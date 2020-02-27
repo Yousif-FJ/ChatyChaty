@@ -1,11 +1,12 @@
-name: CD
+name: CI
 on:
   push:
     branches:
     - master
 jobs:
-  build_chatychaty:
-  runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-latest
+
     steps:
     - uses: actions/checkout@v1
     - name: Build and deploy the Docker image
