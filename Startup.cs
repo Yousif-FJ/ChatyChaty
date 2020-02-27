@@ -29,8 +29,6 @@ namespace ChatyChaty
         {
             services.AddControllers();
 
-            services.AddDbContextPool<ChatyChatyContext>(
-                options => options.UseNpgsql(Environment.GetEnvironmentVariable("DATABASE_URL")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
