@@ -12,14 +12,14 @@ namespace ChatyChaty.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class HomeController : ControllerBase
+    public class ApiController : ControllerBase
     {
 
-        private readonly ILogger<HomeController> _logger;
+        private readonly ILogger<ApiController> _logger;
         private readonly IWebHostEnvironment webHost;
         private readonly IMessageRepository messageRepository;
 
-        public HomeController(ILogger<HomeController> logger , IWebHostEnvironment webHost, IMessageRepository messageRepository)
+        public ApiController(ILogger<ApiController> logger , IWebHostEnvironment webHost, IMessageRepository messageRepository)
         {
             _logger = logger;
             this.webHost = webHost;
