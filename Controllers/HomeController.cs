@@ -1,45 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using ChatyChaty.Model;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace ChatyChaty.Controllers
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class HomeController : ControllerBase
+    public class HomeController : Controller
     {
-
-        private readonly ILogger<HomeController> _logger;
-        private readonly IWebHostEnvironment webHost;
-        private readonly IMessageRepository messageRepository;
-
-        public HomeController(ILogger<HomeController> logger , IWebHostEnvironment webHost, IMessageRepository messageRepository)
-        {
-            _logger = logger;
-            this.webHost = webHost;
-            this.messageRepository = messageRepository;
-        }
-
+        [Route("/")]
         [HttpGet]
-        [Route("Index")]
-        public string Index()
+        public IActionResult Index()
         {
-           _logger.LogInformation($"The first message body is {messageRepository.GetAllMessages().FirstOrDefault().Body}");
-            return "App running";
-        }
-
-
-        [HttpGet]
-        [Route("GetImg")]
-        public string GetImg()
-        {
-            return Path.Combine(webHost.WebRootPath, "img", "CatFilterReaction.jpg");
+            return View();
         }
     }
 }

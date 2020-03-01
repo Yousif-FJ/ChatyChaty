@@ -27,7 +27,7 @@ namespace ChatyChaty
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddMvc();
             services.AddDbContext<ChatyChatyContext>();
             services.AddScoped<IMessageRepository, MessagesRepository>();
         }
