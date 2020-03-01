@@ -12,6 +12,8 @@ namespace ChatyChaty.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Consumes("application/json")]
+    [Produces("application/json")]
     public class ApiController : ControllerBase
     {
 
@@ -27,19 +29,17 @@ namespace ChatyChaty.Controllers
         }
 
         [HttpGet]
-        [Route("Index")]
-        public string Index()
-        {
-           _logger.LogInformation($"The first message body is {messageRepository.GetAllMessages().FirstOrDefault().Body}");
-            return "App running";
-        }
-
-
-        [HttpGet]
         [Route("GetImg")]
         public string GetImg()
         {
             return Path.Combine(webHost.WebRootPath, "img", "CatFilterReaction.jpg");
+        }
+
+        [HttpPost]
+        [Route("TestingPost")]
+        public JsonResult TestingPost([FromBody] Message K)
+        {
+            return new JsonResult(K);
         }
     }
 }
