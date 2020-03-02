@@ -18,13 +18,11 @@ namespace ChatyChaty.Controllers
     {
 
         private readonly ILogger<ApiController> _logger;
-        private readonly IWebHostEnvironment webHost;
         private readonly IMessageRepository messageRepository;
 
-        public ApiController(ILogger<ApiController> logger , IWebHostEnvironment webHost, IMessageRepository messageRepository)
+        public ApiController(ILogger<ApiController> logger , IMessageRepository messageRepository)
         {
             _logger = logger;
-            this.webHost = webHost;
             this.messageRepository = messageRepository;
         }
 
@@ -32,7 +30,7 @@ namespace ChatyChaty.Controllers
         [Route("GetImg")]
         public string GetImg()
         {
-            return Path.Combine(webHost.WebRootPath, "img", "CatFilterReaction.jpg");
+            return "CatFilterReaction.jpg";
         }
 
         [HttpPost]
