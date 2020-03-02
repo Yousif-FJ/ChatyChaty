@@ -18,5 +18,11 @@ namespace ChatyChaty.Model
         {
             return chatyChatyContext.MessagesSet;
         }
+
+        public Message NewMessage(Message message)
+        {
+            chatyChatyContext.MessagesSet.Add(message);
+            return message;
+        }
     }
 }
