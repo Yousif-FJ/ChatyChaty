@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using ChatyChaty.Model;
 using Microsoft.AspNetCore.Builder;
@@ -35,7 +37,12 @@ namespace ChatyChaty
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("ChatyChatyAPI", new OpenApiInfo { Title = "ChatyChatyAPI"});
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
             });
+
+
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -44,7 +51,6 @@ namespace ChatyChaty
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseStaticFiles();
        
             app.UseHttpsRedirection();
 
@@ -55,6 +61,7 @@ namespace ChatyChaty
                 c.SwaggerEndpoint("/swagger/ChatyChatyAPI/swagger.json", "ChatyChatyAPI");
             });
 
+            app.UseStaticFiles();
 
             app.UseRouting();
 
