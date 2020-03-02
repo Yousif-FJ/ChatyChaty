@@ -9,7 +9,7 @@ namespace ChatyChaty.Model
     public class Message
     {
         [Required]
-        public int ID { get; set; }
+        public long ID { get; set; }
         [Required]
         public string Sender { get; set; }
         [Required]
