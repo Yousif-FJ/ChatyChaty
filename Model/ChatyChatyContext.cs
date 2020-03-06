@@ -25,13 +25,6 @@ namespace ChatyChaty.Model
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             string databaseUrl;
-            if (Environment.GetEnvironmentVariable("USE_LOCALDB") == "true")
-            {
-                optionsBuilder.UseSqlServer(@"Data Source=(localdb)\MSSQLLocalDB;Database=ChatyChatyDB;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
-            }
-
-            else
-            {
                 if (Environment.GetEnvironmentVariable("DATABASE_URL") != null)
                 {
                     databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
@@ -57,9 +50,6 @@ namespace ChatyChaty.Model
 
 
                 optionsBuilder.UseNpgsql(builder.ToString());
-
-            }
-
         }
     }
 }
