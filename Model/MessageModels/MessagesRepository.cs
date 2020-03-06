@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ChatyChaty.Model
+namespace ChatyChaty.Model.MessageModels
 {
     public class MessagesRepository :IMessageRepository
     {
