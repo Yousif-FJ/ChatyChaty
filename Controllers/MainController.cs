@@ -4,7 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using ChatyChaty.Model;
-using ChatyChaty.Model.MessagesModels;
+using ChatyChaty.Model.MessageModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -52,7 +53,8 @@ namespace ChatyChaty.Controllers
         /// Take a Message object as input paramter and reposnd back the same object.
         /// </summary>
         /// <response code="400">Posted Message object doesn't match schemas</response>   
-        [HttpPost("TestingPost")]
+        [Authorize]
+        [HttpPost("PostMessage")]
         public IActionResult TestingPost([FromBody] Message message)
         {
             return Ok(message);

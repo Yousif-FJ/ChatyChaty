@@ -4,14 +4,13 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ChatyChaty.Model.MessagesModels
+namespace ChatyChaty.Model.AccountModels
 {
-    public class Message
+    public class AccountModel
     {
-        public long ID { get; set; }
         [Required]
-        public string Sender { get; set; }
+        public string UserName { get; set; }
         [Required]
-        public string Body { get; set; }
+        public string Password { get; set; }
     }
 }
