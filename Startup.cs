@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using ChatyChaty.Model;
-using ChatyChaty.Model.MessageModels;
+using ChatyChaty.Model.MessageModel;
 using ChatyChaty.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -74,27 +74,27 @@ namespace ChatyChaty
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-                  .AddJwtBearer(options =>
-                  {
-                      options.TokenValidationParameters = new TokenValidationParameters
-                      {
-                          ValidateIssuer = true,
-                          ValidateAudience = true,
-                          ValidateLifetime = true,
-                          ValidateIssuerSigningKey = true,
-                          ValidIssuer = Configuration["Jwt:Issuer"],
-                          ValidAudience = Configuration["Jwt:Issuer"],
-                          IssuerSigningKey = new SymmetricSecurityKey(
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = Configuration["Jwt:Issuer"],
+                        ValidAudience = Configuration["Jwt:Issuer"],
+                        IssuerSigningKey = new SymmetricSecurityKey(
                             Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_SECRET"))
-                      )
-                      };
-                  });
+                             )
+                    };
+                });
 
 
             //configure swagger -------------------------------------------------------------
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("ChatyChatyAPI", new OpenApiInfo { Title = "ChatyChatyAPI" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Version = "v1", Title = "ChatyChatyAPI" });
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
@@ -111,19 +111,19 @@ namespace ChatyChaty
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement()
                 {
                   {
-                   new OpenApiSecurityScheme
+                    new OpenApiSecurityScheme
                       {
-                        Reference = new OpenApiReference
-                       {
+                      Reference = new OpenApiReference
+                        {
                           Type = ReferenceType.SecurityScheme,
                           Id = "Bearer"
-                       },
-            Scheme = "oauth2",
-            Name = "Bearer",
-            In = ParameterLocation.Header,
+                        },
+                      Scheme = "oauth2",
+                      Name = "Bearer",
+                      In = ParameterLocation.Header,
 
                       },
-                  new List<string>()
+                    new List<string>()
                   }
               });
             });
@@ -153,7 +153,7 @@ namespace ChatyChaty
 
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/ChatyChatyAPI/swagger.json", "ChatyChatyAPI");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
 
             });
 

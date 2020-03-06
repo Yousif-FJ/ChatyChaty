@@ -4,16 +4,16 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using ChatyChaty.Model;
-using ChatyChaty.Model.MessageModels;
+using ChatyChaty.Model.MessageModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace ChatyChaty.Controllers
+namespace ChatyChaty.Controllers.v1
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [Consumes("application/json")]
     [Produces("application/json")]
     public class MainController : ControllerBase

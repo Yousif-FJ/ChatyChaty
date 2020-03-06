@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ChatyChaty.Model.AccountModels
+namespace ChatyChaty.Model.AuthenticationModel
 {
     public class AccountModel
     {

@@ -1,4 +1,4 @@
-﻿using ChatyChaty.Model.MessageModels;
+﻿using ChatyChaty.Model.MessageModel;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;

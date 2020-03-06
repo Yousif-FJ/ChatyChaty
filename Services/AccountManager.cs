@@ -1,4 +1,4 @@
-﻿using ChatyChaty.Model.AccountModels;
+﻿using ChatyChaty.Model.AuthenticationModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System;

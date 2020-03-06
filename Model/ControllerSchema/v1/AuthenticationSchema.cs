@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ChatyChaty.Model.AccountModels
+namespace ChatyChaty.ControllerSchema.v1
 {
-    public class AuthenticationResult
+    public class AuthenticationSchema
     {
         public bool Success { get; set; }
         public string Token { get; set; }
