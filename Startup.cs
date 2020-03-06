@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 using ChatyChaty.Model;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -14,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 namespace ChatyChaty
@@ -42,7 +45,26 @@ namespace ChatyChaty
                 c.IncludeXmlComments(xmlPath);
             });
 
-
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+               .AddJwtBearer(options =>
+           {
+               options.TokenValidationParameters = new TokenValidationParameters
+               {
+                   ValidateIssuer = true,
+                   ValidateAudience = true,
+                   ValidateLifetime = true,
+                   ValidateIssuerSigningKey = true,
+                   ValidIssuer = Configuration["Jwt:Issuer"],
+                   ValidAudience = Configuration["Jwt:Issuer"],
+                   IssuerSigningKey = new SymmetricSecurityKey(
+                     Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_SECRET"))
+               )
+               };
+           });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
