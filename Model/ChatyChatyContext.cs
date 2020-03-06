@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using ChatyChaty.Model.MessageModels;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Npgsql;
 using System;
@@ -8,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace ChatyChaty.Model
 {
-    public class ChatyChatyContext : DbContext
+    public class ChatyChatyContext : IdentityDbContext
     {
         private readonly ILogger<ChatyChatyContext> logger;
 
@@ -23,31 +25,40 @@ namespace ChatyChaty.Model
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             string databaseUrl;
-            if (Environment.GetEnvironmentVariable("DATABASE_URL") != null)
+            if (Environment.GetEnvironmentVariable("USE_LOCALDB") == "true")
             {
-                databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+                optionsBuilder.UseSqlServer(@"Data Source=(localdb)\MSSQLLocalDB;Database=ChatyChatyDB;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
             }
+
             else
             {
-                logger.LogWarning("DATABASE_URL is null, falling back to inline Database connection");
-                databaseUrl ="postgres://ariehsrkswnkuy:f71fcbb30ddc875d91836b4ca0c0ca4af1da51b3885d73674381e0888ac757d5@ec2-54-75-231-215.eu-west-1.compute.amazonaws.com:5432/dkmm2e5rvrrn1";
+                if (Environment.GetEnvironmentVariable("DATABASE_URL") != null)
+                {
+                    databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+                }
+                else
+                {
+                    logger.LogWarning("DATABASE_URL is null, falling back to inline Database connection");
+                    databaseUrl = "postgres://ariehsrkswnkuy:f71fcbb30ddc875d91836b4ca0c0ca4af1da51b3885d73674381e0888ac757d5@ec2-54-75-231-215.eu-west-1.compute.amazonaws.com:5432/dkmm2e5rvrrn1";
+                }
+                var databaseUri = new Uri(databaseUrl);
+                var userInfo = databaseUri.UserInfo.Split(':');
+
+                var builder = new NpgsqlConnectionStringBuilder
+                {
+                    Host = databaseUri.Host,
+                    Port = databaseUri.Port,
+                    Username = userInfo[0],
+                    Password = userInfo[1],
+                    Database = databaseUri.LocalPath.TrimStart('/'),
+                    SslMode = SslMode.Require,
+                    TrustServerCertificate = true
+                };
+
+
+                optionsBuilder.UseNpgsql(builder.ToString());
+
             }
-            var databaseUri = new Uri(databaseUrl);
-            var userInfo = databaseUri.UserInfo.Split(':');
-
-            var builder = new NpgsqlConnectionStringBuilder
-            {
-                Host = databaseUri.Host,
-                Port = databaseUri.Port,
-                Username = userInfo[0],
-                Password = userInfo[1],
-                Database = databaseUri.LocalPath.TrimStart('/'),
-                SslMode = SslMode.Require,
-                TrustServerCertificate = true
-            };
-
-
-            optionsBuilder.UseNpgsql(builder.ToString());
 
         }
     }
