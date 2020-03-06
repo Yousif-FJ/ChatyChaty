@@ -15,7 +15,8 @@
       "launchUrl": "",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "JWT_SECRET": "WW*V|^}*m81Ub]$KU(!3z=hrWV^v+g!xe2~<B1.EK]Y]]H#v0''KOW~i/n3Lvq("
+        "JWT_SECRET": "WW*V|^}*m81Ub]$KU(!3z=hrWV^v+g!xe2~<B1.EK]Y]]H#v0''KOW~i/n3Lvq(",
+        "ENABLE_REGESTRATION": "true"
       }
     },
     "DemoAPI": {
@@ -24,7 +25,8 @@
       "launchUrl": "",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "JWT_SECRET": "WW*V|^}*m81Ub]$KU(!3z=hrWV^v+g!xe2~<B1.EK]Y]]H#v0''KOW~i/n3Lvq("
+        "JWT_SECRET": "WW*V|^}*m81Ub]$KU(!3z=hrWV^v+g!xe2~<B1.EK]Y]]H#v0''KOW~i/n3Lvq(",
+        "ENABLE_REGESTRATION": "true"
       },
       "applicationUrl": "https://localhost:5001;http://localhost:5000"
     },

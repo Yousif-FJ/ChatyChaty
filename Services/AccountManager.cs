@@ -22,6 +22,14 @@ namespace ChatyChaty.Services
 
         public async Task<AuthenticationResult> CreateAccount(AccountModel accountModel)
         {
+            if (Environment.GetEnvironmentVariable("ENABLE_REGESTRATION") == "true")
+            {
+                return new AuthenticationResult
+                {
+                    Success = false,
+                    Errors = new List<string>() { new string("Account creation is disabled for security reasons") }
+                };
+            }
             IdentityUser identityUser = new IdentityUser(accountModel.UserName);
             var AccountCreationResult = await userManager.CreateAsync(identityUser, accountModel.Password);
             if (!AccountCreationResult.Succeeded)
