@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using ChatyChaty.Model;
+using ChatyChaty.Model.ControllerSchema.v1;
 using ChatyChaty.Model.MessageModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -55,7 +55,7 @@ namespace ChatyChaty.Controllers.v1
         /// <response code="400">Posted Message object doesn't match schemas</response>   
         [Authorize]
         [HttpPost("PostMessage")]
-        public IActionResult TestingPost([FromBody] Message message)
+        public IActionResult TestingPost([FromBody] MessageSchema message)
         {
             return Ok(message);
         }
