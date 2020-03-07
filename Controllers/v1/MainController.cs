@@ -43,6 +43,7 @@ namespace ChatyChaty.Controllers.v1
         /// <summary>
         /// Get an array of all messages.
         /// </summary>
+        /// <response code="500">Server Error (This shouldn't happen)</response>
         [HttpGet("GetAllMessages")]
         public IActionResult GetAllMessages()
         {

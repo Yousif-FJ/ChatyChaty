@@ -22,6 +22,7 @@ namespace ChatyChaty.Model.MessageModel
         public Message NewMessage(Message message)
         {
             chatyChatyContext.MessagesSet.Add(message);
+            chatyChatyContext.SaveChanges();
             return message;
         }
     }
