@@ -31,7 +31,7 @@ namespace ChatyChaty.Controllers.v1
         /// Try it out to check the response schema 
         /// (Account creation may be disable for security reasons)
         /// </remarks>
-        /// <response code="401">Accoutn creation failed</response>
+        /// <response code="401">Acconut creation failed</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [HttpPost("CreateAccount")]
         public async Task<IActionResult> CreateAccount([FromBody]AccountSchema accountSchema)

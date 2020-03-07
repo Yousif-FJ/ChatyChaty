@@ -22,7 +22,7 @@ namespace ChatyChaty.Services
 
         public async Task<AuthenticationResult> CreateAccount(AccountModel accountModel)
         {
-            if (Environment.GetEnvironmentVariable("ENABLE_REGESTRATION") == "true")
+            if (Environment.GetEnvironmentVariable("DISABLE_REGESTRATION") == "true")
             {
                 return new AuthenticationResult
                 {
