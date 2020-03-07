@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ChatyChaty.Model
+namespace ChatyChaty.Model.MessageModel
 {
     public class MessagesRepository :IMessageRepository
     {
@@ -22,6 +22,7 @@ namespace ChatyChaty.Model
         public Message NewMessage(Message message)
         {
             chatyChatyContext.MessagesSet.Add(message);
+            chatyChatyContext.SaveChanges();
             return message;
         }
     }

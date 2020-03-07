@@ -3,15 +3,17 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using ChatyChaty.Model;
+using ChatyChaty.Model.ControllerSchema.v1;
+using ChatyChaty.Model.MessageModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace ChatyChaty.Controllers
+namespace ChatyChaty.Controllers.v1
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [Consumes("application/json")]
     [Produces("application/json")]
     public class MainController : ControllerBase
@@ -30,7 +32,7 @@ namespace ChatyChaty.Controllers
         /// <summary>
         /// Get the location of an img file
         /// </summary>
-        /// <returns></returns>
+        /// <response code="500">Server Error (This shouldn't happen)</response>
         [HttpGet("GetImg")]
         public IActionResult GetImg()
         {
@@ -41,6 +43,7 @@ namespace ChatyChaty.Controllers
         /// <summary>
         /// Get an array of all messages.
         /// </summary>
+        /// <response code="500">Server Error (This shouldn't happen)</response>
         [HttpGet("GetAllMessages")]
         public IActionResult GetAllMessages()
         {
@@ -48,12 +51,20 @@ namespace ChatyChaty.Controllers
         }
 
         /// <summary>
-        /// Take a Message object as input paramter and reposnd back the same object.
+        /// Post a message (Require authentication).
         /// </summary>
         /// <response code="400">Posted Message object doesn't match schemas</response>   
-        [HttpPost("TestingPost")]
-        public IActionResult TestingPost([FromBody] Message message)
+        /// <response code="403">Not Authenticated</response>
+        /// <response code="500">Server Error (This shouldn't happen)</response>
+        [Authorize]
+        [HttpPost("PostMessage")]
+        public IActionResult PostMessage([FromBody] MessageSchema message)
         {
+            messageRepository.NewMessage(new Message
+            {
+                Body = message.Body,
+                Sender = message.Sender
+            });
             return Ok(message);
         }
     }

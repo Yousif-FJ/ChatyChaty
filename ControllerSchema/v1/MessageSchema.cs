@@ -4,11 +4,10 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ChatyChaty.Model
+namespace ChatyChaty.Model.ControllerSchema.v1
 {
-    public class Message
+    public class MessageSchema
     {
-        public long ID { get; set; }
         [Required]
         public string Sender { get; set; }
         [Required]
