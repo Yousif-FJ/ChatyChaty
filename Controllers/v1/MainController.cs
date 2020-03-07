@@ -32,7 +32,7 @@ namespace ChatyChaty.Controllers.v1
         /// <summary>
         /// Get the location of an img file
         /// </summary>
-        /// <returns></returns>
+        /// <response code="500">Server Error (This shouldn't happen)</response>
         [HttpGet("GetImg")]
         public IActionResult GetImg()
         {
@@ -50,13 +50,20 @@ namespace ChatyChaty.Controllers.v1
         }
 
         /// <summary>
-        /// Take a Message object as input paramter and reposnd back the same object.
+        /// Post a message (Require authentication).
         /// </summary>
         /// <response code="400">Posted Message object doesn't match schemas</response>   
+        /// <response code="403">Not Authenticated</response>
+        /// <response code="500">Server Error (This shouldn't happen)</response>
         [Authorize]
         [HttpPost("PostMessage")]
-        public IActionResult TestingPost([FromBody] MessageSchema message)
+        public IActionResult PostMessage([FromBody] MessageSchema message)
         {
+            messageRepository.NewMessage(new Message
+            {
+                Body = message.Body,
+                Sender = message.Sender
+            });
             return Ok(message);
         }
     }

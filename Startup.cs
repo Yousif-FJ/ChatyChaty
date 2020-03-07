@@ -98,7 +98,6 @@ namespace ChatyChaty
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
-
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Description =
