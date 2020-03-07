@@ -23,8 +23,18 @@ namespace ChatyChaty.Controllers.v1
             this.accountManager = accountManager;
         }
 
+
+        /// <summary>
+        /// Create an account
+        /// </summary>
+        /// <remarks>
+        /// Try it out to check the response schema 
+        /// (Account creation may be disable for security reasons)
+        /// </remarks>
+        /// <response code="401">Accoutn creation failed</response>
+        /// <response code="500">Server Error (This shouldn't happen)</response>
         [HttpPost("CreateAccount")]
-        public async Task<IActionResult> CreateAccount(AccountSchema accountSchema)
+        public async Task<IActionResult> CreateAccount([FromBody]AccountSchema accountSchema)
         {
            var authenticationResult = await accountManager.CreateAccount(new AccountModel
            {
@@ -49,8 +59,18 @@ namespace ChatyChaty.Controllers.v1
             throw new Exception("authenticationResult.Success is null");
         }
 
+
+        /// <summary>
+        /// Login with an existing account
+        /// </summary>
+        /// <remarks>
+        /// Try it out to check the response schema 
+        /// </remarks>
+        /// <response code="401">Login failed</response>
+        /// <response code="500">Server Error (This shouldn't happen)</response>
+
         [HttpPost("Login")]
-        public async Task<IActionResult> Login(AccountSchema accountSchema)
+        public async Task<IActionResult> Login([FromBody]AccountSchema accountSchema)
         {
             var authenticationResult = await accountManager.Login(new AccountModel()
             {
