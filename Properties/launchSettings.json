@@ -16,7 +16,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "JWT_SECRET": "WW*V|^}*m81Ub]$KU(!3z=hrWV^v+g!xe2~<B1.EK]Y]]H#v0''KOW~i/n3Lvq(",
-        "ENABLE_REGESTRATION": "true"
+        "DISABLE_REGESTRATION": "true"
       }
     },
     "DemoAPI": {
