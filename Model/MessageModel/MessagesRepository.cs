@@ -19,6 +19,23 @@ namespace ChatyChaty.Model.MessageModel
             return chatyChatyContext.MessagesSet;
         }
 
+        public IEnumerable<Message> GetNewMessages(long ID)
+        {
+            var LastID = chatyChatyContext.MessagesSet.Max(m => m.ID);
+            if (LastID == ID)
+            {
+                return new List<Message>();
+            }
+            else if (LastID >=ID)
+            {
+                return chatyChatyContext.MessagesSet.Where(message => message.ID > ID);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         public Message NewMessage(Message message)
         {
             chatyChatyContext.MessagesSet.Add(message);

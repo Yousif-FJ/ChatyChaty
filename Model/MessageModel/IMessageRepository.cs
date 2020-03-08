@@ -8,6 +8,7 @@ namespace ChatyChaty.Model.MessageModel
     public interface IMessageRepository
     {
         IEnumerable<Message> GetAllMessages();
+        IEnumerable<Message> GetNewMessages(long ID);
         Message NewMessage(Message message);
     }
 }
