@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using ChatyChaty.ControllerSchema.v2;
 using ChatyChaty.Model.ControllerSchema.v1;
 using ChatyChaty.Model.MessageModel;
 using Microsoft.AspNetCore.Authorization;
@@ -49,7 +50,28 @@ namespace ChatyChaty.Controllers.v1
         [HttpGet("GetAllMessages")]
         public IActionResult GetAllMessages()
         {
-            return Ok(messageRepository.GetAllMessages());
+            
+            return Ok(MessageModelToSchema(messageRepository.GetAllMessages()));
+        }
+
+
+        /// <summary>
+        /// Get new messages after the specified message ID.
+        /// </summary>
+        /// <response code="400">ID is out of range</response>   
+        /// <response code="500">Server Error (This shouldn't happen)</response>
+        [HttpGet("GetNewMessages")]
+        public IActionResult GetNewMessages([FromQuery]long id)
+        {
+            var Response = MessageModelToSchema(messageRepository.GetNewMessages(id));
+            if (Response != null)
+            {
+                return Ok(Response);
+            }
+            else
+            {
+                return BadRequest("ID is out of range");
+            }
         }
 
         /// <summary>
@@ -74,6 +96,21 @@ namespace ChatyChaty.Controllers.v1
                 Sender = UserNameClaim.Value
             });
             return Ok(NewMessage);
+        }
+
+        private List<ResponseMessageSchema> MessageModelToSchema(IEnumerable<Message> MessageSet)
+        {
+            var responseMessages = new List<ResponseMessageSchema>();
+            foreach (var item in MessageSet)
+            {
+                responseMessages.Add(new ResponseMessageSchema
+                {
+                    ID = item.ID,
+                    Sender = item.Sender,
+                    Body = item.Body
+                });
+            }
+            return responseMessages;
         }
     }
 }
