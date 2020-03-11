@@ -98,6 +98,18 @@ namespace ChatyChaty.Controllers.v1
             return Ok(NewMessage);
         }
 
+        /// <summary>
+        /// Delete all messages simple clean and fast :p (Require authentication).
+        /// </summary>
+        /// <returns></returns>
+        [Authorize]
+        [HttpDelete("DeleteAllMessages")]
+        public IActionResult DeleteAllMessages()
+        {
+            messageRepository.DeleteAllMessages();
+            return Ok();
+        }
+
         private List<ResponseMessageSchema> MessageModelToSchema(IEnumerable<Message> MessageSet)
         {
             var responseMessages = new List<ResponseMessageSchema>();
