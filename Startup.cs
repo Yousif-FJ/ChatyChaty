@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using ChatyChaty.Model;
+using ChatyChaty.Model.FileRepository;
 using ChatyChaty.Model.MessageModel;
 using ChatyChaty.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -47,7 +48,9 @@ namespace ChatyChaty
 
             services.AddScoped<IMessageRepository, MessagesRepository>();
 
-            services.AddIdentity<IdentityUser, IdentityRole>()
+            services.AddScoped<IFileRepository, FileRepository>();
+
+            services.AddIdentity<AppUser, IdentityRole>()
                .AddEntityFrameworkStores<ChatyChatyContext>();
 
 
