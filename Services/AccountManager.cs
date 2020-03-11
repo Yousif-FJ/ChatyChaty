@@ -1,5 +1,7 @@
-﻿using ChatyChaty.Model.AuthenticationModel;
+﻿using ChatyChaty.Model;
+using ChatyChaty.Model.AuthenticationModel;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -13,11 +15,13 @@ namespace ChatyChaty.Services
 {
     public class AccountManager : IAccountManager
     {
-        private readonly UserManager<IdentityUser> userManager;
+        private readonly UserManager<AppUser> userManager;
+        private readonly IConfiguration configuration;
 
-        public AccountManager(UserManager<IdentityUser> userManager)
+        public AccountManager(UserManager<AppUser> userManager, IConfiguration configuration)
         {
             this.userManager = userManager;
+            this.configuration = configuration;
         }
 
         public async Task<AuthenticationResult> CreateAccount(AccountModel accountModel)
@@ -30,7 +34,7 @@ namespace ChatyChaty.Services
                     Errors = new List<string>() { new string("Account creation is disabled for security reasons") }
                 };
             }
-            IdentityUser identityUser = new IdentityUser(accountModel.UserName);
+            AppUser identityUser = new AppUser(accountModel.UserName);
             var AccountCreationResult = await userManager.CreateAsync(identityUser, accountModel.Password);
             if (!AccountCreationResult.Succeeded)
             {
@@ -68,6 +72,19 @@ namespace ChatyChaty.Services
 
         }
 
+        public async Task<AppUser> GetUser(string UserName)
+        {
+            var user = await userManager.FindByNameAsync(UserName);
+            return user;
+        }
+
+        public async Task<string> SetPhotoName(string UserName, string PhotoName)
+        {
+            var user = await userManager.FindByNameAsync(UserName);
+            user.PhotoName = PhotoName;
+            return PhotoName;
+        }
+
         private string JwtTokenGenerator(AccountModel accountModel)
         {
             JwtSecurityTokenHandler jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
@@ -84,8 +101,8 @@ namespace ChatyChaty.Services
                 IssuedAt = DateTime.Now,
                 NotBefore = DateTime.Now,
                 Expires = DateTime.Now.AddDays(7),
-                Issuer = "https://chatychaty0.herokuapp.com/",
-                Audience = "https://chatychaty0.herokuapp.com/",
+                Issuer = configuration["Jwt:Issuer"],
+                Audience = configuration["Jwt:Issuer"]
             };
             var token = jwtSecurityTokenHandler.CreateToken(tokenDescriptor);
             return jwtSecurityTokenHandler.WriteToken(token);
