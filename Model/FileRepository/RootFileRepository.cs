@@ -8,18 +8,28 @@ using System.Threading.Tasks;
 
 namespace ChatyChaty.Model.FileRepository
 {
-    public class FileRepository : IFileRepository
+    public class RootFileRepository : IFileRepository
     {
-        private readonly IWebHostEnvironment hostEnvironment;
+        private readonly string fileConatiner;
 
-        public FileRepository(IWebHostEnvironment hostEnvironment)
+        public string FileConatiner
         {
-            this.hostEnvironment = hostEnvironment;
+            get
+            {
+                Directory.CreateDirectory(fileConatiner);
+                return fileConatiner;
+            }
+        }
+
+        public RootFileRepository(IWebHostEnvironment webHostEnvironment)
+        {
+            if (webHostEnvironment is null) { throw new ArgumentNullException(nameof(webHostEnvironment)); };
+            fileConatiner = Path.Combine(webHostEnvironment.WebRootPath, "ProfilePIctures");
         }
 
         public async Task<string> ChangePhoto(string PhotoName, IFormFile formFile)
         {
-            var FilePath = Path.Combine(hostEnvironment.WebRootPath, "ProfilePIctures", PhotoName);
+            var FilePath = Path.Combine(fileConatiner, PhotoName);
             using FileStream fileStream = new FileStream(path: FilePath, FileMode.Create);
             await formFile.CopyToAsync(fileStream);
             return PhotoName;
@@ -28,7 +38,7 @@ namespace ChatyChaty.Model.FileRepository
         public async Task<string> UploadPhoto(IFormFile formFile)
         {
             var PhotoName = $"{Guid.NewGuid().ToString()}_{formFile.FileName}";
-            var FilePath = Path.Combine(hostEnvironment.WebRootPath, "ProfilePIctures", PhotoName);
+            var FilePath = Path.Combine(fileConatiner, PhotoName);
             using FileStream fileStream = new FileStream(path: FilePath, FileMode.CreateNew);
             await formFile.CopyToAsync(fileStream);
             return PhotoName;

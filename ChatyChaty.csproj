@@ -12,6 +12,10 @@
   <ItemGroup>
     <Compile Remove="Migrations\20200306193238_NewM.cs" />
     <Compile Remove="Migrations\20200306193238_NewM.Designer.cs" />
+    <Compile Remove="Migrations\20200311205843_AddUserApp.cs" />
+    <Compile Remove="Migrations\20200311205843_AddUserApp.Designer.cs" />
+    <Compile Remove="Migrations\20200311210229_UseApUSe.cs" />
+    <Compile Remove="Migrations\20200311210229_UseApUSe.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

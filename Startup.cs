@@ -48,7 +48,7 @@ namespace ChatyChaty
 
             services.AddScoped<IMessageRepository, MessagesRepository>();
 
-            services.AddScoped<IFileRepository, FileRepository>();
+            services.AddScoped<IFileRepository, RootFileRepository>();
 
             services.AddIdentity<AppUser, IdentityRole>()
                .AddEntityFrameworkStores<ChatyChatyContext>();
