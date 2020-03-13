@@ -44,7 +44,7 @@ namespace ChatyChaty.Controllers.v1
             }
             if (User.PhotoID != null)
             {
-                return Ok(pictureProvider.GetPhotoURL(User.PhotoID));
+                return Ok(await pictureProvider.GetPhotoURL(User.PhotoID));
             }
             else
             {
@@ -74,7 +74,7 @@ namespace ChatyChaty.Controllers.v1
             {
                 PhotoID = await pictureProvider.ChangePhoto(user.PhotoID, uploadFile.PhotoFile);
             }
-            var ReturnURL = pictureProvider.GetPhotoURL(PhotoID);
+            var ReturnURL = await pictureProvider.GetPhotoURL(PhotoID);
                 return Ok(ReturnURL);
         }
     }
