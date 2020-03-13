@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ using ChatyChaty.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using WebApplication1.ValidationAttributes;
 
 namespace ChatyChaty.Controllers.v1
 {
@@ -36,7 +38,7 @@ namespace ChatyChaty.Controllers.v1
         public async Task<IActionResult> GetUserPhoto([FromQuery]string UserName)
         {
             var User = await accountManager.GetUser(UserName);
-            string UserPhotoName = "Placeholder.jpg";
+            string UserPhotoName;
             if (User is null)
             {
                 return NotFound();
@@ -44,6 +46,10 @@ namespace ChatyChaty.Controllers.v1
             if (User.PhotoName != null)
             {
                 UserPhotoName = User.PhotoName;
+            }
+            else
+            {
+                UserPhotoName = "Placeholder.jpg";
             }
             return Ok($"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/ProfilePIctures/{UserPhotoName}");
         }
@@ -54,9 +60,10 @@ namespace ChatyChaty.Controllers.v1
         /// <param name="uploadFile"></param>
         /// <returns></returns>
         [Authorize]
+        [Consumes("multipart/form-data")]
         [HttpPost("SetPhotoForSelf")]
-        public async Task<IActionResult> SetPhotoForSelf([FromBody]UploadFileSchema uploadFile)
-        {
+        public async Task<IActionResult> SetPhotoForSelf([FromForm]UploadFileSchema uploadFile)
+        {         
             var UserNameClaim = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Name);
             var user = await accountManager.GetUser(UserNameClaim.Value);
             if (user.PhotoName is null)
