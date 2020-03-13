@@ -18,13 +18,13 @@ namespace ChatyChaty.Controllers.v1
     [ApiController]
     public class ProfileController : ControllerBase
     {
-        private readonly IFileRepository fileRepository;
         private readonly IAccountManager accountManager;
+        private readonly IPictureProvider pictureProvider;
 
-        public ProfileController(IFileRepository fileRepository, IAccountManager accountManager)
+        public ProfileController(IAccountManager accountManager, IPictureProvider pictureProvider)
         {
-            this.fileRepository = fileRepository;
             this.accountManager = accountManager;
+            this.pictureProvider = pictureProvider;
         }
 
         /// <summary>
@@ -38,20 +38,18 @@ namespace ChatyChaty.Controllers.v1
         public async Task<IActionResult> GetUserPhoto([FromQuery]string UserName)
         {
             var User = await accountManager.GetUser(UserName);
-            string UserPhotoName;
             if (User is null)
             {
-                return NotFound();
+                return NotFound("UserName wasn't found");
             }
-            if (User.PhotoName != null)
+            if (User.PhotoID != null)
             {
-                UserPhotoName = User.PhotoName;
+                return Ok(pictureProvider.GetPhotoURL(User.PhotoID));
             }
             else
             {
-                UserPhotoName = "Placeholder.jpg";
+                return Ok(pictureProvider.GetPlaceHolderURL());
             }
-            return Ok($"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/ProfilePIctures/{UserPhotoName}");
         }
 
         /// <summary>
@@ -66,16 +64,18 @@ namespace ChatyChaty.Controllers.v1
         {         
             var UserNameClaim = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Name);
             var user = await accountManager.GetUser(UserNameClaim.Value);
-            if (user.PhotoName is null)
+            string PhotoID;
+            if (user.PhotoID is null)
             {
-                var NewFileName = await fileRepository.UploadPhoto(uploadFile.PhotoFile);
-                await accountManager.SetPhotoName(user.UserName, NewFileName);
+                PhotoID = await pictureProvider.UploadPhoto(uploadFile.PhotoFile);
+                await accountManager.SetPhotoID(user.UserName, PhotoID);
             }
             else
             {
-                var FileName = await fileRepository.ChangePhoto(user.PhotoName, uploadFile.PhotoFile);
+                PhotoID = await pictureProvider.ChangePhoto(user.PhotoID, uploadFile.PhotoFile);
             }
-                return Ok();
+            var ReturnURL = pictureProvider.GetPhotoURL(PhotoID);
+                return Ok(ReturnURL);
         }
     }
 }
