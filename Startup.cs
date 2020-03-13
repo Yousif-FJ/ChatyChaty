@@ -6,7 +6,6 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using ChatyChaty.Model;
-using ChatyChaty.Model.FileRepository;
 using ChatyChaty.Model.MessageModel;
 using ChatyChaty.Services;
 using CloudinaryDotNet;
@@ -48,8 +47,6 @@ namespace ChatyChaty
             services.AddScoped<IAccountManager, AccountManager>();
 
             services.AddScoped<IMessageRepository, MessagesRepository>();
-
-            services.AddScoped<IFileRepository, RootFileRepository>();
 
             services.AddIdentity<AppUser, IdentityRole>()
                .AddEntityFrameworkStores<ChatyChatyContext>();
@@ -162,9 +159,6 @@ namespace ChatyChaty
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
 
             });
-
-            app.UseStaticFiles();
-
 
             app.UseRouting();
 

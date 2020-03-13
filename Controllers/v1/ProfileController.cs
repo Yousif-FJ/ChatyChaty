@@ -5,7 +5,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using ChatyChaty.ControllerSchema.v1;
-using ChatyChaty.Model.FileRepository;
 using ChatyChaty.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
