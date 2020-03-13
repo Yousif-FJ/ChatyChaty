@@ -9,6 +9,7 @@ using ChatyChaty.Model;
 using ChatyChaty.Model.FileRepository;
 using ChatyChaty.Model.MessageModel;
 using ChatyChaty.Services;
+using CloudinaryDotNet;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -53,6 +54,9 @@ namespace ChatyChaty
             services.AddIdentity<AppUser, IdentityRole>()
                .AddEntityFrameworkStores<ChatyChatyContext>();
 
+            services.AddSingleton<Cloudinary>();
+
+            services.AddScoped<IPictureProvider, CloudinaryPictureProvider>();
 
             //configure identity -----------------------------------------------------------
 
