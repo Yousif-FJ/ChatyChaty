@@ -1,4 +1,6 @@
-﻿using ChatyChaty.Model.AuthenticationModel;
+﻿using ChatyChaty.Model;
+using ChatyChaty.Model.AuthenticationModel;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,5 +12,8 @@ namespace ChatyChaty.Services
     {
         Task<AuthenticationResult> CreateAccount(AccountModel accountModel);
         Task<AuthenticationResult> Login(AccountModel accountModel);
+        Task<AppUser> GetUser(string UserName);
+        Task<string> SetPhotoID(string UserName, string PhotoName);
+
     }
 }

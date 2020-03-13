@@ -12,9 +12,14 @@
   <ItemGroup>
     <Compile Remove="Migrations\20200306193238_NewM.cs" />
     <Compile Remove="Migrations\20200306193238_NewM.Designer.cs" />
+    <Compile Remove="Migrations\20200311205843_AddUserApp.cs" />
+    <Compile Remove="Migrations\20200311205843_AddUserApp.Designer.cs" />
+    <Compile Remove="Migrations\20200311210229_UseApUSe.cs" />
+    <Compile Remove="Migrations\20200311210229_UseApUSe.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="CloudinaryDotNet" Version="1.10.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.2">
@@ -28,7 +33,11 @@
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.9.10" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.1" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.1.2" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
   </ItemGroup>
 
 

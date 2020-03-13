@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using ChatyChaty.Model;
 using ChatyChaty.Model.MessageModel;
 using ChatyChaty.Services;
+using CloudinaryDotNet;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -47,9 +48,12 @@ namespace ChatyChaty
 
             services.AddScoped<IMessageRepository, MessagesRepository>();
 
-            services.AddIdentity<IdentityUser, IdentityRole>()
+            services.AddIdentity<AppUser, IdentityRole>()
                .AddEntityFrameworkStores<ChatyChatyContext>();
 
+            services.AddSingleton<Cloudinary>();
+
+            services.AddScoped<IPictureProvider, CloudinaryPictureProvider>();
 
             //configure identity -----------------------------------------------------------
 
@@ -155,9 +159,6 @@ namespace ChatyChaty
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
 
             });
-
-            app.UseStaticFiles();
-
 
             app.UseRouting();
 
