@@ -13,6 +13,6 @@ namespace ChatyChaty.Model
         {
         }
 
-        public string PhotoName { get; set; }
+        public string PhotoID { get; set; }
     }
 }

@@ -78,10 +78,10 @@ namespace ChatyChaty.Services
             return user;
         }
 
-        public async Task<string> SetPhotoName(string UserName, string PhotoName)
+        public async Task<string> SetPhotoID(string UserName, string PhotoName)
         {
             var user = await userManager.FindByNameAsync(UserName);
-            user.PhotoName = PhotoName;
+            user.PhotoID = PhotoName;
             await userManager.UpdateAsync(user);
             return PhotoName;
         }
