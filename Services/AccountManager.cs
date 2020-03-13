@@ -82,6 +82,7 @@ namespace ChatyChaty.Services
         {
             var user = await userManager.FindByNameAsync(UserName);
             user.PhotoName = PhotoName;
+            await userManager.UpdateAsync(user);
             return PhotoName;
         }
 
