@@ -10,5 +10,6 @@ namespace ChatyChaty.Model.MessageModel
         IEnumerable<Message> GetAllMessages();
         IEnumerable<Message> GetNewMessages(long ID);
         Message NewMessage(Message message);
+        IEnumerable<Message> DeleteAllMessages();
     }
 }

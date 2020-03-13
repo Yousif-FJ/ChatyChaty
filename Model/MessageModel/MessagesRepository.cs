@@ -14,6 +14,14 @@ namespace ChatyChaty.Model.MessageModel
             this.chatyChatyContext = chatyChatyContext;
         }
 
+        public IEnumerable<Message> DeleteAllMessages()
+        {
+            var messages = chatyChatyContext.MessagesSet;
+            chatyChatyContext.MessagesSet.RemoveRange(messages);
+            chatyChatyContext.SaveChanges();
+            return messages;
+        }
+
         public IEnumerable<Message> GetAllMessages()
         {
             return chatyChatyContext.MessagesSet;

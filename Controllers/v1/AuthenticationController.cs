@@ -31,7 +31,8 @@ namespace ChatyChaty.Controllers.v1
         /// Try it out to check the response schema 
         /// (Account creation may be disable for security reasons)
         /// </remarks>
-        /// <response code="401">Acconut creation failed</response>
+        /// <response code="200">Login Succeed or failed</response>
+        /// <response code="400">Model validation failed</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [HttpPost("CreateAccount")]
         public async Task<IActionResult> CreateAccount([FromBody]AccountSchema accountSchema)
@@ -48,15 +49,7 @@ namespace ChatyChaty.Controllers.v1
                 Success = authenticationResult.Success,
                 Token = authenticationResult.Token
             };
-            if (authenticationSchema.Success)
-            {
                 return Ok(authenticationSchema);
-            }
-            else if (!authenticationSchema.Success)
-            {
-                return Unauthorized(authenticationSchema);
-            }
-            throw new Exception("authenticationResult.Success is null");
         }
 
 
@@ -66,7 +59,8 @@ namespace ChatyChaty.Controllers.v1
         /// <remarks>
         /// Try it out to check the response schema 
         /// </remarks>
-        /// <response code="401">Login failed</response>
+        /// <response code="200">Login Succeed or failed</response>
+        /// <response code="400">Model validation failed</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
 
         [HttpPost("Login")]
@@ -84,16 +78,7 @@ namespace ChatyChaty.Controllers.v1
                 Errors = authenticationResult.Errors,
                 Token = authenticationResult.Token
             };
-
-            if (authenticationSchema.Success)
-            {
                 return Ok(authenticationSchema);
-            }
-            else if (!authenticationSchema.Success)
-            {
-                return Unauthorized(authenticationSchema);
-            }
-            throw new Exception("authenticationResult.Success is null");
         }
     }
 }
