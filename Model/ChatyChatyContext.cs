@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ChatyChaty.Model
 {
-    public class ChatyChatyContext : IdentityDbContext<AppUser>
+    public class ChatyChatyContext : IdentityUserContext<AppUser>
     {
         private readonly ILogger<ChatyChatyContext> logger;
 
