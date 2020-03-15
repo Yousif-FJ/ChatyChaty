@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ChatyChaty.Model
 {
-    public class ChatyChatyContext : IdentityUserContext<AppUser>
+    public class ChatyChatyContext : IdentityUserContext<AppUser,long>
     {
         private readonly ILogger<ChatyChatyContext> logger;
 
@@ -33,7 +33,8 @@ namespace ChatyChaty.Model
 
             builder.Entity<AppUser>().Ignore(f => f.Email);
             builder.Entity<AppUser>().Ignore(f => f.PhoneNumber);
-
+            builder.Entity<AppUser>(f => f.HasKey(b => b.Id));
+            builder.Entity<AppUser>().Ignore(f => f.NormalizedEmail);
         }
     }
 }

@@ -7,12 +7,14 @@ using System.Threading.Tasks;
 
 namespace ChatyChaty.Model
 {
-    public class AppUser : IdentityUser
+    public class AppUser : IdentityUser<long>
     {
         public AppUser(string userName) : base(userName)
         {
         }
 
+        public override long Id { get => base.Id; set => base.Id = value; }
+        [MaxLength(50)]
         public string PhotoID { get; set; }
     }
 }
