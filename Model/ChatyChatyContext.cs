@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,31 +23,17 @@ namespace ChatyChaty.Model
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            string databaseUrl;
-                if (Environment.GetEnvironmentVariable("DATABASE_URL") != null)
-                {
-                    databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
-                }
-                else
-                {
-                throw new Exception("Couldn't get connection string");
-                }
-                var databaseUri = new Uri(databaseUrl);
-                var userInfo = databaseUri.UserInfo.Split(':');
+            optionsBuilder.UseSqlServer(
+                "Server=(localdb)\\mssqllocaldb;Database=ChatyChatyDB;Trusted_Connection=True;MultipleActiveResultSets=true");
+        }
 
-                var builder = new NpgsqlConnectionStringBuilder
-                {
-                    Host = databaseUri.Host,
-                    Port = databaseUri.Port,
-                    Username = userInfo[0],
-                    Password = userInfo[1],
-                    Database = databaseUri.LocalPath.TrimStart('/'),
-                    SslMode = SslMode.Require,
-                    TrustServerCertificate = true
-                };
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
 
+            builder.Entity<AppUser>().Ignore(f => f.Email);
+            builder.Entity<AppUser>().Ignore(f => f.PhoneNumber);
 
-                optionsBuilder.UseNpgsql(builder.ToString());
         }
     }
 }
