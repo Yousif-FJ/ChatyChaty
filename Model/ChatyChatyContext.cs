@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace ChatyChaty.Model
 {
-    public class ChatyChatyContext : IdentityDbContext<AppUser>
+    public class ChatyChatyContext : IdentityUserContext<AppUser>
     {
         private readonly ILogger<ChatyChatyContext> logger;
 
@@ -49,6 +49,15 @@ namespace ChatyChaty.Model
 
 
                 optionsBuilder.UseNpgsql(builder.ToString());
+        }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            builder.Entity<AppUser>().Ignore(f => f.Email);
+            builder.Entity<AppUser>().Ignore(f => f.PhoneNumber);
+
         }
     }
 }
