@@ -14,7 +14,7 @@ namespace ChatyChaty.Model.MessageModel
             this.chatyChatyContext = chatyChatyContext;
         }
 
-        public IEnumerable<Message> DeleteAllMessages()
+        public IEnumerable<Message1> DeleteAllMessages()
         {
             var messages = chatyChatyContext.MessagesSet;
             chatyChatyContext.MessagesSet.RemoveRange(messages);
@@ -22,17 +22,17 @@ namespace ChatyChaty.Model.MessageModel
             return messages;
         }
 
-        public IEnumerable<Message> GetAllMessages()
+        public IEnumerable<Message1> GetAllMessages()
         {
             return chatyChatyContext.MessagesSet;
         }
 
-        public IEnumerable<Message> GetNewMessages(long ID)
+        public IEnumerable<Message1> GetNewMessages(long ID)
         {
             var LastID = chatyChatyContext.MessagesSet.Max(m => m.ID);
             if (LastID == ID)
             {
-                return new List<Message>();
+                return new List<Message1>();
             }
             else if (LastID >=ID)
             {
@@ -44,7 +44,7 @@ namespace ChatyChaty.Model.MessageModel
             }
         }
 
-        public Message NewMessage(Message message)
+        public Message1 NewMessage(Message1 message)
         {
             chatyChatyContext.MessagesSet.Add(message);
             chatyChatyContext.SaveChanges();

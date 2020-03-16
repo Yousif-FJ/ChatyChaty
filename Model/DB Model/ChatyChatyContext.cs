@@ -19,7 +19,7 @@ namespace ChatyChaty.Model
             this.logger = logger;
         }
 
-        public DbSet<Message> MessagesSet { get; set; }
+        public DbSet<Message1> MessagesSet { get; set; }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
