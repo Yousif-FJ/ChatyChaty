@@ -11,7 +11,6 @@ namespace ChatyChaty.ControllerSchema.v1
     public class UploadFileSchema
     {
         [Required]
-        [MaxFileSize(512000)]
         [AlowPicture]
         public IFormFile PhotoFile { get; set; }
     }

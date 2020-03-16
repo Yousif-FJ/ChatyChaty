@@ -18,12 +18,12 @@ namespace ChatyChaty.Services
         {
             this.cloudinary = cloudinary;
         }
-        public async Task<string> ChangePhoto(string PhotoID, IFormFile formFile)
+        public async Task<string> ChangePhoto(long UserID, IFormFile formFile)
         {
             ImageUploadParams uploadParams = new ImageUploadParams()
             {
                 File = new FileDescription(name: formFile.FileName,stream: formFile.OpenReadStream()),
-                PublicId = PhotoID,
+                PublicId = $"ChatyChaty/{UserID}",
                 Overwrite = true
             };
             var uploadResult = await cloudinary.UploadAsync(uploadParams);
@@ -37,32 +37,10 @@ namespace ChatyChaty.Services
             }
         }
 
-        public async Task<string> GetPhotoURL(string PhotoID)
+        public async Task<string> GetPhotoURL(long UserID)
         {
-            var resourceResult = await cloudinary.GetResourceAsync(PhotoID);
+            var resourceResult = await cloudinary.GetResourceAsync(publicId : $"ChatyChaty/{UserID}");
             return resourceResult.Url;
-        }
-
-        public async Task<string> UploadPhoto(IFormFile formFile)
-        {
-            var giud = Guid.NewGuid().ToString();
-            ImageUploadParams uploadParams = new ImageUploadParams()
-            {
-                File = new FileDescription(name: formFile.FileName, stream: formFile.OpenReadStream()),
-                PublicId = $"ChatyChaty/{giud}",
-                Overwrite = false,
-                
-            };
-            var uploadResult = await cloudinary.UploadAsync(uploadParams);
-            if (uploadResult.Error is null)
-            {
-                return uploadResult.PublicId;
-            }
-            else
-            {
-                throw new Exception(uploadResult.Error.Message);
-            }
-
         }
 
         public string GetPlaceHolderURL()

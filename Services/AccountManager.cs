@@ -78,14 +78,6 @@ namespace ChatyChaty.Services
             return user;
         }
 
-        public async Task<string> SetPhotoID(string UserName, string PhotoName)
-        {
-            var user = await userManager.FindByNameAsync(UserName);
-            user.PhotoID = PhotoName;
-            await userManager.UpdateAsync(user);
-            return PhotoName;
-        }
-
         private string JwtTokenGenerator(AccountModel accountModel)
         {
             JwtSecurityTokenHandler jwtSecurityTokenHandler = new JwtSecurityTokenHandler();

@@ -13,7 +13,6 @@ namespace ChatyChaty.Services
         Task<AuthenticationResult> CreateAccount(AccountModel accountModel);
         Task<AuthenticationResult> Login(AccountModel accountModel);
         Task<AppUser> GetUser(string UserName);
-        Task<string> SetPhotoID(string UserName, string PhotoName);
 
     }
 }

@@ -13,7 +13,6 @@ namespace ChatyChaty.Model
         {
         }
         public override long Id { get => base.Id; set => base.Id = value; }
-        public string PhotoID { get; set; }
     }
     public class Role : IdentityRole<long>
     {
