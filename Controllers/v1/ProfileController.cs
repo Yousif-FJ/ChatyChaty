@@ -58,6 +58,8 @@ namespace ChatyChaty.Controllers.v1
         /// <param name="uploadFile"></param>
         /// <returns></returns>
         /// <response code="400">The uploaded Photo must be a vaild img with png, jpg or jpeg</response>
+        /// <response code="401">unauthentorized</response>
+        /// <response code="500">Server Error (This shouldn't happen)</response>
         [Authorize]
         [Consumes("multipart/form-data")]
         [HttpPost("SetPhotoForSelf")]
