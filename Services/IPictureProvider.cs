@@ -9,7 +9,7 @@ namespace ChatyChaty.Services
     public interface IPictureProvider
     {
         public string GetPlaceHolderURL();
-        public Task<string> ChangePhoto(long UserID, IFormFile formFile);
-        public Task<string> GetPhotoURL(long UserID);
+        public Task<string> ChangePhoto(long UserID,string UserName, IFormFile formFile);
+        public Task<string> GetPhotoURL(long UserID,string UserName);
     }
 }

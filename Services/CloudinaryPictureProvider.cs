@@ -18,12 +18,12 @@ namespace ChatyChaty.Services
         {
             this.cloudinary = cloudinary;
         }
-        public async Task<string> ChangePhoto(long UserID, IFormFile formFile)
+        public async Task<string> ChangePhoto(long UserID, string UserName, IFormFile formFile)
         {
             ImageUploadParams uploadParams = new ImageUploadParams()
             {
                 File = new FileDescription(name: formFile.FileName,stream: formFile.OpenReadStream()),
-                PublicId = $"ChatyChaty/{UserID}",
+                PublicId = $"ChatyChaty/{UserName}{UserID}",
                 Overwrite = true
             };
             var uploadResult = await cloudinary.UploadAsync(uploadParams);
@@ -37,9 +37,9 @@ namespace ChatyChaty.Services
             }
         }
 
-        public async Task<string> GetPhotoURL(long UserID)
+        public async Task<string> GetPhotoURL(long UserID, string UserName)
         {
-            var resourceResult = await cloudinary.GetResourceAsync(publicId : $"ChatyChaty/{UserID}");
+            var resourceResult = await cloudinary.GetResourceAsync(publicId : $"ChatyChaty/{UserName}{UserID}");
             return resourceResult.Url;
         }
 

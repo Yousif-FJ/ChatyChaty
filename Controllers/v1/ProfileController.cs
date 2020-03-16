@@ -41,7 +41,7 @@ namespace ChatyChaty.Controllers.v1
             {
                 return NotFound("UserName wasn't found");
             }
-            var PictureURL = await pictureProvider.GetPhotoURL(User.Id);
+            var PictureURL = await pictureProvider.GetPhotoURL(User.Id,User.UserName);
             if (PictureURL != null)
             {
                 return Ok(PictureURL);
@@ -65,9 +65,9 @@ namespace ChatyChaty.Controllers.v1
         {         
             var UserNameClaim = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Name);
             var user = await accountManager.GetUser(UserNameClaim.Value);
-            await pictureProvider.ChangePhoto(user.Id, uploadFile.PhotoFile);
+            await pictureProvider.ChangePhoto(user.Id,user.UserName, uploadFile.PhotoFile);
 
-            var ReturnURL = await pictureProvider.GetPhotoURL(user.Id);
+            var ReturnURL = await pictureProvider.GetPhotoURL(user.Id,user.UserName);
                 return Ok(ReturnURL);
         }
     }
