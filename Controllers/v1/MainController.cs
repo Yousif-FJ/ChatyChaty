@@ -90,7 +90,7 @@ namespace ChatyChaty.Controllers.v1
         {
             var UserNameClaim = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Name);
 
-            var NewMessage = messageRepository.NewMessage(new Message
+            var NewMessage = messageRepository.NewMessage(new Message1
             {
                 Body = message.Body,
                 Sender = UserNameClaim.Value
@@ -110,7 +110,7 @@ namespace ChatyChaty.Controllers.v1
             return Ok();
         }
 
-        private List<ResponseMessageSchema> MessageModelToSchema(IEnumerable<Message> MessageSet)
+        private List<ResponseMessageSchema> MessageModelToSchema(IEnumerable<Message1> MessageSet)
         {
             var responseMessages = new List<ResponseMessageSchema>();
             foreach (var item in MessageSet)

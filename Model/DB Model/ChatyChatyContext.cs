@@ -18,7 +18,7 @@ namespace ChatyChaty.Model
             this.logger = logger;
         }
 
-        public DbSet<Message> MessagesSet { get; set; }
+        public DbSet<Message1> MessagesSet { get; set; }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -34,6 +34,15 @@ namespace ChatyChaty.Model
             builder.Entity<AppUser>().Ignore(f => f.Email);
             builder.Entity<AppUser>().Ignore(f => f.PhoneNumber);
             builder.Entity<AppUser>(f => f.HasKey(b => b.Id));
+            builder.Entity<AppUser>().Ignore(f => f.NormalizedEmail);
+        }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            builder.Entity<AppUser>().Ignore(f => f.Email);
+            builder.Entity<AppUser>().Ignore(f => f.PhoneNumber);
             builder.Entity<AppUser>().Ignore(f => f.NormalizedEmail);
         }
     }

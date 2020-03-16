@@ -41,7 +41,7 @@ namespace ChatyChaty.Controllers
         {
             var UserNameClaim = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Name);
 
-            var NewMessage = messageRepository.NewMessage(new Message
+            var NewMessage = messageRepository.NewMessage(new Message1
             {
                 Body = message.Body,
                 Sender = UserNameClaim.Value

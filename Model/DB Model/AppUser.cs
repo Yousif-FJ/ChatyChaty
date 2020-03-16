@@ -12,9 +12,10 @@ namespace ChatyChaty.Model
         public AppUser(string userName) : base(userName)
         {
         }
-
         public override long Id { get => base.Id; set => base.Id = value; }
-        [MaxLength(50)]
-        public string PhotoID { get; set; }
+    }
+
+    public class Role : IdentityRole<long>
+    {
     }
 }

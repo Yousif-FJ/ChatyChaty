@@ -41,9 +41,10 @@ namespace ChatyChaty.Controllers.v1
             {
                 return NotFound("UserName wasn't found");
             }
-            if (User.PhotoID != null)
+            var PictureURL = await pictureProvider.GetPhotoURL(User.Id,User.UserName);
+            if (PictureURL != null)
             {
-                return Ok(await pictureProvider.GetPhotoURL(User.PhotoID));
+                return Ok(PictureURL);
             }
             else
             {
@@ -56,6 +57,9 @@ namespace ChatyChaty.Controllers.v1
         /// </summary>
         /// <param name="uploadFile"></param>
         /// <returns></returns>
+        /// <response code="400">The uploaded Photo must be a vaild img with png, jpg or jpeg</response>
+        /// <response code="401">unauthentorized</response>
+        /// <response code="500">Server Error (This shouldn't happen)</response>
         [Authorize]
         [Consumes("multipart/form-data")]
         [HttpPost("SetPhotoForSelf")]
@@ -63,17 +67,9 @@ namespace ChatyChaty.Controllers.v1
         {         
             var UserNameClaim = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Name);
             var user = await accountManager.GetUser(UserNameClaim.Value);
-            string PhotoID;
-            if (user.PhotoID is null)
-            {
-                PhotoID = await pictureProvider.UploadPhoto(uploadFile.PhotoFile);
-                await accountManager.SetPhotoID(user.UserName, PhotoID);
-            }
-            else
-            {
-                PhotoID = await pictureProvider.ChangePhoto(user.PhotoID, uploadFile.PhotoFile);
-            }
-            var ReturnURL = await pictureProvider.GetPhotoURL(PhotoID);
+            await pictureProvider.ChangePhoto(user.Id,user.UserName, uploadFile.PhotoFile);
+
+            var ReturnURL = await pictureProvider.GetPhotoURL(user.Id,user.UserName);
                 return Ok(ReturnURL);
         }
     }
