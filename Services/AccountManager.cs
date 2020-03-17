@@ -1,5 +1,6 @@
 ﻿using ChatyChaty.Model;
 using ChatyChaty.Model.AuthenticationModel;
+using ChatyChaty.Model.DBModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
