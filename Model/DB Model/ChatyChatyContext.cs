@@ -1,5 +1,4 @@
-﻿using ChatyChaty.Model.DB_Model;
-using ChatyChaty.Model.MessageModel;
+﻿using ChatyChaty.Model.OldModel;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -9,15 +8,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ChatyChaty.Model
+namespace ChatyChaty.Model.DBModel
 {
     public class ChatyChatyContext : IdentityUserContext<AppUser,long>
     {
-        private readonly ILogger<ChatyChatyContext> logger;
-
-        public ChatyChatyContext(DbContextOptions dbContextOptions, ILogger<ChatyChatyContext> logger) : base(dbContextOptions)
+        public ChatyChatyContext(DbContextOptions dbContextOptions) : base(dbContextOptions)
         {
-            this.logger = logger;
         }
 
         public DbSet<Message1> MessagesSet { get; set; }

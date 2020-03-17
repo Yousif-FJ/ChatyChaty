@@ -1,15 +1,16 @@
-﻿using System;
+﻿using ChatyChaty.Model.DBModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ChatyChaty.Model.MessageModel
+namespace ChatyChaty.Model.OldModel
 {
-    public class MessagesRepository :IMessageRepository
+    public class MessagesRepository1 :IMessageRepository1
     {
         private readonly ChatyChatyContext chatyChatyContext;
 
-        public MessagesRepository(ChatyChatyContext chatyChatyContext) 
+        public MessagesRepository1(ChatyChatyContext chatyChatyContext) 
         {
             this.chatyChatyContext = chatyChatyContext;
         }

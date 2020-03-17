@@ -6,7 +6,8 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using ChatyChaty.Model;
-using ChatyChaty.Model.MessageModel;
+using ChatyChaty.Model.DBModel;
+using ChatyChaty.Model.OldModel;
 using ChatyChaty.Services;
 using CloudinaryDotNet;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -46,7 +47,7 @@ namespace ChatyChaty
 
             services.AddScoped<IAccountManager, AccountManager>();
 
-            services.AddScoped<IMessageRepository, MessagesRepository>();
+            services.AddScoped<IMessageRepository1, MessagesRepository1>();
 
             services.AddIdentity<AppUser, Role>()
                .AddEntityFrameworkStores<ChatyChatyContext>();

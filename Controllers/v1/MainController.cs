@@ -7,7 +7,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using ChatyChaty.ControllerSchema.v2;
 using ChatyChaty.Model.ControllerSchema.v1;
-using ChatyChaty.Model.MessageModel;
+using ChatyChaty.Model.OldModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -21,13 +21,10 @@ namespace ChatyChaty.Controllers.v1
     [Produces("application/json")]
     public class MainController : ControllerBase
     {
+        private readonly IMessageRepository1 messageRepository;
 
-        private readonly ILogger<MainController> _logger;
-        private readonly IMessageRepository messageRepository;
-
-        public MainController(ILogger<MainController> logger , IMessageRepository messageRepository)
+        public MainController(IMessageRepository1 messageRepository)
         {
-            _logger = logger;
             this.messageRepository = messageRepository;
         }
 

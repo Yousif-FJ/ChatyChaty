@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ChatyChaty.Model.DB_Model
+namespace ChatyChaty.Model.DBModel
 {
     public class Message
     {

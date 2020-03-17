@@ -1,12 +1,11 @@
-﻿using ChatyChaty.Model.DB_Model;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ChatyChaty.Model
+namespace ChatyChaty.Model.DBModel
 {
     public class AppUser : IdentityUser<long>
     {

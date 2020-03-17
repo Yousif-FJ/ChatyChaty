@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ChatyChaty.Model.MessageModel
+namespace ChatyChaty.Model.OldModel
 {
-    public interface IMessageRepository
+    public interface IMessageRepository1
     {
         IEnumerable<Message1> GetAllMessages();
         IEnumerable<Message1> GetNewMessages(long ID);
