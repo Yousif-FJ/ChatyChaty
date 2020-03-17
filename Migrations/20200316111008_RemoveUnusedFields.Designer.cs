@@ -4,14 +4,16 @@ using ChatyChaty.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ChatyChaty.Migrations
 {
     [DbContext(typeof(ChatyChatyContext))]
-    partial class ChatyChatyContextModelSnapshot : ModelSnapshot
+    [Migration("20200316111008_RemoveUnusedFields")]
+    partial class RemoveUnusedFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -31,9 +33,6 @@ namespace ChatyChaty.Migrations
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DisplayName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("LockoutEnabled")
@@ -68,29 +67,29 @@ namespace ChatyChaty.Migrations
 
             modelBuilder.Entity("ChatyChaty.Model.DB_Model.Conversation", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<long>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<long>("FirstUserId")
+                    b.Property<long>("ReceiverID")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("SecondUserId")
+                    b.Property<long>("SenderID")
                         .HasColumnType("bigint");
 
-                    b.HasKey("Id");
+                    b.HasKey("ID");
 
-                    b.HasIndex("FirstUserId");
+                    b.HasIndex("ReceiverID");
 
-                    b.HasIndex("SecondUserId");
+                    b.HasIndex("SenderID");
 
                     b.ToTable("Conversations");
                 });
 
             modelBuilder.Entity("ChatyChaty.Model.DB_Model.Message", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<long>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -98,20 +97,12 @@ namespace ChatyChaty.Migrations
                     b.Property<string>("Body")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<long>("ConversationId")
+                    b.Property<long>("ConversationID")
                         .HasColumnType("bigint");
 
-                    b.Property<bool>("Delivered")
-                        .HasColumnType("bit");
+                    b.HasKey("ID");
 
-                    b.Property<long>("SenderId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ConversationId");
-
-                    b.HasIndex("SenderId");
+                    b.HasIndex("ConversationID");
 
                     b.ToTable("Messages");
                 });
@@ -201,15 +192,15 @@ namespace ChatyChaty.Migrations
 
             modelBuilder.Entity("ChatyChaty.Model.DB_Model.Conversation", b =>
                 {
-                    b.HasOne("ChatyChaty.Model.AppUser", "FirstUser")
-                        .WithMany("Conversations1")
-                        .HasForeignKey("FirstUserId")
+                    b.HasOne("ChatyChaty.Model.AppUser", "Receiver")
+                        .WithMany("InConversations")
+                        .HasForeignKey("ReceiverID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ChatyChaty.Model.AppUser", "SecondUser")
-                        .WithMany("Conversations2")
-                        .HasForeignKey("SecondUserId")
+                    b.HasOne("ChatyChaty.Model.AppUser", "Sender")
+                        .WithMany("OutConversations")
+                        .HasForeignKey("SenderID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -218,13 +209,7 @@ namespace ChatyChaty.Migrations
                 {
                     b.HasOne("ChatyChaty.Model.DB_Model.Conversation", "Conversation")
                         .WithMany("Messages")
-                        .HasForeignKey("ConversationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ChatyChaty.Model.AppUser", "Sender")
-                        .WithMany("MessageSender")
-                        .HasForeignKey("SenderId")
+                        .HasForeignKey("ConversationID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
