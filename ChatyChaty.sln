@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.29806.167
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatyChaty", "ChatyChatyMain\ChatyChaty.csproj", "{2093B335-819B-4E2B-86F9-AC4A2C15BDEA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XUnitTest", "XUnitTest\XUnitTest.csproj", "{96021DCB-A324-417F-AE09-7A116932C34E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{2093B335-819B-4E2B-86F9-AC4A2C15BDEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2093B335-819B-4E2B-86F9-AC4A2C15BDEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2093B335-819B-4E2B-86F9-AC4A2C15BDEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96021DCB-A324-417F-AE09-7A116932C34E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96021DCB-A324-417F-AE09-7A116932C34E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96021DCB-A324-417F-AE09-7A116932C34E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96021DCB-A324-417F-AE09-7A116932C34E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

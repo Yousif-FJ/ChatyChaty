@@ -151,8 +151,6 @@ namespace ChatyChaty
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
-
             app.UseSwagger();
 
             app.UseSwaggerUI(c =>
