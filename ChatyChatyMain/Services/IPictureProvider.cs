@@ -11,5 +11,6 @@ namespace ChatyChaty.Services
         public string GetPlaceHolderURL();
         public Task<string> ChangePhoto(long UserID,string UserName, IFormFile formFile);
         public Task<string> GetPhotoURL(long UserID,string UserName);
+        public Task DeletePhoto(long UserID, string UserName);
     }
 }
