@@ -1,53 +1,33 @@
-﻿using ChatyChaty.Model.OldModel;
+﻿using ChatyChaty.Model.DBModel;
+using ChatyChaty.Model.OldModel;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ChatyChaty.Model.DBModel
+namespace ChatyChaty.Model
 {
-    public class ChatyChatyContext : IdentityUserContext<AppUser,long>
+    public class ChatyChatyContext : IdentityUserContext<AppUser, long>
     {
-        public ChatyChatyContext(DbContextOptions dbContextOptions) : base(dbContextOptions)
+        private readonly ILogger<ChatyChatyContext> logger;
+
+        public ChatyChatyContext(DbContextOptions dbContextOptions, ILogger<ChatyChatyContext> logger) : base(dbContextOptions)
         {
+            this.logger = logger;
         }
 
         public DbSet<Message1> MessagesSet { get; set; }
-        public DbSet<Message> Messages{ get; set; }
+        public DbSet<Message> Messages { get; set; }
         public DbSet<Conversation> Conversations { get; set; }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            string databaseUrl;
-            if (Environment.GetEnvironmentVariable("DATABASE_URL") != null)
-            {
-                databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
-            }
-            else
-            {
-                throw new Exception("Couldn't get connection string");
-            }
-            var databaseUri = new Uri(databaseUrl);
-            var userInfo = databaseUri.UserInfo.Split(':');
-
-            var builder = new NpgsqlConnectionStringBuilder
-            {
-                Host = databaseUri.Host,
-                Port = databaseUri.Port,
-                Username = userInfo[0],
-                Password = userInfo[1],
-                Database = databaseUri.LocalPath.TrimStart('/'),
-                SslMode = SslMode.Require,
-                TrustServerCertificate = true
-            };
-
-
-            optionsBuilder.UseNpgsql(builder.ToString());
+            optionsBuilder.UseSqlServer(
+                "Server=(localdb)\\mssqllocaldb;Database=ChatyChatyDB;Trusted_Connection=True;MultipleActiveResultSets=true");
         }
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -85,4 +65,3 @@ namespace ChatyChaty.Model.DBModel
         }
     }
 }
-
