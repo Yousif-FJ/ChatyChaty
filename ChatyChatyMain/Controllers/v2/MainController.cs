@@ -5,12 +5,14 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using ChatyChaty.ControllerSchema.v2;
 using ChatyChaty.Model.OldModel;
+using ChatyChaty.ValidationAttribute;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace ChatyChaty.Controllers
 {
+    [RequireHttpsOrClose]
     [Route("api/v2/[controller]")]
     [Consumes("application/json")]
     [Produces("application/json")]

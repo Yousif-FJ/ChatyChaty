@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using ChatyChaty.ControllerSchema.v1;
 using ChatyChaty.Services;
+using ChatyChaty.ValidationAttribute;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +14,7 @@ using WebApplication1.ValidationAttributes;
 
 namespace ChatyChaty.Controllers.v1
 {
+    [RequireHttpsOrClose]
     [Route("api/v1/[controller]")]
     [ApiController]
     public class ProfileController : ControllerBase

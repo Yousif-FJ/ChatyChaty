@@ -7,9 +7,11 @@ using ChatyChaty.ControllerSchema.v1;
 using ChatyChaty.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ChatyChaty.ValidationAttribute;
 
 namespace ChatyChaty.Controllers.v1
 {
+    [RequireHttpsOrClose]
     [Route("api/v1/[controller]")]
     [Consumes("application/json")]
     [Produces("application/json")]

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using ChatyChaty.ControllerSchema.v2;
 using ChatyChaty.Model.ControllerSchema.v1;
 using ChatyChaty.Model.OldModel;
+using ChatyChaty.ValidationAttribute;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +16,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ChatyChaty.Controllers.v1
 {
+    [RequireHttpsOrClose]
     [ApiController]
     [Route("api/v1/[controller]")]
     [Consumes("application/json")]
