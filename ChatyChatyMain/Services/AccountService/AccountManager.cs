@@ -65,6 +65,7 @@ namespace ChatyChaty.Services
                     Errors = new List<string> { new string("Invalid Login cridentials") }
                 };
             }
+            accountModel.Id = user.Id;
             return new AuthenticationResult
             {
                 Success = true,
@@ -88,6 +89,7 @@ namespace ChatyChaty.Services
                 Subject = new ClaimsIdentity(claims: new[]
                 {
                     new Claim(type: JwtRegisteredClaimNames.UniqueName, accountModel.UserName),
+                    new Claim(type:JwtRegisteredClaimNames.NameId, accountModel.Id.ToString()),
                     new Claim(type: JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
                 }
                 ),

@@ -12,5 +12,7 @@ namespace ChatyChaty.Model.AuthenticationModel
         public string UserName { get; set; }
         [Required]
         public string Password { get; set; }
+        public long? Id { get; set; }
+
     }
 }
