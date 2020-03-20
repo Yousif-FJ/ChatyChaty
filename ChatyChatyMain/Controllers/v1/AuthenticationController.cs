@@ -8,6 +8,7 @@ using ChatyChaty.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ChatyChaty.ValidationAttribute;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ChatyChaty.Controllers.v1
 {
@@ -81,6 +82,20 @@ namespace ChatyChaty.Controllers.v1
                 Token = authenticationResult.Token
             };
                 return Ok(authenticationSchema);
+        }
+
+        /// <summary>
+        /// Check if the use is Authenticated
+        /// </summary>
+        /// <returns></returns>
+        /// <response code="403">Not Authenticated</response>
+        /// <response code="200">Authenticated</response>
+        /// <response code="500">Server Error (This shouldn't happen)</response>
+        [HttpGet("IsAuthenticated")]
+        [Authorize]
+        public IActionResult IsAuthenticated()
+        {
+            return Ok();
         }
     }
 }
