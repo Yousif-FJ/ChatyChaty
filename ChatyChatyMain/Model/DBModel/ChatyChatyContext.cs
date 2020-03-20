@@ -8,15 +8,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ChatyChaty.Model
+namespace ChatyChaty.Model.DBModel
 {
     public class ChatyChatyContext : IdentityUserContext<AppUser, long>
     {
-        private readonly ILogger<ChatyChatyContext> logger;
-
-        public ChatyChatyContext(DbContextOptions dbContextOptions, ILogger<ChatyChatyContext> logger) : base(dbContextOptions)
+        public ChatyChatyContext(DbContextOptions dbContextOptions) : base(dbContextOptions)
         {
-            this.logger = logger;
         }
 
         public DbSet<Message1> MessagesSet { get; set; }
@@ -26,8 +23,11 @@ namespace ChatyChaty.Model
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseSqlServer(
                 "Server=(localdb)\\mssqllocaldb;Database=ChatyChatyDB;Trusted_Connection=True;MultipleActiveResultSets=true");
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder builder)

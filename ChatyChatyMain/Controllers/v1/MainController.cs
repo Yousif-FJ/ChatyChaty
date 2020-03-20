@@ -5,8 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using ChatyChaty.ControllerSchema.v1;
 using ChatyChaty.ControllerSchema.v2;
-using ChatyChaty.Model.ControllerSchema.v1;
 using ChatyChaty.Model.OldModel;
 using ChatyChaty.ValidationAttribute;
 using Microsoft.AspNetCore.Authorization;
@@ -74,7 +74,7 @@ namespace ChatyChaty.Controllers.v1
         }
 
         /// <summary>
-        /// Post a message (Require authentication).
+        /// [obsolete(use v2 instead)]Post a message (Require authentication).
         /// </summary>
         /// <remarks>
         /// To authorize you get the JWT tokken from the login or the register actions,

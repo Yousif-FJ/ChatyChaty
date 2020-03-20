@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace ChatyChaty.Controllers
+namespace ChatyChaty.Controllers.v2
 {
     [RequireHttpsOrClose]
     [Route("api/v2/[controller]")]
