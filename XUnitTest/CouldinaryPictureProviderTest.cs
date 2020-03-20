@@ -22,7 +22,7 @@ namespace XUnitTest
         }
 
         [Fact]
-        public async void ChangePhoto_New_Succeful_Upload()
+        public async void ChangePhoto_New_Upload()
         {
             //Arrange
             string UserName = "SomeVeryUniqueName";
