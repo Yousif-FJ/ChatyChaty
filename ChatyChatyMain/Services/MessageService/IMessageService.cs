@@ -8,9 +8,11 @@ namespace ChatyChaty.Services
 {
     public interface IMessageService
     {
-        Task<Message> SendNewMessage(long SenderId, long ReceiverId, string MessageBody);
+        Task<long> NewConversation(long SenderId, long ReceiverId);
         Task<Message> SendMessage(long ConversationId, long SenderId, string MessageBody);
-        Task<IEnumerable<Message>> GetNewMessages(long UserId, long LastMessageID);
+        Task<IEnumerable<Message>> GetNewMessages(long UserId, long LastMessageId);
+        Task<bool?> CheckForNewMessages(long UserId, long LastMessageId);
         Task<bool?> IsDelivered(long UserId, long MessageId);
+        Task<Conversation> GetConversationInfo(long UserId, long conversationId);
     }
 }
