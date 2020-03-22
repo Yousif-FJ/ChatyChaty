@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ChatyChaty.ControllerSchema.v1
 {
-    public class AccountSchema
+    public class AccountSchemaOld
     {
         [Required]
         public string UserName { get; set; }
