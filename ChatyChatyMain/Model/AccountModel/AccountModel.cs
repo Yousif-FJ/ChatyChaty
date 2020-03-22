@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ChatyChaty.Model.AuthenticationModel
+namespace ChatyChaty.Model.AccountModel
 {
     public class AccountModel
     {
@@ -13,6 +13,7 @@ namespace ChatyChaty.Model.AuthenticationModel
         [Required]
         public string Password { get; set; }
         public long? Id { get; set; }
+        public string DisplayName { get; set; }
 
     }
 }

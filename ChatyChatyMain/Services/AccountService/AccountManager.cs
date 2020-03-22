@@ -1,5 +1,5 @@
 ﻿using ChatyChaty.Model;
-using ChatyChaty.Model.AuthenticationModel;
+using ChatyChaty.Model.AccountModel;
 using ChatyChaty.Model.DBModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -18,11 +18,19 @@ namespace ChatyChaty.Services
     {
         private readonly UserManager<AppUser> userManager;
         private readonly IConfiguration configuration;
+        private readonly IPictureProvider pictureProvider;
+        private readonly ChatyChatyContext dbcontext;
 
-        public AccountManager(UserManager<AppUser> userManager, IConfiguration configuration)
+        public AccountManager(
+            UserManager<AppUser> userManager,
+            IConfiguration configuration,
+            IPictureProvider pictureProvider,
+            ChatyChatyContext dbcontext)
         {
             this.userManager = userManager;
             this.configuration = configuration;
+            this.pictureProvider = pictureProvider;
+            this.dbcontext = dbcontext;
         }
 
         public async Task<AuthenticationResult> CreateAccount(AccountModel accountModel)
@@ -45,11 +53,18 @@ namespace ChatyChaty.Services
                    Errors = AccountCreationResult.Errors.Select(x => x.Description)
                 };
             }
-
+            var profile = new Profile
+            {
+                DisplayName = accountModel.DisplayName,
+                Username = accountModel.UserName,
+                PhotoURL = pictureProvider.GetPlaceHolderURL()
+            };
+            
             return new AuthenticationResult
             {
                 Success = true,
-                Token = JwtTokenGenerator(accountModel)
+                Token = JwtTokenGenerator(accountModel),
+                Profile = profile
             };
         }
 
@@ -66,10 +81,17 @@ namespace ChatyChaty.Services
                 };
             }
             accountModel.Id = user.Id;
+            var profile = new Profile
+            {
+                DisplayName = user.DisplayName,
+                Username = user.UserName,
+                PhotoURL = await pictureProvider.GetPhotoURL(user.Id,user.UserName)
+            };
             return new AuthenticationResult
             {
                 Success = true,
-                Token = JwtTokenGenerator(accountModel)
+                Token = JwtTokenGenerator(accountModel),
+                Profile = profile
             };
 
         }
@@ -102,6 +124,12 @@ namespace ChatyChaty.Services
             };
             var token = jwtSecurityTokenHandler.CreateToken(tokenDescriptor);
             return jwtSecurityTokenHandler.WriteToken(token);
+        }
+
+        public async Task<AppUser> GetUser(long UserId)
+        {
+            var user = await dbcontext.Users.FindAsync(UserId);
+            return user;
         }
     }
 }
