@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 
 namespace ChatyChaty.ControllerSchema.v2
 {
-    public class SendMessageSchema
+    public class AccountSchema
     {
         [Required]
-        public long ConversationId { get; set; }
+        public string UserName { get; set; }
         [Required]
-        public string Body { get; set; }
+        public string Password { get; set; }
+        [Required]
+        public string DisplayName { get; set; }
     }
 }

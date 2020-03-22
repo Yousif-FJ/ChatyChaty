@@ -26,7 +26,7 @@ namespace ChatyChaty.Controllers.v2
         }
 
         /// <summary>
-        /// Post a message (Require authentication).
+        /// [Use Message controller instead] Post a message (Require authentication).
         /// </summary>
         /// <remarks>
         /// To authorize you get the JWT tokken from the login or the register actions,
@@ -37,7 +37,8 @@ namespace ChatyChaty.Controllers.v2
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [Authorize]
         [HttpPost("PostMessage")]
-        public IActionResult PostMessage([FromBody] PostMessageSchema message)
+        [Obsolete("Use Message controller instead")]
+        public IActionResult PostMessage([FromBody] PostMessageSchemaOld message)
         {
             var UserNameClaim = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Name);
 
@@ -46,7 +47,7 @@ namespace ChatyChaty.Controllers.v2
                 Body = message.Body,
                 Sender = UserNameClaim.Value
             });
-            return Ok(new ResponseMessageSchema {
+            return Ok(new ResponseMessageSchemaOld {
             Body = NewMessage.Body,
             ID = NewMessage.ID,
             Sender = NewMessage.Sender
