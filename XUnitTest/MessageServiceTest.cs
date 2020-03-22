@@ -26,7 +26,7 @@ namespace XUnitTest
 
 
         [Fact]
-        public async Task SendNewMessage_Test()
+        public async Task GetConversation()
         {
             //Arrange
             var sender = new AppUser("Test1") 
@@ -41,13 +41,13 @@ namespace XUnitTest
 
             await dbContext.Users.AddRangeAsync(sender,reciver);
             dbContext.SaveChanges();
-
-            string message = "Some test message";
             //Act
-            await messageService.SendNewMessage(sender.Id, reciver.Id,message);
+            var ConversationId = await messageService.NewConversation(sender.Id, reciver.Id);
             //Assert
-            var m =  await dbContext.Messages.LastAsync();
-            Assert.True(m.Body == message);
+            var conversation = await dbContext.Conversations.FindAsync(ConversationId);
+            Assert.True(conversation != null && 
+                conversation.FirstUserId == sender.Id && 
+                conversation.SecondUserId == reciver.Id);
         }
 
         [Fact]
