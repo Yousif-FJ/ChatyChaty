@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ChatyChaty.Model.AccountModel;
-using ChatyChaty.ControllerSchema.v1;
 using ChatyChaty.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ChatyChaty.ValidationAttribute;
 using Microsoft.AspNetCore.Authorization;
+using ChatyChaty.ControllerSchema.v2;
 
-namespace ChatyChaty.Controllers.v1
+namespace ChatyChaty.Controllers.v2
 {
     [RequireHttpsOrClose]
-    [Route("api/v1/[controller]")]
+    [Route("api/v2/[controller]")]
     [Consumes("application/json")]
     [Produces("application/json")]
     [ApiController]
@@ -21,14 +21,14 @@ namespace ChatyChaty.Controllers.v1
     {
         private readonly IAccountManager accountManager;
 
-        public AuthenticationController(IAccountManager accountManager)
+        public AuthenticationController(IAccountManager accountManager, IPictureProvider pictureProvider)
         {
             this.accountManager = accountManager;
         }
 
 
         /// <summary>
-        /// [Use v2 instead] Create an account
+        /// Create an account
         /// </summary>
         /// <remarks>
         /// Try it out to check the response schema 
@@ -38,27 +38,49 @@ namespace ChatyChaty.Controllers.v1
         /// <response code="400">Model validation failed</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [HttpPost("CreateAccount")]
-        [Obsolete("Use v2 instead")]
-        public async Task<IActionResult> CreateAccount([FromBody]AccountSchemaOld accountSchema)
+        public async Task<IActionResult> CreateAccount([FromBody]CreateAccountSchema accountSchema)
         {
            var authenticationResult = await accountManager.CreateAccount(new AccountModel
            {
                UserName = accountSchema.UserName,
-               Password = accountSchema.Password
+               Password = accountSchema.Password,
+               DisplayName = accountSchema.DisplayName
            }
                );
-            AuthenticationSchemaOld authenticationSchema = new AuthenticationSchemaOld()
+            ProfileSchema profileSchema = new ProfileSchema
+            {
+                DisplayName = authenticationResult.Profile.DisplayName,
+                Username = authenticationResult.Profile.Username,
+                PhotoURL = authenticationResult.Profile.PhotoURL
+            };
+
+            AuthenticationSchema authenticationSchema = new AuthenticationSchema()
             {
                 Errors = authenticationResult.Errors,
                 Success = authenticationResult.Success,
-                Token = authenticationResult.Token
+                Token = authenticationResult.Token,
+                Profile = profileSchema
             };
                 return Ok(authenticationSchema);
         }
 
+        /// <summary>
+        /// Check if the use is Authenticated
+        /// </summary>
+        /// <returns></returns>
+        /// <response code="403">Not Authenticated</response>
+        /// <response code="200">Authenticated</response>
+        /// <response code="500">Server Error (This shouldn't happen)</response>
+        [HttpGet("IsAuthenticated")]
+        [Authorize]
+        public IActionResult IsAuthenticated()
+        {
+            return Ok();
+        }
+
 
         /// <summary>
-        /// [Use v2 instead] Login with an existing account
+        /// Login with an existing account
         /// </summary>
         /// <remarks>
         /// Try it out to check the response schema 
@@ -67,22 +89,21 @@ namespace ChatyChaty.Controllers.v1
         /// <response code="400">Model validation failed</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [HttpPost("Login")]
-        [Obsolete("Use v2 instead")]
-        public async Task<IActionResult> Login([FromBody]AccountSchemaOld accountSchema)
+        public async Task<IActionResult> Login([FromBody]LoginAccountSchema accountSchema)
         {
             var authenticationResult = await accountManager.Login(new AccountModel()
             {
                 UserName = accountSchema.UserName,
                 Password = accountSchema.Password
-            }) ;
+            });
 
-            AuthenticationSchemaOld authenticationSchema = new AuthenticationSchemaOld()
+            AuthenticationSchema authenticationSchema = new AuthenticationSchema()
             {
                 Success = authenticationResult.Success,
                 Errors = authenticationResult.Errors,
                 Token = authenticationResult.Token
             };
-                return Ok(authenticationSchema);
+            return Ok(authenticationSchema);
         }
     }
 }

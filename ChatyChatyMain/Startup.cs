@@ -56,6 +56,8 @@ namespace ChatyChaty
 
             services.AddScoped<IPictureProvider, CloudinaryPictureProvider>();
 
+            services.AddScoped<IMessageService, MessageService>();
+
             //configure identity -----------------------------------------------------------
 
             services.Configure<IdentityOptions>(options =>
