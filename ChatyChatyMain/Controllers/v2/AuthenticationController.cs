@@ -21,7 +21,7 @@ namespace ChatyChaty.Controllers.v2
     {
         private readonly IAccountManager accountManager;
 
-        public AuthenticationController(IAccountManager accountManager, IPictureProvider pictureProvider)
+        public AuthenticationController(IAccountManager accountManager)
         {
             this.accountManager = accountManager;
         }
@@ -54,7 +54,7 @@ namespace ChatyChaty.Controllers.v2
                 PhotoURL = authenticationResult.Profile.PhotoURL
             };
 
-            AuthenticationSchema authenticationSchema = new AuthenticationSchema()
+            AuthenticationResponse authenticationSchema = new AuthenticationResponse()
             {
                 Errors = authenticationResult.Errors,
                 Success = authenticationResult.Success,
@@ -97,11 +97,19 @@ namespace ChatyChaty.Controllers.v2
                 Password = accountSchema.Password
             });
 
-            AuthenticationSchema authenticationSchema = new AuthenticationSchema()
+            ProfileSchema profileSchema = new ProfileSchema
             {
-                Success = authenticationResult.Success,
+                DisplayName = authenticationResult.Profile.DisplayName,
+                Username = authenticationResult.Profile.Username,
+                PhotoURL = authenticationResult.Profile.PhotoURL
+            };
+
+            AuthenticationResponse authenticationSchema = new AuthenticationResponse()
+            {
                 Errors = authenticationResult.Errors,
-                Token = authenticationResult.Token
+                Success = authenticationResult.Success,
+                Token = authenticationResult.Token,
+                Profile = profileSchema
             };
             return Ok(authenticationSchema);
         }
