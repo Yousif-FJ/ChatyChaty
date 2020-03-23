@@ -6,13 +6,11 @@ using System.Threading.Tasks;
 
 namespace ChatyChaty.ControllerSchema.v2
 {
-    public class AccountSchema
+    public class LoginAccountSchema
     {
         [Required]
         public string UserName { get; set; }
         [Required]
         public string Password { get; set; }
-        [Required]
-        public string DisplayName { get; set; }
     }
 }

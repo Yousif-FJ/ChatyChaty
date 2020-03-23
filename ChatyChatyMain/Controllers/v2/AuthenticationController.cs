@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ChatyChaty.Model.AccountModel;
-using ChatyChaty.ControllerSchema.v2;
 using ChatyChaty.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ChatyChaty.ValidationAttribute;
 using Microsoft.AspNetCore.Authorization;
+using ChatyChaty.ControllerSchema.v2;
 
 namespace ChatyChaty.Controllers.v2
 {
@@ -38,7 +38,7 @@ namespace ChatyChaty.Controllers.v2
         /// <response code="400">Model validation failed</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [HttpPost("CreateAccount")]
-        public async Task<IActionResult> CreateAccount([FromBody]AccountSchema accountSchema)
+        public async Task<IActionResult> CreateAccount([FromBody]CreateAccountSchema accountSchema)
         {
            var authenticationResult = await accountManager.CreateAccount(new AccountModel
            {
@@ -89,7 +89,7 @@ namespace ChatyChaty.Controllers.v2
         /// <response code="400">Model validation failed</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [HttpPost("Login")]
-        public async Task<IActionResult> Login([FromBody]AccountSchema accountSchema)
+        public async Task<IActionResult> Login([FromBody]LoginAccountSchema accountSchema)
         {
             var authenticationResult = await accountManager.Login(new AccountModel()
             {
