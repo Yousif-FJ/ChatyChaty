@@ -43,7 +43,10 @@ namespace ChatyChaty.Services
                     Errors = new List<string>() { new string("Account creation is disabled for security reasons") }
                 };
             }
-            AppUser identityUser = new AppUser(accountModel.UserName);
+            AppUser identityUser = new AppUser(accountModel.UserName)
+            {
+                DisplayName = accountModel.DisplayName
+            };
             var AccountCreationResult = await userManager.CreateAsync(identityUser, accountModel.Password);
             if (!AccountCreationResult.Succeeded)
             {
@@ -53,10 +56,12 @@ namespace ChatyChaty.Services
                    Errors = AccountCreationResult.Errors.Select(x => x.Description)
                 };
             }
+            var User = await userManager.FindByNameAsync(accountModel.UserName);
+            accountModel.Id = User.Id;
             var profile = new Profile
             {
-                DisplayName = accountModel.DisplayName,
-                Username = accountModel.UserName,
+                DisplayName = User.DisplayName,
+                Username = User.UserName,
                 PhotoURL = pictureProvider.GetPlaceHolderURL()
             };
             
