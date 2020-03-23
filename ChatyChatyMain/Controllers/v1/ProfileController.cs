@@ -114,8 +114,8 @@ namespace ChatyChaty.Controllers.v1
         /// <summary>
         /// Get conversation information
         /// </summary>
-        /// <remarks>This is used when GetNewMessages return a message with a conversation Id that doesn't exist locally 
-        /// i.e the user received a message first time from some other user</remarks>
+        /// <remarks>This is used when GetNewMessages return a message with a conversation Id, 
+        /// it also should be used everytime a conversation is opened to keep the profile uptodate</remarks>
         /// <param name="ConversationId"></param>
         /// <returns></returns>
         /// <response code="400">Requested conversationId doesn't exist</response>
@@ -133,15 +133,25 @@ namespace ChatyChaty.Controllers.v1
             {
                 return BadRequest();
             }
-            var user = await accountManager.GetUser(UserIdClaim.Value);
             var response = new GetConversationInfoResponse
             {
-                ConversationId = conversation.Id,
-                DisplayName = user.DisplayName,
-                Username = user.UserName,
-                PictureUrl = await pictureProvider.GetPhotoURL(user.Id, user.UserName)
+                ConversationId = conversation.ConversationId,
+                DisplayName = conversation.SecondUserDisplayName,
+                Username = conversation.SecondUserUsername,
+                PictureUrl = await pictureProvider.GetPhotoURL(conversation.SecondUserId, conversation.SecondUserUsername)
             };
             return Ok(response);
+        }
+
+        [Authorize]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        [HttpPatch("UpdateDisplayName")]
+        public async Task<IActionResult> UpdateDisplayName([FromBody]string NewDisplayName)
+        {
+            var UserId = long.Parse(HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
+            var result = await accountManager.UpdateDisplayName(UserId, NewDisplayName);
+            return Ok(result);
         }
     }
 }

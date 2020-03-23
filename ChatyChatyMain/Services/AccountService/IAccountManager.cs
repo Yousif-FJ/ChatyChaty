@@ -15,6 +15,6 @@ namespace ChatyChaty.Services
         Task<AuthenticationResult> Login(AccountModel accountModel);
         Task<AppUser> GetUser(string UserName);
         Task<AppUser> GetUser(long UserId);
-
+        Task<string> UpdateDisplayName(long UserId, string NewDisplayName);
     }
 }

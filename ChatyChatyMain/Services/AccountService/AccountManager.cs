@@ -136,5 +136,18 @@ namespace ChatyChaty.Services
             var user = await dbcontext.Users.FindAsync(UserId);
             return user;
         }
+
+        public async Task<string> UpdateDisplayName(long UserId, string NewDisplayName)
+        {
+            var user = await dbcontext.Users.FindAsync(UserId);
+            if (user is null)
+            {
+                throw new ArgumentOutOfRangeException("Invalid userId");
+            }
+            user.DisplayName = NewDisplayName;
+            dbcontext.Users.Update(user);
+            await dbcontext.SaveChangesAsync();
+            return user.DisplayName;
+        }
     }
 }
