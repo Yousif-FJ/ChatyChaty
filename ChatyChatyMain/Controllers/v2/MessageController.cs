@@ -22,10 +22,10 @@ namespace ChatyChaty.Controllers.v2
     [Produces("application/json")]
     public class MessageController : ControllerBase
     {
-        private readonly MessageService messageService;
-        private readonly AccountManager accountManager;
+        private readonly IMessageService messageService;
+        private readonly IAccountManager accountManager;
 
-        public MessageController(MessageService messageService, AccountManager accountManager)
+        public MessageController(IMessageService messageService, IAccountManager accountManager)
         {
             this.messageService = messageService;
             this.accountManager = accountManager;
@@ -48,12 +48,13 @@ namespace ChatyChaty.Controllers.v2
         [HttpGet("GetNewMessages")]
         public async Task<IActionResult> GetNewMessages(long LastMessageId)
         {
-            var UserIdClaim = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
-            var result = await messageService.GetNewMessages(long.Parse(UserIdClaim.Value), LastMessageId);
+            var UserId = long.Parse(HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
+            var result = await messageService.GetNewMessages(UserId, LastMessageId);
             if (result == null)
             {
                 return BadRequest();
             }
+
             var Messages = new List<NewMessagesResponse>();
             foreach (var message in result)
             {
@@ -62,8 +63,8 @@ namespace ChatyChaty.Controllers.v2
                     Body = message.Body,
                     ConversationId = message.ConversationId,
                     MessageId = message.Id,
-                    Sender = message.Sender.UserName,
-                    Delivered = message.Delivered
+                    Sender = (await accountManager.GetUser(message.SenderId)).UserName,
+                    Delivered = message.SenderId == UserId ? message.Delivered : (bool?)null
                 });
             }
             return Ok(Messages);
@@ -113,7 +114,7 @@ namespace ChatyChaty.Controllers.v2
                 ConversationId = message.ConversationId,
                 Sender = UserNameClaim.Value
             };
-            return Ok();
+            return Ok(response);
         }
 
     }
