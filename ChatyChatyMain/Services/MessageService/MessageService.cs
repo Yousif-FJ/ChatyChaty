@@ -1,4 +1,5 @@
 ﻿using ChatyChaty.Model.DBModel;
+using ChatyChaty.Model.Messaging_model;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -147,14 +148,32 @@ namespace ChatyChaty.Services
         /// <param name="UserId">The userId who have the conversation</param>
         /// <param name="conversationId">The requested conversation</param>
         /// <returns>conversation of the given user</returns>
-        public async Task<Conversation> GetConversationInfo(long UserId, long conversationId)
+        public async Task<ConversationInfo> GetConversationInfo(long UserId, long conversationId)
         {
             var conversation = await dBContext.Conversations.FindAsync(conversationId);
-            if (conversation.FirstUserId != UserId && conversation.SecondUserId != UserId)
+            AppUser SecondUser;
+            if (conversation.FirstUserId == UserId)
+            {
+                SecondUser = await dBContext.Users.FindAsync(conversation.SecondUserId); 
+            }
+            else if (conversation.SecondUserId == UserId)
+            {
+                SecondUser = await dBContext.Users.FindAsync(conversation.FirstUserId);
+            }
+            else
             {
                 return null;
             }
-            return conversation;
+
+            var response = new ConversationInfo
+            {
+                ConversationId = conversation.Id,
+                SecondUserDisplayName = SecondUser.DisplayName,
+                SecondUserUsername = SecondUser.UserName,
+                SecondUserId = SecondUser.Id
+            };
+
+            return response;
         }
 
         /// <summary>

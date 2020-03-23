@@ -33,7 +33,7 @@ namespace ChatyChaty.Controllers.v2
 
 
         [HttpGet("CheckForNewMessages")]
-        public async Task<IActionResult> CheckForNewMessages(long LastMessageId)
+        public async Task<IActionResult> CheckForNewMessages([FromBody]long LastMessageId)
         {
             var UserIdClaim = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
             var result = await messageService.CheckForNewMessages(long.Parse(UserIdClaim.Value), LastMessageId);
@@ -46,7 +46,7 @@ namespace ChatyChaty.Controllers.v2
 
 
         [HttpGet("GetNewMessages")]
-        public async Task<IActionResult> GetNewMessages(long LastMessageId)
+        public async Task<IActionResult> GetNewMessages([FromBody]long LastMessageId)
         {
             var UserId = long.Parse(HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
             var result = await messageService.GetNewMessages(UserId, LastMessageId);
@@ -70,7 +70,6 @@ namespace ChatyChaty.Controllers.v2
             return Ok(Messages);
         }
 
-        
 
         /// <summary>
         /// Check if the message is Delivered or not
@@ -84,7 +83,7 @@ namespace ChatyChaty.Controllers.v2
         /// <response code="403">Not Authenticated</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [HttpGet("CheckDelivered")]
-        public async Task<IActionResult> CheckDelivered(long MessageId)
+        public async Task<IActionResult> CheckDelivered([FromBody]long MessageId)
         {
             var UserIdClaim = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
             var Result = await messageService.IsDelivered(long.Parse(UserIdClaim.Value), MessageId);
@@ -97,7 +96,7 @@ namespace ChatyChaty.Controllers.v2
 
 
         [HttpPost("SendMessage")]
-        public async Task<IActionResult> SendMessage(SendMessageSchema messageSchema)
+        public async Task<IActionResult> SendMessage([FromBody]SendMessageSchema messageSchema)
         {
             var UserIdClaim = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
             var message = await messageService.SendMessage(messageSchema.ConversationId, long.Parse(UserIdClaim.Value), messageSchema.Body);
@@ -116,6 +115,5 @@ namespace ChatyChaty.Controllers.v2
             };
             return Ok(response);
         }
-
     }
 }
