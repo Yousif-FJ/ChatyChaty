@@ -112,24 +112,16 @@ namespace ChatyChaty.Services
                 {
                     FirstUserId = SenderDB.Id,
                     SecondUserId = ReciverDB.Id,
-                    Messages = new List<Message>()
                 };
-            }
             var resultConv = await dBContext.Conversations.AddAsync(conversation);
             await dBContext.SaveChangesAsync();
-
             return resultConv.Entity.Id;
+            }
+            return conversation.Id;
         }
 
         public async Task<IEnumerable<Message>> GetNewMessages(long UserId, long LastMessageId)
         {
-
-            var message = await dBContext.Messages.FindAsync(LastMessageId);
-            var conversation = await dBContext.Conversations.FindAsync(message.ConversationId);
-            if (conversation.FirstUserId != UserId && conversation.SecondUserId != UserId)
-            {
-                return null;
-            }
             var UserConversationsId = dBContext.Conversations
                 .Where(c => (c.FirstUserId == UserId || c.SecondUserId == UserId))
                 .Select(c => c.Id);
@@ -140,7 +132,7 @@ namespace ChatyChaty.Services
 
             foreach (var Message in NewMessages)
             {
-                message.Delivered = true;
+                Message.Delivered = true;
             }
             dBContext.Messages.UpdateRange(NewMessages);
             await dBContext.SaveChangesAsync();
@@ -174,18 +166,12 @@ namespace ChatyChaty.Services
         /// <returns>A bool whether there is new message</returns>
         public async Task<bool?> CheckForNewMessages(long UserId, long LastMessageId)
         {
-            var message = await dBContext.Messages.FindAsync(LastMessageId);
-            var conversation = await dBContext.Conversations.FindAsync(message.ConversationId);
-            if (conversation.FirstUserId != UserId && conversation.SecondUserId != UserId)
-            {
-                return null;
-            }
 
             var UserConversationsId = dBContext.Conversations
               .Where(c => (c.FirstUserId == UserId || c.SecondUserId == UserId))
               .Select(c => c.Id);
 
-            var IsThereNewMessage = dBContext.Messages.Any(
+            var IsThereNewMessage = await dBContext.Messages.AnyAsync(
                  m => m.Id > LastMessageId &&
                 UserConversationsId.Any(id => id == m.ConversationId)
                  );
