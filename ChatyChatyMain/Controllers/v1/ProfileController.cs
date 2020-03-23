@@ -15,7 +15,6 @@ using WebApplication1.ValidationAttributes;
 
 namespace ChatyChaty.Controllers.v1
 {
-    [RequireHttpsOrClose]
     [Route("api/v1/[controller]")]
     [ApiController]
     public class ProfileController : ControllerBase

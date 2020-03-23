@@ -15,7 +15,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace ChatyChaty.Controllers.v2
 {
     [Authorize]
-    [RequireHttpsOrClose]
     [ApiController]
     [Route("api/v2/[controller]")]
     [Consumes("application/json")]
