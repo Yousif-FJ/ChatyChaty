@@ -1,5 +1,5 @@
 ﻿using ChatyChaty.Model;
-using ChatyChaty.Model.AuthenticationModel;
+using ChatyChaty.Model.AccountModel;
 using ChatyChaty.Model.DBModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -18,11 +18,19 @@ namespace ChatyChaty.Services
     {
         private readonly UserManager<AppUser> userManager;
         private readonly IConfiguration configuration;
+        private readonly IPictureProvider pictureProvider;
+        private readonly ChatyChatyContext dbcontext;
 
-        public AccountManager(UserManager<AppUser> userManager, IConfiguration configuration)
+        public AccountManager(
+            UserManager<AppUser> userManager,
+            IConfiguration configuration,
+            IPictureProvider pictureProvider,
+            ChatyChatyContext dbcontext)
         {
             this.userManager = userManager;
             this.configuration = configuration;
+            this.pictureProvider = pictureProvider;
+            this.dbcontext = dbcontext;
         }
 
         public async Task<AuthenticationResult> CreateAccount(AccountModel accountModel)
@@ -35,7 +43,10 @@ namespace ChatyChaty.Services
                     Errors = new List<string>() { new string("Account creation is disabled for security reasons") }
                 };
             }
-            AppUser identityUser = new AppUser(accountModel.UserName);
+            AppUser identityUser = new AppUser(accountModel.UserName)
+            {
+                DisplayName = accountModel.DisplayName
+            };
             var AccountCreationResult = await userManager.CreateAsync(identityUser, accountModel.Password);
             if (!AccountCreationResult.Succeeded)
             {
@@ -45,11 +56,20 @@ namespace ChatyChaty.Services
                    Errors = AccountCreationResult.Errors.Select(x => x.Description)
                 };
             }
-
+            var User = await userManager.FindByNameAsync(accountModel.UserName);
+            accountModel.Id = User.Id;
+            var profile = new Profile
+            {
+                DisplayName = User.DisplayName,
+                Username = User.UserName,
+                PhotoURL = pictureProvider.GetPlaceHolderURL()
+            };
+            
             return new AuthenticationResult
             {
                 Success = true,
-                Token = JwtTokenGenerator(accountModel)
+                Token = JwtTokenGenerator(accountModel),
+                Profile = profile
             };
         }
 
@@ -65,10 +85,18 @@ namespace ChatyChaty.Services
                     Errors = new List<string> { new string("Invalid Login cridentials") }
                 };
             }
+            accountModel.Id = user.Id;
+            var profile = new Profile
+            {
+                DisplayName = user.DisplayName,
+                Username = user.UserName,
+                PhotoURL = await pictureProvider.GetPhotoURL(user.Id,user.UserName)
+            };
             return new AuthenticationResult
             {
                 Success = true,
-                Token = JwtTokenGenerator(accountModel)
+                Token = JwtTokenGenerator(accountModel),
+                Profile = profile
             };
 
         }
@@ -88,6 +116,7 @@ namespace ChatyChaty.Services
                 Subject = new ClaimsIdentity(claims: new[]
                 {
                     new Claim(type: JwtRegisteredClaimNames.UniqueName, accountModel.UserName),
+                    new Claim(type:JwtRegisteredClaimNames.NameId, accountModel.Id.ToString()),
                     new Claim(type: JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
                 }
                 ),
@@ -100,6 +129,25 @@ namespace ChatyChaty.Services
             };
             var token = jwtSecurityTokenHandler.CreateToken(tokenDescriptor);
             return jwtSecurityTokenHandler.WriteToken(token);
+        }
+
+        public async Task<AppUser> GetUser(long UserId)
+        {
+            var user = await dbcontext.Users.FindAsync(UserId);
+            return user;
+        }
+
+        public async Task<string> UpdateDisplayName(long UserId, string NewDisplayName)
+        {
+            var user = await dbcontext.Users.FindAsync(UserId);
+            if (user is null)
+            {
+                throw new ArgumentOutOfRangeException("Invalid userId");
+            }
+            user.DisplayName = NewDisplayName;
+            dbcontext.Users.Update(user);
+            await dbcontext.SaveChangesAsync();
+            return user.DisplayName;
         }
     }
 }

@@ -56,6 +56,8 @@ namespace ChatyChaty
 
             services.AddScoped<IPictureProvider, CloudinaryPictureProvider>();
 
+            services.AddScoped<IMessageService, MessageService>();
+
             //configure identity -----------------------------------------------------------
 
             services.Configure<IdentityOptions>(options =>
@@ -70,7 +72,7 @@ namespace ChatyChaty
 
                 // User settings.
                 options.User.AllowedUserNameCharacters =
-                "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+                "abcdefghijklmnopqrstuvwxyz0123456789_";
             });
 
 

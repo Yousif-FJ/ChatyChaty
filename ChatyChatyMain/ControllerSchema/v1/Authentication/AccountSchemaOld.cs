@@ -1,17 +1,16 @@
-﻿using Microsoft.AspNetCore.Http;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using WebApplication1.ValidationAttributes;
 
 namespace ChatyChaty.ControllerSchema.v1
 {
-    public class UploadFileSchema
+    public class AccountSchemaOld
     {
         [Required]
-        [AlowPicture]
-        public IFormFile PhotoFile { get; set; }
+        public string UserName { get; set; }
+        [Required]
+        public string Password { get; set; }
     }
 }

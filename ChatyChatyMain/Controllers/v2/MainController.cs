@@ -5,12 +5,14 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using ChatyChaty.ControllerSchema.v2;
 using ChatyChaty.Model.OldModel;
+using ChatyChaty.ValidationAttribute;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace ChatyChaty.Controllers
+namespace ChatyChaty.Controllers.v2
 {
+    [RequireHttpsOrClose]
     [Route("api/v2/[controller]")]
     [Consumes("application/json")]
     [Produces("application/json")]
@@ -24,7 +26,7 @@ namespace ChatyChaty.Controllers
         }
 
         /// <summary>
-        /// Post a message (Require authentication).
+        /// [Use Message controller instead] Post a message (Require authentication).
         /// </summary>
         /// <remarks>
         /// To authorize you get the JWT tokken from the login or the register actions,
@@ -35,7 +37,8 @@ namespace ChatyChaty.Controllers
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [Authorize]
         [HttpPost("PostMessage")]
-        public IActionResult PostMessage([FromBody] PostMessageSchema message)
+        [Obsolete("Use Message controller instead")]
+        public IActionResult PostMessage([FromBody] PostMessageSchemaOld message)
         {
             var UserNameClaim = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Name);
 
@@ -44,7 +47,7 @@ namespace ChatyChaty.Controllers
                 Body = message.Body,
                 Sender = UserNameClaim.Value
             });
-            return Ok(new ResponseMessageSchema {
+            return Ok(new ResponseMessageSchemaOld {
             Body = NewMessage.Body,
             ID = NewMessage.ID,
             Sender = NewMessage.Sender

@@ -2,14 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ChatyChaty.Model.AuthenticationModel;
+using ChatyChaty.Model.AccountModel;
 using ChatyChaty.ControllerSchema.v1;
 using ChatyChaty.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ChatyChaty.ValidationAttribute;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ChatyChaty.Controllers.v1
 {
+    [RequireHttpsOrClose]
     [Route("api/v1/[controller]")]
     [Consumes("application/json")]
     [Produces("application/json")]
@@ -25,7 +28,7 @@ namespace ChatyChaty.Controllers.v1
 
 
         /// <summary>
-        /// Create an account
+        /// [Use v2 instead] Create an account
         /// </summary>
         /// <remarks>
         /// Try it out to check the response schema 
@@ -35,7 +38,8 @@ namespace ChatyChaty.Controllers.v1
         /// <response code="400">Model validation failed</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [HttpPost("CreateAccount")]
-        public async Task<IActionResult> CreateAccount([FromBody]AccountSchema accountSchema)
+        [Obsolete("Use v2 instead")]
+        public async Task<IActionResult> CreateAccount([FromBody]AccountSchemaOld accountSchema)
         {
            var authenticationResult = await accountManager.CreateAccount(new AccountModel
            {
@@ -43,7 +47,7 @@ namespace ChatyChaty.Controllers.v1
                Password = accountSchema.Password
            }
                );
-            AuthenticationSchema authenticationSchema = new AuthenticationSchema()
+            AuthenticationSchemaOld authenticationSchema = new AuthenticationSchemaOld()
             {
                 Errors = authenticationResult.Errors,
                 Success = authenticationResult.Success,
@@ -54,7 +58,7 @@ namespace ChatyChaty.Controllers.v1
 
 
         /// <summary>
-        /// Login with an existing account
+        /// [Use v2 instead] Login with an existing account
         /// </summary>
         /// <remarks>
         /// Try it out to check the response schema 
@@ -62,9 +66,9 @@ namespace ChatyChaty.Controllers.v1
         /// <response code="200">Login Succeed or failed</response>
         /// <response code="400">Model validation failed</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
-
         [HttpPost("Login")]
-        public async Task<IActionResult> Login([FromBody]AccountSchema accountSchema)
+        [Obsolete("Use v2 instead")]
+        public async Task<IActionResult> Login([FromBody]AccountSchemaOld accountSchema)
         {
             var authenticationResult = await accountManager.Login(new AccountModel()
             {
@@ -72,7 +76,7 @@ namespace ChatyChaty.Controllers.v1
                 Password = accountSchema.Password
             }) ;
 
-            AuthenticationSchema authenticationSchema = new AuthenticationSchema()
+            AuthenticationSchemaOld authenticationSchema = new AuthenticationSchemaOld()
             {
                 Success = authenticationResult.Success,
                 Errors = authenticationResult.Errors,

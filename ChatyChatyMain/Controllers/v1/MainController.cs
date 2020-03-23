@@ -5,9 +5,10 @@ using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using ChatyChaty.ControllerSchema.v1;
 using ChatyChaty.ControllerSchema.v2;
-using ChatyChaty.Model.ControllerSchema.v1;
 using ChatyChaty.Model.OldModel;
+using ChatyChaty.ValidationAttribute;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +16,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ChatyChaty.Controllers.v1
 {
+    [RequireHttpsOrClose]
     [ApiController]
     [Route("api/v1/[controller]")]
     [Consumes("application/json")]
@@ -30,10 +32,11 @@ namespace ChatyChaty.Controllers.v1
 
 
         /// <summary>
-        /// Get the location of an img file
+        /// [Use profile controller] Get the location of an img file
         /// </summary>
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [HttpGet("GetImg")]
+        [Obsolete("Use profile controller")]
         public IActionResult GetImg()
         {
             return Ok($"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/CatFilterReaction.jpg");
@@ -41,10 +44,11 @@ namespace ChatyChaty.Controllers.v1
 
 
         /// <summary>
-        /// Get an array of all messages.
+        /// [use message controller instead] Get an array of all messages.
         /// </summary>
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [HttpGet("GetAllMessages")]
+        [Obsolete("use message controller instead")]
         public IActionResult GetAllMessages()
         {
             
@@ -53,11 +57,12 @@ namespace ChatyChaty.Controllers.v1
 
 
         /// <summary>
-        /// Get new messages after the specified message ID.
+        /// [use message controller instead] Get new messages after the specified message ID.
         /// </summary>
         /// <response code="400">ID is out of range</response>   
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [HttpGet("GetNewMessages")]
+        [Obsolete("use message controller instead")]
         public IActionResult GetNewMessages([FromQuery]long id)
         {
             var Response = MessageModelToSchema(messageRepository.GetNewMessages(id));
@@ -72,7 +77,7 @@ namespace ChatyChaty.Controllers.v1
         }
 
         /// <summary>
-        /// Post a message (Require authentication).
+        /// [use message controller instead] Post a message (Require authentication).
         /// </summary>
         /// <remarks>
         /// To authorize you get the JWT tokken from the login or the register actions,
@@ -81,9 +86,10 @@ namespace ChatyChaty.Controllers.v1
         /// <response code="400">Posted Message object doesn't match schemas</response>   
         /// <response code="403">Not Authenticated</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
+        [Obsolete("use message controller instead")]
         [Authorize]
         [HttpPost("PostMessage")]
-        public IActionResult PostMessage([FromBody] MessageSchema message)
+        public IActionResult PostMessage([FromBody] MessageSchemaOld message)
         {
             var UserNameClaim = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Name);
 
@@ -96,23 +102,24 @@ namespace ChatyChaty.Controllers.v1
         }
 
         /// <summary>
-        /// Delete all messages simple clean and fast :p (Require authentication).
+        /// [Not active on the new repository] Delete all messages simple clean and fast :p (Require authentication).
         /// </summary>
         /// <returns></returns>
         [Authorize]
         [HttpDelete("DeleteAllMessages")]
+        [Obsolete("Not active")]
         public IActionResult DeleteAllMessages()
         {
             messageRepository.DeleteAllMessages();
             return Ok();
         }
 
-        private List<ResponseMessageSchema> MessageModelToSchema(IEnumerable<Message1> MessageSet)
+        private List<ResponseMessageSchemaOld> MessageModelToSchema(IEnumerable<Message1> MessageSet)
         {
-            var responseMessages = new List<ResponseMessageSchema>();
+            var responseMessages = new List<ResponseMessageSchemaOld>();
             foreach (var item in MessageSet)
             {
-                responseMessages.Add(new ResponseMessageSchema
+                responseMessages.Add(new ResponseMessageSchemaOld
                 {
                     ID = item.ID,
                     Sender = item.Sender,

@@ -4,9 +4,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ChatyChaty.ControllerSchema.v1
+namespace ChatyChaty.ControllerSchema.v2
 {
-    public class AccountSchema
+    public class LoginAccountSchema
     {
         [Required]
         public string UserName { get; set; }

@@ -1,5 +1,5 @@
 ﻿using ChatyChaty.Model;
-using ChatyChaty.Model.AuthenticationModel;
+using ChatyChaty.Model.AccountModel;
 using ChatyChaty.Model.DBModel;
 using Microsoft.AspNetCore.Identity;
 using System;
@@ -14,6 +14,7 @@ namespace ChatyChaty.Services
         Task<AuthenticationResult> CreateAccount(AccountModel accountModel);
         Task<AuthenticationResult> Login(AccountModel accountModel);
         Task<AppUser> GetUser(string UserName);
-
+        Task<AppUser> GetUser(long UserId);
+        Task<string> UpdateDisplayName(long UserId, string NewDisplayName);
     }
 }
