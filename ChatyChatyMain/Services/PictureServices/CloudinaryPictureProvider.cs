@@ -59,7 +59,7 @@ namespace ChatyChaty.Services
         public async Task<string> GetPhotoURL(long UserID, string UserName)
         {
             var resourceResult = await cloudinary.GetResourceAsync(GetPublicId(UserID, UserName));
-            if (resourceResult != null)
+            if (resourceResult.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 return resourceResult.Url;
             }
