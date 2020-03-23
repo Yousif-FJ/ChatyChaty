@@ -54,13 +54,16 @@ namespace ChatyChaty.Controllers.v1
         /// <summary>
         /// Set photo picture or replace existing one (Require authentication)
         /// </summary>
+        /// <remarks>
+        /// Return the photo URL as a string (surrounded by "")</remarks>
         /// <param name="uploadFile"></param>
         /// <returns></returns>
-        /// <response code="400">The uploaded Photo must be a vaild img with png, jpg or jpeg</response>
+        /// <response code="400">The uploaded Photo must be a vaild img with png, jpg or jpeg with less than 4MB size</response>
         /// <response code="401">Unaithenticated</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [Authorize]
         [Consumes("multipart/form-data")]
+        [Produces("application/json")]
         [HttpPost("SetPhotoForSelf")]
         public async Task<IActionResult> SetPhotoForSelf([FromForm]UploadFileSchema uploadFile)
         {         
@@ -68,24 +71,37 @@ namespace ChatyChaty.Controllers.v1
             var user = await accountManager.GetUser(UserNameClaim.Value);
             await pictureProvider.ChangePhoto(user.Id,user.UserName, uploadFile.PhotoFile);
 
-            var ReturnURL = await pictureProvider.GetPhotoURL(user.Id,user.UserName);
-                return Ok(ReturnURL);
+            var URL = await pictureProvider.GetPhotoURL(user.Id,user.UserName);
+                return Ok(URL);
         }
 
 
         /// <summary>
-        /// Find users and return user profile with a conversation Id which is used to send messages
+        /// Find users and return user profile with a conversation Id,
+        /// which is used to send messages and get other users info(Require authentication)
         /// </summary>
-        /// <remarks>This is used to start a conversation with a user</remarks>
+        /// <remarks><br>This is used to start a conversation with a user</br>
+        /// <br>You may get the DisplayName as null due to account greated before the last change</br>
+        /// Example response:
+        /// {
+        ///  "success": true,
+        ///  "error": null,
+        ///  "conversationId": 1,
+        ///  "pictureUrl": "*URL*",
+        ///  "username": "*UserName*",
+        ///  "displayName": "*DisplayName*"
+        /// }
+        /// </remarks>
         /// <param name="UserName"></param>
         /// <returns></returns>
+        /// <response code="200">When user was found or not</response>
         /// <response code="401">Unaithenticated</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [Authorize]
         [Consumes("application/json")]
         [Produces("application/json")]
         [HttpGet("GetUser")]
-        public async Task<IActionResult> GetUser([FromQuery]string UserName)
+        public async Task<IActionResult> GetUser([FromHeader]string UserName)
         {
             var UserIdClaim = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
             var user = await accountManager.GetUser(UserName);
@@ -112,10 +128,20 @@ namespace ChatyChaty.Controllers.v1
 
 
         /// <summary>
-        /// Get conversation information
+        /// Get conversation information like username and ... (Require authentication)
         /// </summary>
         /// <remarks>This is used when GetNewMessages return a message with a conversation Id, 
-        /// it also should be used everytime a conversation is opened to keep the profile uptodate</remarks>
+        /// it also should be used everytime a conversation is opened to keep the profile upto date (DisplayName can be changed)
+        /// <br>
+        /// Example response:
+        /// {
+        ///  "conversationId": 1,
+        ///  "pictureUrl": "*URL*",
+        ///  "displayName": "*Username*",
+        ///  "username": "*Username*"
+        /// }
+        /// </br>
+        /// </remarks>
         /// <param name="ConversationId"></param>
         /// <returns></returns>
         /// <response code="400">Requested conversationId doesn't exist</response>
@@ -125,7 +151,7 @@ namespace ChatyChaty.Controllers.v1
         [Consumes("application/json")]
         [Produces("application/json")]
         [HttpGet("GetConversation")]
-        public async Task<IActionResult> GetConversationInfo([FromQuery]long ConversationId)
+        public async Task<IActionResult> GetConversationInfo([FromHeader]long ConversationId)
         {
             var UserIdClaim = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
             var conversation = await messageService.GetConversationInfo(long.Parse(UserIdClaim.Value), ConversationId);
@@ -142,7 +168,15 @@ namespace ChatyChaty.Controllers.v1
             };
             return Ok(response);
         }
-
+        /// <summary>
+        /// Set or update the DisplayName of the authenticated user (Require authentication)
+        /// </summary>
+        /// <remarks>
+        /// Take the name as a json string (surrounded by "") and
+        /// Return the name as a json string (surrounded by "")
+        /// </remarks>
+        /// <param name="NewDisplayName"></param>
+        /// <returns></returns>
         [Authorize]
         [Consumes("application/json")]
         [Produces("application/json")]
