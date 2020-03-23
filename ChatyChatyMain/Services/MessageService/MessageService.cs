@@ -129,7 +129,7 @@ namespace ChatyChaty.Services
             var NewMessages = dBContext.Messages.Where(
                 m => m.Id > LastMessageId &&
                 UserConversationsId.Any(id => id == m.ConversationId)
-                );
+                ).Include(c => c.Sender);
 
             foreach (var Message in NewMessages)
             {
@@ -151,6 +151,10 @@ namespace ChatyChaty.Services
         public async Task<ConversationInfo> GetConversationInfo(long UserId, long conversationId)
         {
             var conversation = await dBContext.Conversations.FindAsync(conversationId);
+            if (conversation == null)
+            {
+                return null;
+            }
             AppUser SecondUser;
             if (conversation.FirstUserId == UserId)
             {
