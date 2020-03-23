@@ -28,11 +28,20 @@ namespace ChatyChaty.Controllers.v2
 
 
         /// <summary>
-        /// Create an account
+        /// Create an account and retrieve JWT token with Profile 
         /// </summary>
         /// <remarks>
-        /// Try it out to check the response schema 
-        /// (Account creation may be disable for security reasons)
+        /// Sample Response: 
+        /// {
+        ///  "success": true,
+        ///  "token": "*The Token*",
+        ///  "errors": null,
+        ///  "profile": {
+        /// "username": "*UserName*",
+        ///    "displayName": "*DisplayName*",
+        ///    "photoURL": "*Picture URL*"
+        ///  }
+        ///}
         /// </remarks>
         /// <response code="200">Login Succeed or failed</response>
         /// <response code="400">Model validation failed</response>
@@ -47,6 +56,17 @@ namespace ChatyChaty.Controllers.v2
                DisplayName = accountSchema.DisplayName
            }
                );
+
+            if (!authenticationResult.Success)
+            {
+                AuthenticationResponse authenticationSchemaF = new AuthenticationResponse()
+                {
+                    Errors = authenticationResult.Errors,
+                    Success = authenticationResult.Success,
+                };
+                return Ok(authenticationSchemaF);
+            }
+
             ProfileSchema profileSchema = new ProfileSchema
             {
                 DisplayName = authenticationResult.Profile.DisplayName,
@@ -68,7 +88,7 @@ namespace ChatyChaty.Controllers.v2
         /// Check if the use is Authenticated
         /// </summary>
         /// <returns></returns>
-        /// <response code="403">Not Authenticated</response>
+        /// <response code="401">Not Authenticated</response>
         /// <response code="200">Authenticated</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [HttpGet("IsAuthenticated")]
@@ -80,10 +100,20 @@ namespace ChatyChaty.Controllers.v2
 
 
         /// <summary>
-        /// Login with an existing account
+        /// Login with an existing account and retrieve JWT token with Profile
         /// </summary>
         /// <remarks>
-        /// Try it out to check the response schema 
+        /// Sample Response: 
+        /// {
+        ///  "success": true,
+        ///  "token": "*The Token*",
+        ///  "errors": null,
+        ///  "profile": {
+        /// "username": "*UserName*",
+        ///    "displayName": "*DisplayName*",
+        ///    "photoURL": "*Picture URL*"
+        ///  }
+        ///}
         /// </remarks>
         /// <response code="200">Login Succeed or failed</response>
         /// <response code="400">Model validation failed</response>
@@ -96,6 +126,17 @@ namespace ChatyChaty.Controllers.v2
                 UserName = accountSchema.UserName,
                 Password = accountSchema.Password
             });
+
+            if (!authenticationResult.Success)
+            {
+                AuthenticationResponse authenticationSchemaF = new AuthenticationResponse()
+                {
+                    Errors = authenticationResult.Errors,
+                    Success = authenticationResult.Success,
+                };
+                return Ok(authenticationSchemaF);
+            }
+
 
             ProfileSchema profileSchema = new ProfileSchema
             {
