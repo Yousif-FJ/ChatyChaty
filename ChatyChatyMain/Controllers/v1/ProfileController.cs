@@ -76,16 +76,16 @@ namespace ChatyChaty.Controllers.v1
 
 
         /// <summary>
-        /// Find users and return user profile with a conversation Id,
+        /// Find users and return user profile with a chat Id,
         /// which is used to send messages and get other users info(Require authentication)
         /// </summary>
-        /// <remarks><br>This is used to start a conversation with a user</br>
+        /// <remarks><br>This is used to start a chat with a user</br>
         /// <br>You may get the DisplayName as null due to account greated before the last change</br>
         /// Example response:
         /// {
         ///  "success": true,
         ///  "error": null,
-        ///  "conversationId": 1,
+        ///  "chatId": 1,
         ///  "pictureUrl": "*URL*",
         ///  "username": "*UserName*",
         ///  "displayName": "*DisplayName*"
@@ -117,7 +117,7 @@ namespace ChatyChaty.Controllers.v1
             var response = new GetUserProfileResponse
             {
                 Success = true,
-                ConversationId = conversationId,
+                ChatId = conversationId,
                 DisplayName = user.DisplayName,
                 Username = user.UserName,
                 PictureUrl = await pictureProvider.GetPhotoURL(user.Id, user.UserName)
@@ -127,40 +127,40 @@ namespace ChatyChaty.Controllers.v1
 
 
         /// <summary>
-        /// Get conversation information like username and ... (Require authentication)
+        /// Get chat information like username and ... (Require authentication)
         /// </summary>
-        /// <remarks>This is used when GetNewMessages return a message with a conversation Id, 
-        /// it also should be used everytime a conversation is opened to keep the profile upto date (DisplayName can be changed)
+        /// <remarks>This is used when GetNewMessages return a message with a chat Id, 
+        /// it also should be used everytime a chat is opened to keep the profile upto date (DisplayName can be changed)
         /// <br>
         /// Example response:
         /// {
-        ///  "conversationId": 1,
+        ///  "chatId": 1,
         ///  "pictureUrl": "*URL*",
         ///  "displayName": "*Username*",
         ///  "username": "*Username*"
         /// }
         /// </br>
         /// </remarks>
-        /// <param name="ConversationId"></param>
+        /// <param name="ChatId"></param>
         /// <returns></returns>
-        /// <response code="400">Requested conversationId doesn't exist</response>
+        /// <response code="400">Requested ChatId doesn't exist</response>
         /// <response code="401">Unaithenticated</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [Authorize]
         [Consumes("application/json")]
         [Produces("application/json")]
-        [HttpGet("GetConversation")]
-        public async Task<IActionResult> GetConversationInfo([FromHeader]long ConversationId)
+        [HttpGet("GetChatInfo")]
+        public async Task<IActionResult> GetChatInfo([FromHeader]long ChatId)
         {
             var UserIdClaim = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
-            var conversation = await messageService.GetConversationInfo(long.Parse(UserIdClaim.Value), ConversationId);
+            var conversation = await messageService.GetConversationInfo(long.Parse(UserIdClaim.Value), ChatId);
             if (conversation == null)
             {
                 return BadRequest();
             }
-            var response = new GetConversationInfoResponse
+            var response = new GetChatInfoResponse
             {
-                ConversationId = conversation.ConversationId,
+                ChatId = conversation.ConversationId,
                 DisplayName = conversation.SecondUserDisplayName,
                 Username = conversation.SecondUserUsername,
                 PictureUrl = await pictureProvider.GetPhotoURL(conversation.SecondUserId, conversation.SecondUserUsername)
