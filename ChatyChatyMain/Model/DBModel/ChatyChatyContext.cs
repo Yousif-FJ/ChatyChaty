@@ -18,7 +18,7 @@ namespace ChatyChaty.Model.DBModel
 
         public DbSet<Message1> MessagesSet { get; set; }
         public DbSet<Message> Messages{ get; set; }
-        public DbSet<Chat> Chats { get; set; }
+        public DbSet<Conversation> Conversations { get; set; }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -66,23 +66,23 @@ namespace ChatyChaty.Model.DBModel
 
 
             builder.Entity<Message>()
-                .HasOne<Chat>(x => x.Chat)
+                .HasOne<Conversation>(x => x.Conversation)
                 .WithMany(x => x.Messages)
-                .HasForeignKey(x => x.ChatId);
+                .HasForeignKey(x => x.ConversationId);
 
             builder.Entity<Message>()
                 .HasOne<AppUser>(x => x.Sender)
                 .WithMany(x => x.MessageSender)
                 .HasForeignKey(x => x.SenderId);
 
-            builder.Entity<Chat>()
+            builder.Entity<Conversation>()
                 .HasOne<AppUser>(x => x.FirstUser)
-                .WithMany(x => x.Chat1)
+                .WithMany(x => x.Conversations1)
                 .HasForeignKey(x => x.FirstUserId);
 
-            builder.Entity<Chat>()
+            builder.Entity<Conversation>()
                 .HasOne<AppUser>(x => x.SecondUser)
-                .WithMany(x => x.Chat2)
+                .WithMany(x => x.Conversations2)
                 .HasForeignKey(x => x.SecondUserId);
 
         }

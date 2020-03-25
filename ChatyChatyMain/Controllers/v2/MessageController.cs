@@ -31,7 +31,7 @@ namespace ChatyChaty.Controllers.v2
         }
 
         /// <summary>
-        /// Check for new messages by supplying the last messageId of the last chat (Require authentication)
+        /// Check for new messages by supplying the last messageId of the last conversation (Require authentication)
         /// </summary>
         /// <remarks>
         /// <br>You may supply 0 as last messageId if there are no messages.</br>
@@ -56,19 +56,19 @@ namespace ChatyChaty.Controllers.v2
         }
 
         /// <summary>
-        /// Get new messages by supplying the last messageId of the last chat (Require authentication)
+        /// Get new messages by supplying the last messageId of the last conversation (Require authentication)
         /// </summary>
         /// <remarks>
         /// You should use CheckForNewMessages first for performance (I'm not sure if it makes much difference will test latter).
         /// You may supply 0 as last messageId if there are no messages.
         /// Expect delivered to be null for the message you received.
-        /// You may get the full chat info (like sender username and picture) using the chatId,
-        /// You can use the action GetConchatversationInfo to get the chat info. 
+        /// You may get the full conversation info (like sender username and picture) using the conversationId,
+        /// You can use the action GetConversationInfo to get the conversation info. 
         /// Example response:
         /// <br>
         /// [
         ///  {
-        ///    "chatId": 1,
+        ///    "conversationId": 1,
         ///    "messageId": 1,
         ///    "sender": "*Username*",
         ///    "body": "*The message*",
@@ -98,7 +98,7 @@ namespace ChatyChaty.Controllers.v2
                 Messages.Add(new NewMessagesResponse
                 {
                     Body = message.Body,
-                    ChatId = message.ChatId,
+                    ConversationId = message.ConversationId,
                     MessageId = message.Id,
                     Sender = message.Sender.UserName,
                     Delivered = message.SenderId == UserId ? message.Delivered : (bool?)null
@@ -112,7 +112,7 @@ namespace ChatyChaty.Controllers.v2
         /// Check if the message is Delivered or not (Require authentication)
         /// </summary>
         /// <remarks>Only works if the message was sent by the user himself.
-        /// should be only used when the chat is open, to reduce performance hit
+        /// should be only used when the conversation is open, to reduce performance hit
         /// <br>Example response: false</br>
         /// </remarks>
         /// <param name="MessageId">long represent the message Id</param>
@@ -135,14 +135,14 @@ namespace ChatyChaty.Controllers.v2
 
 
         /// <summary>
-        /// Send New message with the chatId(Require authentication)
+        /// Send New message with the conversationId(Require authentication)
         /// </summary>
-        /// <remarks>you can get the chatId using the action GetUser,
-        /// and get the chat info from the action GetChatInfo.
+        /// <remarks>you can get the conversationId using the action GetUser,
+        /// and get the conversation info from the action GetConversationInfo.
         /// <br>Example response:</br>
         /// <br>
         ///    {
-        ///    "chatId": 1,
+        ///    "conversationId": 1,
         ///    "messageId": 1,
         ///    "sender": "*Username*",
         ///    "body": "*The message*",
@@ -153,7 +153,7 @@ namespace ChatyChaty.Controllers.v2
         /// <param name="messageSchema">Object representing the message info</param>
         /// <returns></returns>
         /// <response code="200">sent! You get the message back in the response</response>
-        /// <response code="400">The user doesn't own the chat</response>
+        /// <response code="400">The user doesn't own the conversation</response>
         /// <response code="403">Not Authenticated</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [HttpPost("SendMessage")]
@@ -161,7 +161,7 @@ namespace ChatyChaty.Controllers.v2
         {
             var UserIdClaim = HttpContext.User.Claims.FirstOrDefault(
                 claim => claim.Type == ClaimTypes.NameIdentifier);
-            var message = await messageService.SendMessage(messageSchema.ChatId,
+            var message = await messageService.SendMessage(messageSchema.ConversationId,
                 long.Parse(UserIdClaim.Value), messageSchema.Body);
 
             if (message == null)
@@ -174,7 +174,7 @@ namespace ChatyChaty.Controllers.v2
             {
                 Body = message.Body,
                 MessageId = message.Id,
-                ChatId = message.ChatId,
+                ConversationId = message.ConversationId,
                 Sender = UserNameClaim.Value
             };
             return Ok(response);

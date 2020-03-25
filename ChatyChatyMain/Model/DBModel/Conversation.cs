@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ChatyChaty.Model.DBModel
 {
-    public class Chat
+    public class Conversation
     {
         [Key]
         public long Id { get; set; }

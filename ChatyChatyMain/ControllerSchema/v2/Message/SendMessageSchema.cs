@@ -9,7 +9,7 @@ namespace ChatyChaty.ControllerSchema.v2
     public class SendMessageSchema
     {
         [Required]
-        public long ChatId { get; set; }
+        public long ConversationId { get; set; }
         [Required]
         public string Body { get; set; }
     }

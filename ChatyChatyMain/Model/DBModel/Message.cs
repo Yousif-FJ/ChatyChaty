@@ -11,10 +11,10 @@ namespace ChatyChaty.Model.DBModel
         [Key]
         public long Id { get; set; }
         public string Body { get; set; }
-        public long ChatId { get; set; }
+        public long ConversationId { get; set; }
         public long SenderId { get; set; }
         public AppUser Sender { get; set; }
-        public Chat Chat { get; set; }
+        public Conversation Conversation { get; set; }
         public bool Delivered { get; set; }
     }
 }

@@ -9,7 +9,7 @@ namespace ChatyChaty.ControllerSchema.v1.Profile
     {
         public bool Success { get; set; }
         public string Error { get; set; }
-        public long? ChatId { get; set; }
+        public long? ConversationId { get; set; }
         public string PictureUrl { get; set; }
         public string Username { get; set; }
         public string DisplayName { get; set; }
