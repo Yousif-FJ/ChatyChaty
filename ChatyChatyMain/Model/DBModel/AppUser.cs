@@ -13,8 +13,8 @@ namespace ChatyChaty.Model.DBModel
         {
         }
         public string DisplayName { get; set; }
-        public ICollection<Conversation> Conversations1 { get; set; }
-        public ICollection<Conversation> Conversations2 { get; set; }
+        public ICollection<Chat> Chat1 { get; set; }
+        public ICollection<Chat> Chat2 { get; set; }
         public ICollection<Message> MessageSender { get; set; }
     }
 

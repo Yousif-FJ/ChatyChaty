@@ -26,7 +26,9 @@ namespace XUnitTest
 
 
         [Fact]
-        public async Task GetConversation()
+        public async Task Get
+            
+            ()
         {
             //Arrange
             var sender = new AppUser("Test1") 
@@ -42,12 +44,12 @@ namespace XUnitTest
             await dbContext.Users.AddRangeAsync(sender,reciver);
             dbContext.SaveChanges();
             //Act
-            var ConversationId = await messageService.NewConversation(sender.Id, reciver.Id);
+            var ChatId = await messageService.NewChat(sender.Id, reciver.Id);
             //Assert
-            var conversation = await dbContext.Conversations.FindAsync(ConversationId);
-            Assert.True(conversation != null && 
-                conversation.FirstUserId == sender.Id && 
-                conversation.SecondUserId == reciver.Id);
+            var chat = await dbContext.Chats.FindAsync(ChatId);
+            Assert.True(chat != null && 
+                chat.FirstUserId == sender.Id && 
+                chat.SecondUserId == reciver.Id);
         }
 
         [Fact]
@@ -64,7 +66,7 @@ namespace XUnitTest
                 Id = 2
             };
 
-            var conversation = await dbContext.Conversations.AddAsync(new Conversation
+            var chat = await dbContext.Chats.AddAsync(new Chat
             {
                 FirstUserId = sender.Id,
                 SecondUserId = reciver.Id
@@ -76,7 +78,7 @@ namespace XUnitTest
 
             string message = "Some test message";
             //Act
-            await messageService.SendMessage(conversation.Entity.Id, sender.Id, message);
+            await messageService.SendMessage(chat.Entity.Id, sender.Id, message);
             //Assert
             var m = await dbContext.Messages.LastAsync();
             Assert.True(m.Body == message);

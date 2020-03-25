@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace ChatyChaty.ControllerSchema.v1.Profile
 {
-    public class GetConversationInfoResponse
+    public class GetChatInfoResponse
     {
-        public long ConversationId { get; set; }
+        public long ChatId { get; set; }
         public string PictureUrl { get; set; }
         public string DisplayName { get; set; }
         public string Username { get; set; }

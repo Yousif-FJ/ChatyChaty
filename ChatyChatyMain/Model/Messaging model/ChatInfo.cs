@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace ChatyChaty.Model.Messaging_model
 {
-    public class ConversationInfo
+    public class ChatInfo
     {
-        public long ConversationId { get; set; }
+        public long ChatId { get; set; }
         public string SecondUserDisplayName { get; set; }
         public string SecondUserUsername { get; set; }
         public long SecondUserId { get; set; }
