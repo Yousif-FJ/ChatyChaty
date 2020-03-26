@@ -5,7 +5,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using ChatyChaty.ControllerSchema.v1;
-using ChatyChaty.ControllerSchema.v1.Profile;
 using ChatyChaty.Services;
 using ChatyChaty.ValidationAttribute;
 using Microsoft.AspNetCore.Authorization;
@@ -118,9 +117,12 @@ namespace ChatyChaty.Controllers.v1
             {
                 Success = true,
                 ChatId = conversationId,
-                DisplayName = user.DisplayName,
-                Username = user.UserName,
-                PhotoURL = await pictureProvider.GetPhotoURL(user.Id, user.UserName)
+                Profile = new ProfileResponse
+                {
+                    DisplayName = user.DisplayName,
+                    Username = user.UserName,
+                    PhotoURL = await pictureProvider.GetPhotoURL(user.Id, user.UserName)
+                }
             };
             return Ok(response);
         }
@@ -161,9 +163,12 @@ namespace ChatyChaty.Controllers.v1
             var response = new GetChatInfoResponse
             {
                 ChatId = conversation.ConversationId,
-                DisplayName = conversation.SecondUserDisplayName,
-                Username = conversation.SecondUserUsername,
-                PhotoURL = await pictureProvider.GetPhotoURL(conversation.SecondUserId, conversation.SecondUserUsername)
+                Profile = new ProfileResponse
+                {
+                    DisplayName = conversation.SecondUserDisplayName,
+                    Username = conversation.SecondUserUsername,
+                    PhotoURL = await pictureProvider.GetPhotoURL(conversation.SecondUserId, conversation.SecondUserUsername)
+                }
             };
             return Ok(response);
         }
