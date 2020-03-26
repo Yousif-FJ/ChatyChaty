@@ -15,7 +15,7 @@ namespace ChatyChaty.Services
     {
         private readonly Cloudinary cloudinary;
         private const string PlaceHolderURL
-            = "https://res.cloudinary.com/da5y8c0lx/image/upload/v1584120925/ChatyChaty/Placeholder_h5xlzr.jpg";
+            = "https://res.cloudinary.com/da5y8c0lx/image/upload/ChatyChaty/Placeholder_h5xlzr.jpg";
         private const string FileConatiner = "ChatyChaty";
 
         public CloudinaryPictureProvider(Cloudinary cloudinary)

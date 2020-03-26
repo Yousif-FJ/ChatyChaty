@@ -8,7 +8,7 @@ namespace ChatyChaty.ControllerSchema.v1.Profile
     public class GetChatInfoResponse
     {
         public long ChatId { get; set; }
-        public string PictureUrl { get; set; }
+        public string PhotoURL { get; set; }
         public string DisplayName { get; set; }
         public string Username { get; set; }
     }
