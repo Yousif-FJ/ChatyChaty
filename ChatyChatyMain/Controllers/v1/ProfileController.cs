@@ -50,7 +50,7 @@ namespace ChatyChaty.Controllers.v1
         }
 
         /// <summary>
-        /// Set photo picture or replace existing one (Require authentication)
+        /// Set photo or replace existing one (Require authentication)
         /// </summary>
         /// <remarks>
         /// Return the photo URL as a string (surrounded by "")</remarks>
@@ -85,9 +85,10 @@ namespace ChatyChaty.Controllers.v1
         ///  "success": true,
         ///  "error": null,
         ///  "chatId": 1,
-        ///  "pictureUrl": "*URL*",
+        ///  "profile":{
         ///  "username": "*UserName*",
-        ///  "displayName": "*DisplayName*"
+        ///  "displayName": "*DisplayName*",
+        ///  "PhotoURL": "*URL*"}
         /// }
         /// </remarks>
         /// <param name="UserName"></param>
@@ -137,9 +138,10 @@ namespace ChatyChaty.Controllers.v1
         /// Example response:
         /// {
         ///  "chatId": 1,
-        ///  "pictureUrl": "*URL*",
-        ///  "displayName": "*Username*",
-        ///  "username": "*Username*"
+        ///  "profile":{
+        ///  "username": "*UserName*",
+        ///  "displayName": "*DisplayName*",
+        ///  "PhotoURL": "*URL*"}
         /// }
         /// </br>
         /// </remarks>
