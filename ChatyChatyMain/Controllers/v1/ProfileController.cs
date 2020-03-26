@@ -120,7 +120,7 @@ namespace ChatyChaty.Controllers.v1
                 ChatId = conversationId,
                 DisplayName = user.DisplayName,
                 Username = user.UserName,
-                PictureUrl = await pictureProvider.GetPhotoURL(user.Id, user.UserName)
+                PhotoURL = await pictureProvider.GetPhotoURL(user.Id, user.UserName)
             };
             return Ok(response);
         }
@@ -163,7 +163,7 @@ namespace ChatyChaty.Controllers.v1
                 ChatId = conversation.ConversationId,
                 DisplayName = conversation.SecondUserDisplayName,
                 Username = conversation.SecondUserUsername,
-                PictureUrl = await pictureProvider.GetPhotoURL(conversation.SecondUserId, conversation.SecondUserUsername)
+                PhotoURL = await pictureProvider.GetPhotoURL(conversation.SecondUserId, conversation.SecondUserUsername)
             };
             return Ok(response);
         }
