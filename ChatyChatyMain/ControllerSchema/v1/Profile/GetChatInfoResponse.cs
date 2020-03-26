@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ChatyChaty.ControllerSchema.v1.Profile
+namespace ChatyChaty.ControllerSchema.v1
 {
     public class GetChatInfoResponse
     {
         public long ChatId { get; set; }
-        public string PhotoURL { get; set; }
-        public string DisplayName { get; set; }
-        public string Username { get; set; }
+        public ProfileResponse Profile { get; set; }
     }
 }

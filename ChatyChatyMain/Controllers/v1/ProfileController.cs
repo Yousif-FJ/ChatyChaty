@@ -5,7 +5,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using ChatyChaty.ControllerSchema.v1;
-using ChatyChaty.ControllerSchema.v1.Profile;
 using ChatyChaty.Services;
 using ChatyChaty.ValidationAttribute;
 using Microsoft.AspNetCore.Authorization;
@@ -51,7 +50,7 @@ namespace ChatyChaty.Controllers.v1
         }
 
         /// <summary>
-        /// Set photo picture or replace existing one (Require authentication)
+        /// Set photo or replace existing one (Require authentication)
         /// </summary>
         /// <remarks>
         /// Return the photo URL as a string (surrounded by "")</remarks>
@@ -86,9 +85,10 @@ namespace ChatyChaty.Controllers.v1
         ///  "success": true,
         ///  "error": null,
         ///  "chatId": 1,
-        ///  "pictureUrl": "*URL*",
+        ///  "profile":{
         ///  "username": "*UserName*",
-        ///  "displayName": "*DisplayName*"
+        ///  "displayName": "*DisplayName*",
+        ///  "PhotoURL": "*URL*"}
         /// }
         /// </remarks>
         /// <param name="UserName"></param>
@@ -118,9 +118,12 @@ namespace ChatyChaty.Controllers.v1
             {
                 Success = true,
                 ChatId = conversationId,
-                DisplayName = user.DisplayName,
-                Username = user.UserName,
-                PhotoURL = await pictureProvider.GetPhotoURL(user.Id, user.UserName)
+                Profile = new ProfileResponse
+                {
+                    DisplayName = user.DisplayName,
+                    Username = user.UserName,
+                    PhotoURL = await pictureProvider.GetPhotoURL(user.Id, user.UserName)
+                }
             };
             return Ok(response);
         }
@@ -135,9 +138,10 @@ namespace ChatyChaty.Controllers.v1
         /// Example response:
         /// {
         ///  "chatId": 1,
-        ///  "pictureUrl": "*URL*",
-        ///  "displayName": "*Username*",
-        ///  "username": "*Username*"
+        ///  "profile":{
+        ///  "username": "*UserName*",
+        ///  "displayName": "*DisplayName*",
+        ///  "PhotoURL": "*URL*"}
         /// }
         /// </br>
         /// </remarks>
@@ -161,9 +165,12 @@ namespace ChatyChaty.Controllers.v1
             var response = new GetChatInfoResponse
             {
                 ChatId = conversation.ConversationId,
-                DisplayName = conversation.SecondUserDisplayName,
-                Username = conversation.SecondUserUsername,
-                PhotoURL = await pictureProvider.GetPhotoURL(conversation.SecondUserId, conversation.SecondUserUsername)
+                Profile = new ProfileResponse
+                {
+                    DisplayName = conversation.SecondUserDisplayName,
+                    Username = conversation.SecondUserUsername,
+                    PhotoURL = await pictureProvider.GetPhotoURL(conversation.SecondUserId, conversation.SecondUserUsername)
+                }
             };
             return Ok(response);
         }
