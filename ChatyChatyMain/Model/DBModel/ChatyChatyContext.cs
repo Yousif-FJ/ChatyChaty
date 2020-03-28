@@ -62,6 +62,10 @@ namespace ChatyChaty.Model.DBModel
                 .WithMany(x => x.Conversations2)
                 .HasForeignKey(x => x.SecondUserId);
 
+            builder.Entity<AppUser>()
+                .HasOne<Notification>(x => x.Notification)
+                .WithOne(x => x.AppUser)
+                .HasForeignKey<Notification>(x => x.Id);
         }
     }
 }
