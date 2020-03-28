@@ -18,11 +18,11 @@ namespace ChatyChaty.Controllers.v2
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
-        private readonly IAccountManager accountManager;
+        private readonly IAuthenticationManager authenticationManager;
 
-        public AuthenticationController(IAccountManager accountManager)
+        public AuthenticationController(IAuthenticationManager accountManager)
         {
-            this.accountManager = accountManager;
+            this.authenticationManager = accountManager;
         }
 
 
@@ -48,7 +48,7 @@ namespace ChatyChaty.Controllers.v2
         [HttpPost("CreateAccount")]
         public async Task<IActionResult> CreateAccount([FromBody]CreateAccountSchema accountSchema)
         {
-           var authenticationResult = await accountManager.CreateAccount(new AccountModel
+           var authenticationResult = await authenticationManager.CreateAccount(new AccountModel
            {
                UserName = accountSchema.UserName,
                Password = accountSchema.Password,
@@ -120,7 +120,7 @@ namespace ChatyChaty.Controllers.v2
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody]LoginAccountSchema accountSchema)
         {
-            var authenticationResult = await accountManager.Login(new AccountModel()
+            var authenticationResult = await authenticationManager.Login(new AccountModel()
             {
                 UserName = accountSchema.UserName,
                 Password = accountSchema.Password

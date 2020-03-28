@@ -11,10 +11,7 @@ namespace ChatyChaty.Services
 {
     public interface IAccountManager
     {
-        Task<AuthenticationResult> CreateAccount(AccountModel accountModel);
-        Task<AuthenticationResult> Login(AccountModel accountModel);
         Task<AppUser> GetUser(string UserName);
-        Task<AppUser> GetUser(long UserId);
         Task<string> UpdateDisplayName(long UserId, string NewDisplayName);
     }
 }
