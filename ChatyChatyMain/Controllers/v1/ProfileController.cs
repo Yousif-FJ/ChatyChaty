@@ -83,7 +83,7 @@ namespace ChatyChaty.Controllers.v1
         [HttpGet("GetUser")]
         public async Task<IActionResult> GetUser([FromHeader]string UserName)
         {
-            var UserIdClaim = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
+            var UserId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
             var user = await accountManager.GetUser(UserName);
             if (user == null)
             {
@@ -94,7 +94,7 @@ namespace ChatyChaty.Controllers.v1
                         Error = "No such a Username"
                     });
             }
-            var conversationId = await messageService.NewConversation(long.Parse(UserIdClaim.Value), user.Id);
+            var conversationId = await messageService.NewConversation(long.Parse(UserId), user.Id);
             var response = new GetUserProfileResponse
             {
                 Success = true,
@@ -108,8 +108,8 @@ namespace ChatyChaty.Controllers.v1
             };
             return Ok(response);
         }
-
         /*
+
         /// <summary>
         /// Get chat information like username and ... (Require authentication)
         /// </summary>
