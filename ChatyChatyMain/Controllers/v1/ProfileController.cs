@@ -29,25 +29,6 @@ namespace ChatyChaty.Controllers.v1
             this.messageService = messageService;
         }
 
-        /// <summary>
-        /// [This is no longer needed] Takes a UserName and gives a Photo Location
-        /// </summary>
-        /// <param name="UserName"></param>
-        /// <returns></returns>
-        /// <response code="404">The given UserName doesn't exist</response>
-        /// <response code="500">Server Error (This shouldn't happen)</response>
-        [HttpGet("GetUserPhoto")]
-        [Obsolete("This is no longer needed")]
-        public async Task<IActionResult> GetUserPhoto([FromQuery]string UserName)
-        {
-            var User = await accountManager.GetUser(UserName);
-            if (User is null)
-            {
-                return NotFound("UserName wasn't found");
-            }
-            var PictureURL = await pictureProvider.GetPhotoURL(User.Id,User.UserName);
-            return Ok(PictureURL);
-        }
 
         /// <summary>
         /// Set photo or replace existing one (Require authentication)
@@ -128,7 +109,7 @@ namespace ChatyChaty.Controllers.v1
             return Ok(response);
         }
 
-
+        /*
         /// <summary>
         /// Get chat information like username and ... (Require authentication)
         /// </summary>
@@ -174,6 +155,8 @@ namespace ChatyChaty.Controllers.v1
             };
             return Ok(response);
         }
+        */
+
         /// <summary>
         /// Set or update the DisplayName of the authenticated user (Require authentication)
         /// </summary>
