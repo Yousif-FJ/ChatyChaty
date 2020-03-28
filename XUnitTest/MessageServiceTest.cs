@@ -1,4 +1,5 @@
 ﻿using ChatyChaty.Model.DBModel;
+using ChatyChaty.Model.MessageRepository;
 using ChatyChaty.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +22,8 @@ namespace XUnitTest
                 .Options;
             var context = new ChatyChatyContext(options);
             dbContext = context;
-            messageService = new MessageService(context);
+            var MessageRepositor = new MessageRepository(context);
+            messageService = new MessageService(MessageRepositor);
         }
 
 
