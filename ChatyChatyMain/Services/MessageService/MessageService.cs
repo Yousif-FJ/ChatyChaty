@@ -1,4 +1,6 @@
 ﻿using ChatyChaty.Model.DBModel;
+using ChatyChaty.Model.MessageRepository;
+using ChatyChaty.Model.Messaging_model;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -9,11 +11,11 @@ namespace ChatyChaty.Services
 {
     public class MessageService : IMessageService
     {
-        private readonly ChatyChatyContext dBContext;
+        private readonly IMessageRepository messageRepository;
 
-        public MessageService(ChatyChatyContext DBContext)
+        public MessageService(IMessageRepository messageRepository)
         {
-            dBContext = DBContext;
+            this.messageRepository = messageRepository;
         }
 
         /// <summary>
@@ -26,12 +28,13 @@ namespace ChatyChaty.Services
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the UserId doesn't exist</exception>
         public async Task<bool?> IsDelivered(long UserId, long MessageId)
         {
-            var User = await dBContext.Users.FindAsync(UserId);
+            var User = await messageRepository.GetUser(UserId);
             if (User == null)
             {
                 throw new ArgumentOutOfRangeException("Invalid Id");
             }
-            var Message = await dBContext.Messages.FindAsync(MessageId);
+
+            var Message = await messageRepository.GetMessage(MessageId);
             if (Message == null || Message.SenderId != User.Id)
             {
                 return null;
@@ -50,34 +53,33 @@ namespace ChatyChaty.Services
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the UserId doesn't exist</exception>
         public async Task<Message> SendMessage(long ConversationId, long SenderId, string MessageBody)
         {
-            var conversation = await dBContext.Conversations
-                .Include(c => c.Messages)
-                .FirstOrDefaultAsync(c => c.Id == ConversationId);
+            var conversation = await messageRepository.GetConversationWithMessages(ConversationId);
             if (conversation == null)
             {
                 return null;
             }
-            var Sender = await dBContext.Users.FindAsync(SenderId);
+            var Sender = await messageRepository.GetUser(SenderId);
             if (Sender == null)
             {
                 throw new ArgumentOutOfRangeException("Invalid IDs");
             }
-            if (conversation.FirstUserId != Sender.Id && conversation.SecondUserId != Sender.Id)
+
+            if (!await messageRepository.IsConversationForUser(conversation.Id, SenderId))
             {
                 return null;
             }
 
-            conversation.Messages.Add(new Message
+            var Message = new Message
             {
                 Body = MessageBody,
                 SenderId = Sender.Id,
-                Delivered = false
-            });
+                Delivered = false,
+                ConversationId = conversation.Id
+            };
 
-            var resultConv = dBContext.Conversations.Update(conversation);
-            await dBContext.SaveChangesAsync();
+            var ReturnedMessage = await messageRepository.AddMessage(Message);
 
-            return resultConv.Entity.Messages.Last();
+            return ReturnedMessage;
         }
 
         /// <summary>
@@ -89,57 +91,32 @@ namespace ChatyChaty.Services
         /// <exception cref="System.ArgumentOutOfRangeException">thrown when one or both users don't exist</exception>
         public async Task<long> NewConversation(long SenderId, long ReceiverId)
         {
-            var SenderDB = await dBContext.Users.FindAsync(SenderId);
-            var ReciverDB = await dBContext.Users.FindAsync(ReceiverId);
+            var SenderDB = await messageRepository.GetUser(SenderId);
+            var ReciverDB = await messageRepository.GetUser(ReceiverId);
             if (SenderDB == null || ReciverDB == null)
             {
                 throw new ArgumentOutOfRangeException("Invalid IDs");
             }
 
-            var conversation = await dBContext.Conversations.FirstOrDefaultAsync(
-                c => c.FirstUserId == SenderDB.Id || c.SecondUserId == SenderDB.Id
-            );
+            var conversation = await messageRepository.FindConversationForUsers(SenderDB.Id, ReciverDB.Id);
 
             if (conversation == null)
             {
-                conversation = await dBContext.Conversations.FirstOrDefaultAsync(
-                    c => c.FirstUserId == ReciverDB.Id || c.SecondUserId == ReciverDB.Id
-                );
-            }
-            if (conversation == null)
-            {
-                conversation = new Conversation()
-                {
-                    FirstUserId = SenderDB.Id,
-                    SecondUserId = ReciverDB.Id,
-                };
-            var resultConv = await dBContext.Conversations.AddAsync(conversation);
-            await dBContext.SaveChangesAsync();
-            return resultConv.Entity.Id;
+                return (await messageRepository.CreateConversationForUsers(SenderDB.Id, ReciverDB.Id)).Id;
             }
             return conversation.Id;
         }
 
         public async Task<IEnumerable<Message>> GetNewMessages(long UserId, long LastMessageId)
         {
-            var UserConversationsId = dBContext.Conversations
-                .Where(c => (c.FirstUserId == UserId || c.SecondUserId == UserId))
-                .Select(c => c.Id);
-            var NewMessages = dBContext.Messages.Where(
-                m => m.Id > LastMessageId &&
-                UserConversationsId.Any(id => id == m.ConversationId)
-                );
+            var UserConversationsId = messageRepository.GetUserConversationIds(UserId);
+            var NewMessages = await messageRepository.GetMessagesFromConversationIds(LastMessageId, UserConversationsId);
 
-            foreach (var Message in NewMessages)
-            {
-                Message.Delivered = true;
-            }
-            dBContext.Messages.UpdateRange(NewMessages);
-            await dBContext.SaveChangesAsync();
+            await messageRepository.MarkAsRead(NewMessages);
             return NewMessages;
         }
 
-
+        /*
         /// <summary>
         /// Get the conversation object of a user
         /// </summary>
@@ -147,36 +124,54 @@ namespace ChatyChaty.Services
         /// <param name="UserId">The userId who have the conversation</param>
         /// <param name="conversationId">The requested conversation</param>
         /// <returns>conversation of the given user</returns>
-        public async Task<Conversation> GetConversationInfo(long UserId, long conversationId)
+        public async Task<ConversationInfo> GetConversationInfo(long UserId, long conversationId)
         {
+            //not Implmeneted
+            
             var conversation = await dBContext.Conversations.FindAsync(conversationId);
-            if (conversation.FirstUserId != UserId && conversation.SecondUserId != UserId)
+            if (conversation == null)
             {
                 return null;
             }
-            return conversation;
-        }
+            AppUser SecondUser;
+            if (conversation.FirstUserId == UserId)
+            {
+                SecondUser = await dBContext.Users.FindAsync(conversation.SecondUserId); 
+            }
+            else if (conversation.SecondUserId == UserId)
+            {
+                SecondUser = await dBContext.Users.FindAsync(conversation.FirstUserId);
+            }
+            else
+            {
+                return null;
+            }
 
-        /// <summary>
-        /// Check if there is new message for a user
-        /// </summary>
-        /// <remarks>Return null if the user doesn't exist or doesn't own the message</remarks>
-        /// <param name="UserId">The userId who is requesting the update</param>
-        /// <param name="LastMessageId">The last messaegId</param>
-        /// <returns>A bool whether there is new message</returns>
-        public async Task<bool?> CheckForNewMessages(long UserId, long LastMessageId)
+            var response = new ConversationInfo
+            {
+                ConversationId = conversation.Id,
+                SecondUserDisplayName = SecondUser.DisplayName,
+                SecondUserUsername = SecondUser.UserName,
+                SecondUserId = SecondUser.Id
+            };
+
+            return response;
+    }
+            */
+
+    /// <summary>
+    /// Check if there is new message for a user
+    /// </summary>
+    /// <remarks>Return null if the user doesn't exist or doesn't own the message</remarks>
+    /// <param name="UserId">The userId who is requesting the update</param>
+    /// <param name="LastMessageId">The last messaegId</param>
+    /// <returns>A bool whether there is new message</returns>
+    public async Task<bool?> CheckForNewMessages(long UserId, long LastMessageId)
         {
 
-            var UserConversationsId = dBContext.Conversations
-              .Where(c => (c.FirstUserId == UserId || c.SecondUserId == UserId))
-              .Select(c => c.Id);
+            var UserConversationsId = messageRepository.GetUserConversationIds(UserId);
 
-            var IsThereNewMessage = await dBContext.Messages.AnyAsync(
-                 m => m.Id > LastMessageId &&
-                UserConversationsId.Any(id => id == m.ConversationId)
-                 );
-
-            return IsThereNewMessage;
+            return await messageRepository.IsThereNewMessageInConversationIds(LastMessageId,UserConversationsId) ;
         }
     }
 }

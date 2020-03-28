@@ -12,27 +12,35 @@ using ChatyChaty.ControllerSchema.v2;
 
 namespace ChatyChaty.Controllers.v2
 {
-    [RequireHttpsOrClose]
     [Route("api/v2/[controller]")]
     [Consumes("application/json")]
     [Produces("application/json")]
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
-        private readonly IAccountManager accountManager;
+        private readonly IAuthenticationManager authenticationManager;
 
-        public AuthenticationController(IAccountManager accountManager, IPictureProvider pictureProvider)
+        public AuthenticationController(IAuthenticationManager accountManager)
         {
-            this.accountManager = accountManager;
+            this.authenticationManager = accountManager;
         }
 
 
         /// <summary>
-        /// Create an account
+        /// Create an account and retrieve JWT token with Profile 
         /// </summary>
         /// <remarks>
-        /// Try it out to check the response schema 
-        /// (Account creation may be disable for security reasons)
+        /// Sample Response: 
+        /// {
+        ///  "success": true,
+        ///  "token": "*The Token*",
+        ///  "errors": null,
+        ///  "profile": {
+        /// "username": "*UserName*",
+        ///    "displayName": "*DisplayName*",
+        ///    "photoURL": "*Picture URL*"
+        ///  }
+        ///}
         /// </remarks>
         /// <response code="200">Login Succeed or failed</response>
         /// <response code="400">Model validation failed</response>
@@ -40,13 +48,24 @@ namespace ChatyChaty.Controllers.v2
         [HttpPost("CreateAccount")]
         public async Task<IActionResult> CreateAccount([FromBody]CreateAccountSchema accountSchema)
         {
-           var authenticationResult = await accountManager.CreateAccount(new AccountModel
+           var authenticationResult = await authenticationManager.CreateAccount(new AccountModel
            {
                UserName = accountSchema.UserName,
                Password = accountSchema.Password,
                DisplayName = accountSchema.DisplayName
            }
                );
+
+            if (!authenticationResult.Success)
+            {
+                AuthenticationResponse authenticationSchemaF = new AuthenticationResponse()
+                {
+                    Errors = authenticationResult.Errors,
+                    Success = authenticationResult.Success,
+                };
+                return Ok(authenticationSchemaF);
+            }
+
             ProfileSchema profileSchema = new ProfileSchema
             {
                 DisplayName = authenticationResult.Profile.DisplayName,
@@ -54,7 +73,7 @@ namespace ChatyChaty.Controllers.v2
                 PhotoURL = authenticationResult.Profile.PhotoURL
             };
 
-            AuthenticationSchema authenticationSchema = new AuthenticationSchema()
+            AuthenticationResponse authenticationSchema = new AuthenticationResponse()
             {
                 Errors = authenticationResult.Errors,
                 Success = authenticationResult.Success,
@@ -68,7 +87,7 @@ namespace ChatyChaty.Controllers.v2
         /// Check if the use is Authenticated
         /// </summary>
         /// <returns></returns>
-        /// <response code="403">Not Authenticated</response>
+        /// <response code="401">Not Authenticated</response>
         /// <response code="200">Authenticated</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [HttpGet("IsAuthenticated")]
@@ -80,10 +99,20 @@ namespace ChatyChaty.Controllers.v2
 
 
         /// <summary>
-        /// Login with an existing account
+        /// Login with an existing account and retrieve JWT token with Profile
         /// </summary>
         /// <remarks>
-        /// Try it out to check the response schema 
+        /// Sample Response: 
+        /// {
+        ///  "success": true,
+        ///  "token": "*The Token*",
+        ///  "errors": null,
+        ///  "profile": {
+        /// "username": "*UserName*",
+        ///    "displayName": "*DisplayName*",
+        ///    "photoURL": "*Picture URL*"
+        ///  }
+        ///}
         /// </remarks>
         /// <response code="200">Login Succeed or failed</response>
         /// <response code="400">Model validation failed</response>
@@ -91,17 +120,36 @@ namespace ChatyChaty.Controllers.v2
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody]LoginAccountSchema accountSchema)
         {
-            var authenticationResult = await accountManager.Login(new AccountModel()
+            var authenticationResult = await authenticationManager.Login(new AccountModel()
             {
                 UserName = accountSchema.UserName,
                 Password = accountSchema.Password
             });
 
-            AuthenticationSchema authenticationSchema = new AuthenticationSchema()
+            if (!authenticationResult.Success)
             {
-                Success = authenticationResult.Success,
+                AuthenticationResponse authenticationSchemaF = new AuthenticationResponse()
+                {
+                    Errors = authenticationResult.Errors,
+                    Success = authenticationResult.Success,
+                };
+                return Ok(authenticationSchemaF);
+            }
+
+
+            ProfileSchema profileSchema = new ProfileSchema
+            {
+                DisplayName = authenticationResult.Profile.DisplayName,
+                Username = authenticationResult.Profile.Username,
+                PhotoURL = authenticationResult.Profile.PhotoURL
+            };
+
+            AuthenticationResponse authenticationSchema = new AuthenticationResponse()
+            {
                 Errors = authenticationResult.Errors,
-                Token = authenticationResult.Token
+                Success = authenticationResult.Success,
+                Token = authenticationResult.Token,
+                Profile = profileSchema
             };
             return Ok(authenticationSchema);
         }

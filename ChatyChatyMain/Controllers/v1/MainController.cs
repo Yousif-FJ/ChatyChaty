@@ -16,7 +16,6 @@ using Microsoft.Extensions.Logging;
 
 namespace ChatyChaty.Controllers.v1
 {
-    [RequireHttpsOrClose]
     [ApiController]
     [Route("api/v1/[controller]")]
     [Consumes("application/json")]

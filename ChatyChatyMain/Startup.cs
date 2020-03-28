@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ChatyChaty.Model;
 using ChatyChaty.Model.DBModel;
+using ChatyChaty.Model.MessageRepository;
 using ChatyChaty.Model.OldModel;
 using ChatyChaty.Services;
 using CloudinaryDotNet;
@@ -45,16 +46,20 @@ namespace ChatyChaty
 
             services.AddDbContext<ChatyChatyContext>();
 
+            services.AddIdentity<AppUser, Role>()
+               .AddEntityFrameworkStores<ChatyChatyContext>();
+
             services.AddScoped<IAccountManager, AccountManager>();
 
             services.AddScoped<IMessageRepository1, MessagesRepository1>();
 
-            services.AddIdentity<AppUser, Role>()
-               .AddEntityFrameworkStores<ChatyChatyContext>();
-
             services.AddSingleton<Cloudinary>();
 
+            services.AddScoped<IMessageRepository, MessageRepository>();
+
             services.AddScoped<IPictureProvider, CloudinaryPictureProvider>();
+
+            services.AddScoped<IAuthenticationManager, AuthenticationManager>();
 
             services.AddScoped<IMessageService, MessageService>();
 
