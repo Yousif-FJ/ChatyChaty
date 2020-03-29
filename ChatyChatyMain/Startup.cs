@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using ChatyChaty.Model;
 using ChatyChaty.Model.DBModel;
 using ChatyChaty.Model.MessageRepository;
+using ChatyChaty.Model.NotficationHandler;
 using ChatyChaty.Model.OldModel;
 using ChatyChaty.Services;
 using CloudinaryDotNet;
@@ -60,6 +61,8 @@ namespace ChatyChaty
             services.AddScoped<IPictureProvider, CloudinaryPictureProvider>();
 
             services.AddScoped<IAuthenticationManager, AuthenticationManager>();
+
+            services.AddScoped<INotificationHandler, NotificationHandler>();
 
             services.AddScoped<IMessageService, MessageService>();
 

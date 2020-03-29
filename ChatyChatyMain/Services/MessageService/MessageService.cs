@@ -1,6 +1,7 @@
 ﻿using ChatyChaty.Model.DBModel;
 using ChatyChaty.Model.MessageRepository;
 using ChatyChaty.Model.Messaging_model;
+using ChatyChaty.Model.NotficationHandler;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -12,10 +13,12 @@ namespace ChatyChaty.Services
     public class MessageService : IMessageService
     {
         private readonly IMessageRepository messageRepository;
+        private readonly INotificationHandler notificationHandler;
 
-        public MessageService(IMessageRepository messageRepository)
+        public MessageService(IMessageRepository messageRepository, INotificationHandler notificationHandler)
         {
             this.messageRepository = messageRepository;
+            this.notificationHandler = notificationHandler;
         }
 
         /// <summary>
@@ -53,7 +56,7 @@ namespace ChatyChaty.Services
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the UserId doesn't exist</exception>
         public async Task<Message> SendMessage(long ConversationId, long SenderId, string MessageBody)
         {
-            var conversation = await messageRepository.GetConversationWithMessages(ConversationId);
+            var conversation = await messageRepository.GetConversation(ConversationId);
             if (conversation == null)
             {
                 return null;
@@ -67,6 +70,15 @@ namespace ChatyChaty.Services
             if (!await messageRepository.IsConversationForUser(conversation.Id, SenderId))
             {
                 return null;
+            }
+
+            if (conversation.FirstUserId == Sender.Id)
+            {
+                await notificationHandler.UserGotNewMessage(conversation.SecondUserId);
+            }
+            else
+            {
+                await notificationHandler.UserGotNewMessage(conversation.FirstUserId);
             }
 
             var Message = new Message
@@ -104,6 +116,9 @@ namespace ChatyChaty.Services
             {
                 return (await messageRepository.CreateConversationForUsers(SenderDB.Id, ReciverDB.Id)).Id;
             }
+
+            await notificationHandler.UserGotChatUpdate(ReciverDB.Id);
+            
             return conversation.Id;
         }
 

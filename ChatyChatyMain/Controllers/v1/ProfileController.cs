@@ -46,11 +46,9 @@ namespace ChatyChaty.Controllers.v1
         [HttpPost("SetPhotoForSelf")]
         public async Task<IActionResult> SetPhotoForSelf([FromForm]UploadFileSchema uploadFile)
         {         
-            var UserNameClaim = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Name);
-            var user = await accountManager.GetUser(UserNameClaim.Value);
-            await pictureProvider.ChangePhoto(user.Id,user.UserName, uploadFile.PhotoFile);
+            var UserId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
+            var URL = await accountManager.SetPhoto(long.Parse(UserId), uploadFile.PhotoFile);
 
-            var URL = await pictureProvider.GetPhotoURL(user.Id,user.UserName);
                 return Ok(URL);
         }
 
@@ -123,7 +121,7 @@ namespace ChatyChaty.Controllers.v1
         [Authorize]
         [Consumes("application/json")]
         [Produces("application/json")]
-        [HttpGet("GetChatInfo")]
+        [HttpGet("GetChats")]
         public async Task<IActionResult> GetChats()
         {
             var UserId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
