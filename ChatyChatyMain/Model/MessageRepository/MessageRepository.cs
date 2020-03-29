@@ -50,10 +50,9 @@ namespace ChatyChaty.Model.MessageRepository
             return conversation;
         }
 
-        public async Task<Conversation> GetConversationWithMessages(long ConversationId)
+        public async Task<Conversation> GetConversation(long ConversationId)
         {
             return await dBContext.Conversations
-                .Include(c => c.Messages)
                 .FirstOrDefaultAsync(c => c.Id == ConversationId);
         }
 

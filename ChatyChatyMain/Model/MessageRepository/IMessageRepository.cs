@@ -9,7 +9,7 @@ namespace ChatyChaty.Model.MessageRepository
     public interface IMessageRepository
     {
         Task<AppUser> GetUser(long Id);
-        Task<Conversation> GetConversationWithMessages(long Id);
+        Task<Conversation> GetConversation(long Id);
         Task<Message> GetMessage(long Id);
         Task<bool> IsConversationForUser(long ConversationId, long UserId);
         Task<Conversation> FindConversationForUsers(long User1Id, long User2Id);
