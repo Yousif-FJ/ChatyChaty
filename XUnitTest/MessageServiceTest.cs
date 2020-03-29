@@ -1,5 +1,6 @@
 ﻿using ChatyChaty.Model.DBModel;
 using ChatyChaty.Model.MessageRepository;
+using ChatyChaty.Model.NotficationHandler;
 using ChatyChaty.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -23,7 +24,8 @@ namespace XUnitTest
             var context = new ChatyChatyContext(options);
             dbContext = context;
             var MessageRepositor = new MessageRepository(context);
-            messageService = new MessageService(MessageRepositor);
+            NotificationHandler notificationHandler = new NotificationHandler(dbContext);
+            messageService = new MessageService(MessageRepositor,notificationHandler);
         }
 
 
