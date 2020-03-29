@@ -16,6 +16,7 @@ namespace ChatyChaty.Model.DBModel
         public ICollection<Conversation> Conversations1 { get; set; }
         public ICollection<Conversation> Conversations2 { get; set; }
         public ICollection<Message> MessageSender { get; set; }
+        public Notification Notification { get; set; }
     }
 
     public class Role : IdentityRole<long>

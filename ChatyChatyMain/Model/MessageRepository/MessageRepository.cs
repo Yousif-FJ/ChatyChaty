@@ -50,10 +50,9 @@ namespace ChatyChaty.Model.MessageRepository
             return conversation;
         }
 
-        public async Task<Conversation> GetConversationWithMessages(long ConversationId)
+        public async Task<Conversation> GetConversation(long ConversationId)
         {
             return await dBContext.Conversations
-                .Include(c => c.Messages)
                 .FirstOrDefaultAsync(c => c.Id == ConversationId);
         }
 
@@ -80,6 +79,14 @@ namespace ChatyChaty.Model.MessageRepository
             return dBContext.Conversations
                 .Where(c => (c.FirstUserId == UserId || c.SecondUserId == UserId))
                 .Select(c => c.Id);
+        }
+
+        public async Task<IEnumerable<Conversation>> GetUserConversationsWithUsers(long UserId)
+        {
+            return await dBContext.Conversations
+                .Where(c => (c.FirstUserId == UserId || c.SecondUserId == UserId))
+                .Include(c => c.FirstUser).Include(c => c.SecondUser)
+                .ToListAsync();
         }
 
         public async Task<bool> IsConversationForUser(long ConversationId, long UserId)

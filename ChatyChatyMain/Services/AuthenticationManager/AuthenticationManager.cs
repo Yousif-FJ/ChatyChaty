@@ -1,6 +1,7 @@
 ﻿using ChatyChaty.Model.AccountModel;
 using ChatyChaty.Model.DBModel;
 using ChatyChaty.Model.MessageRepository;
+using ChatyChaty.Model.NotficationHandler;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -19,15 +20,19 @@ namespace ChatyChaty.Services
         private readonly UserManager<AppUser> userManager;
         private readonly IConfiguration configuration;
         private readonly IPictureProvider pictureProvider;
+        private readonly INotificationHandler notificationHandler;
 
         public AuthenticationManager(
             UserManager<AppUser> userManager,
             IConfiguration configuration,
-            IPictureProvider pictureProvider)
+            IPictureProvider pictureProvider,
+            INotificationHandler notificationHandler
+            )
         {
             this.userManager = userManager;
             this.configuration = configuration;
             this.pictureProvider = pictureProvider;
+            this.notificationHandler = notificationHandler;
         }
 
         public async Task<AuthenticationResult> CreateAccount(AccountModel accountModel)
@@ -54,6 +59,7 @@ namespace ChatyChaty.Services
                 };
             }
             var User = await userManager.FindByNameAsync(accountModel.UserName);
+            await notificationHandler.IntializeNofificationHandler(User.Id);
             accountModel.Id = User.Id;
             var profile = new Profile
             {
@@ -83,6 +89,7 @@ namespace ChatyChaty.Services
                 };
             }
             accountModel.Id = user.Id;
+            await notificationHandler.IntializeNofificationHandler(user.Id);
             var profile = new Profile
             {
                 DisplayName = user.DisplayName,

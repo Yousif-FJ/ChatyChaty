@@ -46,11 +46,9 @@ namespace ChatyChaty.Controllers.v1
         [HttpPost("SetPhotoForSelf")]
         public async Task<IActionResult> SetPhotoForSelf([FromForm]UploadFileSchema uploadFile)
         {         
-            var UserNameClaim = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Name);
-            var user = await accountManager.GetUser(UserNameClaim.Value);
-            await pictureProvider.ChangePhoto(user.Id,user.UserName, uploadFile.PhotoFile);
+            var UserId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
+            var URL = await accountManager.SetPhoto(long.Parse(UserId), uploadFile.PhotoFile);
 
-            var URL = await pictureProvider.GetPhotoURL(user.Id,user.UserName);
                 return Ok(URL);
         }
 
@@ -108,54 +106,47 @@ namespace ChatyChaty.Controllers.v1
             };
             return Ok(response);
         }
-        /*
 
         /// <summary>
-        /// Get chat information like username and ... (Require authentication)
+        /// Get a list of all chat's information like username and ... (Require authentication)
         /// </summary>
-        /// <remarks>This is used when GetNewMessages return a message with a chat Id, 
-        /// it also should be used everytime a chat is opened to keep the profile upto date (DisplayName can be changed)
+        /// <remarks>This is used when there is an update in chat info
         /// <br>
-        /// Example response:
-        /// {
-        ///  "chatId": 1,
-        ///  "profile":{
-        ///  "username": "*UserName*",
-        ///  "displayName": "*DisplayName*",
-        ///  "PhotoURL": "*URL*"}
-        /// }
+        ///
         /// </br>
         /// </remarks>
-        /// <param name="ChatId"></param>
         /// <returns></returns>
-        /// <response code="400">Requested ChatId doesn't exist</response>
         /// <response code="401">Unaithenticated</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [Authorize]
         [Consumes("application/json")]
         [Produces("application/json")]
-        [HttpGet("GetChatInfo")]
-        public async Task<IActionResult> GetChatInfo([FromHeader]long ChatId)
+        [HttpGet("GetChats")]
+        public async Task<IActionResult> GetChats()
         {
-            var UserIdClaim = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
-            var conversation = await messageService.GetConversationInfo(long.Parse(UserIdClaim.Value), ChatId);
-            if (conversation == null)
+            var UserId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
+            var conversations = await messageService.GetConversations(long.Parse(UserId));
+
+            var response = new List<GetChatInfoResponse>();
+
+            foreach (var conversation in conversations)
             {
-                return BadRequest();
-            }
-            var response = new GetChatInfoResponse
-            {
-                ChatId = conversation.ConversationId,
-                Profile = new ProfileResponse
+                response.Add(
+                new GetChatInfoResponse
                 {
-                    DisplayName = conversation.SecondUserDisplayName,
-                    Username = conversation.SecondUserUsername,
-                    PhotoURL = await pictureProvider.GetPhotoURL(conversation.SecondUserId, conversation.SecondUserUsername)
+                    ChatId = conversation.ConversationId,
+                    Profile = new ProfileResponse
+                    {
+                        DisplayName = conversation.SecondUserDisplayName,
+                        Username = conversation.SecondUserUsername,
+                        PhotoURL = await pictureProvider.GetPhotoURL(conversation.SecondUserId, conversation.SecondUserUsername)
+                    }
                 }
+                    );
             };
             return Ok(response);
         }
-        */
+
 
         /// <summary>
         /// Set or update the DisplayName of the authenticated user (Require authentication)

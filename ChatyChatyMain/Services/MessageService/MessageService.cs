@@ -1,6 +1,7 @@
 ﻿using ChatyChaty.Model.DBModel;
 using ChatyChaty.Model.MessageRepository;
 using ChatyChaty.Model.Messaging_model;
+using ChatyChaty.Model.NotficationHandler;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -12,10 +13,12 @@ namespace ChatyChaty.Services
     public class MessageService : IMessageService
     {
         private readonly IMessageRepository messageRepository;
+        private readonly INotificationHandler notificationHandler;
 
-        public MessageService(IMessageRepository messageRepository)
+        public MessageService(IMessageRepository messageRepository, INotificationHandler notificationHandler)
         {
             this.messageRepository = messageRepository;
+            this.notificationHandler = notificationHandler;
         }
 
         /// <summary>
@@ -53,7 +56,7 @@ namespace ChatyChaty.Services
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the UserId doesn't exist</exception>
         public async Task<Message> SendMessage(long ConversationId, long SenderId, string MessageBody)
         {
-            var conversation = await messageRepository.GetConversationWithMessages(ConversationId);
+            var conversation = await messageRepository.GetConversation(ConversationId);
             if (conversation == null)
             {
                 return null;
@@ -67,6 +70,15 @@ namespace ChatyChaty.Services
             if (!await messageRepository.IsConversationForUser(conversation.Id, SenderId))
             {
                 return null;
+            }
+
+            if (conversation.FirstUserId == Sender.Id)
+            {
+                await notificationHandler.UserGotNewMessage(conversation.SecondUserId);
+            }
+            else
+            {
+                await notificationHandler.UserGotNewMessage(conversation.FirstUserId);
             }
 
             var Message = new Message
@@ -104,6 +116,9 @@ namespace ChatyChaty.Services
             {
                 return (await messageRepository.CreateConversationForUsers(SenderDB.Id, ReciverDB.Id)).Id;
             }
+
+            await notificationHandler.UserGotChatUpdate(ReciverDB.Id);
+            
             return conversation.Id;
         }
 
@@ -116,48 +131,50 @@ namespace ChatyChaty.Services
             return NewMessages;
         }
 
-        /*
-        /// <summary>
-        /// Get the conversation object of a user
-        /// </summary>
-        /// <remarks>Return null if the user doesn't exist or doesn't own the conversation</remarks>
-        /// <param name="UserId">The userId who have the conversation</param>
-        /// <param name="conversationId">The requested conversation</param>
-        /// <returns>conversation of the given user</returns>
-        public async Task<ConversationInfo> GetConversationInfo(long UserId, long conversationId)
-        {
-            //not Implmeneted
-            
-            var conversation = await dBContext.Conversations.FindAsync(conversationId);
-            if (conversation == null)
-            {
-                return null;
-            }
-            AppUser SecondUser;
-            if (conversation.FirstUserId == UserId)
-            {
-                SecondUser = await dBContext.Users.FindAsync(conversation.SecondUserId); 
-            }
-            else if (conversation.SecondUserId == UserId)
-            {
-                SecondUser = await dBContext.Users.FindAsync(conversation.FirstUserId);
-            }
-            else
-            {
-                return null;
-            }
 
-            var response = new ConversationInfo
+        /// <summary>
+        /// Get a list of conversations for a user
+        /// </summary>
+        /// <remarks>throws exception if the user doesn't exist</remarks>
+        /// <param name="UserId">The userId who have the conversations</param>
+        /// <returns>a list of conversations</returns>
+        public async Task<IEnumerable<ConversationInfo>> GetConversations(long UserId)
+        {
+            var user = await messageRepository.GetUser(UserId);
+            if (user == null)
             {
-                ConversationId = conversation.Id,
-                SecondUserDisplayName = SecondUser.DisplayName,
-                SecondUserUsername = SecondUser.UserName,
-                SecondUserId = SecondUser.Id
+                throw new ArgumentOutOfRangeException("Invalid IDs");
             };
 
+            var conversations = await messageRepository.GetUserConversationsWithUsers(UserId);
+
+            var response = new List<ConversationInfo>();
+
+            foreach (var conversation in conversations)
+            {
+                AppUser SecondUser;
+                if (user.Id == conversation.FirstUserId)
+                {
+                    SecondUser = conversation.SecondUser;
+                }
+                else if (user.Id == conversation.SecondUserId)
+                {
+                    SecondUser = conversation.FirstUser;
+                }
+                else throw new Exception("Invalid Conversation");
+
+                response.Add(new ConversationInfo
+                {
+                    ConversationId = conversation.Id,
+                    SecondUserDisplayName = SecondUser.DisplayName,
+                    SecondUserUsername = SecondUser.UserName,
+                    SecondUserId = SecondUser.Id
+                });
+
+            }
             return response;
     }
-            */
+            
 
     /// <summary>
     /// Check if there is new message for a user

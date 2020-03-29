@@ -1,6 +1,7 @@
 ﻿using ChatyChaty.Model;
 using ChatyChaty.Model.AccountModel;
 using ChatyChaty.Model.DBModel;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -13,5 +14,6 @@ namespace ChatyChaty.Services
     {
         Task<AppUser> GetUser(string UserName);
         Task<string> UpdateDisplayName(long UserId, string NewDisplayName);
+        Task<string> SetPhoto(long UserId, IFormFile formFile);
     }
 }
