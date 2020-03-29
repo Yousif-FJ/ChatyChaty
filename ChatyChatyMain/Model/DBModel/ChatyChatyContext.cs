@@ -19,6 +19,7 @@ namespace ChatyChaty.Model.DBModel
         public DbSet<Message1> MessagesSet { get; set; }
         public DbSet<Message> Messages { get; set; }
         public DbSet<Conversation> Conversations { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
