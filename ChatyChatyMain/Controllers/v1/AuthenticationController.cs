@@ -18,11 +18,11 @@ namespace ChatyChaty.Controllers.v1
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
-        private readonly IAccountManager accountManager;
+        private readonly IAuthenticationManager authenticationManager;
 
-        public AuthenticationController(IAccountManager accountManager)
+        public AuthenticationController(IAuthenticationManager authenticationManager)
         {
-            this.accountManager = accountManager;
+            this.authenticationManager = authenticationManager;
         }
 
 
@@ -40,7 +40,7 @@ namespace ChatyChaty.Controllers.v1
         [Obsolete("Use v2 instead")]
         public async Task<IActionResult> CreateAccount([FromBody]AccountSchemaOld accountSchema)
         {
-           var authenticationResult = await accountManager.CreateAccount(new AccountModel
+           var authenticationResult = await authenticationManager.CreateAccount(new AccountModel
            {
                UserName = accountSchema.UserName,
                Password = accountSchema.Password
@@ -69,7 +69,7 @@ namespace ChatyChaty.Controllers.v1
         [Obsolete("Use v2 instead")]
         public async Task<IActionResult> Login([FromBody]AccountSchemaOld accountSchema)
         {
-            var authenticationResult = await accountManager.Login(new AccountModel()
+            var authenticationResult = await authenticationManager.Login(new AccountModel()
             {
                 UserName = accountSchema.UserName,
                 Password = accountSchema.Password

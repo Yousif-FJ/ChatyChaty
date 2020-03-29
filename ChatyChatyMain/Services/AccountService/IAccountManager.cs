@@ -1,6 +1,7 @@
 ﻿using ChatyChaty.Model;
 using ChatyChaty.Model.AccountModel;
 using ChatyChaty.Model.DBModel;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -11,10 +12,8 @@ namespace ChatyChaty.Services
 {
     public interface IAccountManager
     {
-        Task<AuthenticationResult> CreateAccount(AccountModel accountModel);
-        Task<AuthenticationResult> Login(AccountModel accountModel);
         Task<AppUser> GetUser(string UserName);
-        Task<AppUser> GetUser(long UserId);
         Task<string> UpdateDisplayName(long UserId, string NewDisplayName);
+        Task<string> SetPhoto(long UserId, IFormFile formFile);
     }
 }

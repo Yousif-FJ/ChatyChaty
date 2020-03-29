@@ -30,30 +30,6 @@ namespace ChatyChaty.Controllers.v2
             this.accountManager = accountManager;
         }
 
-        /// <summary>
-        /// Check for new messages by supplying the last messageId of the last chat (Require authentication)
-        /// </summary>
-        /// <remarks>
-        /// <br>You may supply 0 as last messageId if there are no messages.</br>
-        /// <br>Example response: false</br>
-        /// </remarks>
-        /// <param name="LastMessageId"></param>
-        /// <returns></returns>
-        /// <response code="200">A bool whether there is a new message or not</response>
-        /// <response code="400">Invalid MessageId</response>
-        /// <response code="403">Not Authenticated</response>
-        /// <response code="500">Server Error (This shouldn't happen)</response>
-        [HttpGet("CheckForNewMessages")]
-        public async Task<IActionResult> CheckForNewMessages([FromHeader]long LastMessageId)
-        {
-            var UserIdClaim = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
-            var result = await messageService.CheckForNewMessages(long.Parse(UserIdClaim.Value), LastMessageId);
-            if (result == null)
-            {
-                return BadRequest();
-            }
-            return Ok(result.Value);
-        }
 
         /// <summary>
         /// Get new messages by supplying the last messageId of the last chat (Require authentication)
