@@ -63,7 +63,7 @@ namespace ChatyChaty.Services
             {
                 return resourceResult.Url;
             }
-            return GetPlaceHolderURL();
+            return null;
         }
 
         /// <summary>
