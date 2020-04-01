@@ -77,7 +77,7 @@ namespace ChatyChaty.Controllers.v2
                     ChatId = message.ConversationId,
                     MessageId = message.Id,
                     Sender = message.Sender.UserName,
-                    Delivered = message.SenderId == UserId ? message.Delivered : false
+                    Delivered = message.SenderId == UserId ? message.Delivered : (bool?)null
                 }); ;
             }
             return Ok(Messages);
