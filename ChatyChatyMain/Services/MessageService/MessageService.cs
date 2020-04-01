@@ -126,8 +126,15 @@ namespace ChatyChaty.Services
         {
             var UserConversationsId = messageRepository.GetUserConversationIds(UserId);
             var NewMessages = await messageRepository.GetMessagesFromConversationIds(LastMessageId, UserConversationsId);
-
-            await messageRepository.MarkAsRead(NewMessages);
+            var MarkMessages = new List<Message>();
+            foreach (var message in NewMessages)
+            {
+                if (message.SenderId != UserId)
+                {
+                    MarkMessages.Add(message);
+                }
+            }
+            await messageRepository.MarkAsRead(MarkMessages);
             return NewMessages;
         }
 
