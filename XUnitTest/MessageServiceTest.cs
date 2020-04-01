@@ -155,5 +155,44 @@ namespace XUnitTest
             Assert.True(Messagelist[0].ConversationId == conversation1.Id);
             Assert.True(Messagelist.Count == 1);
         }
+
+        [Fact]
+        public async Task IsDelivered_False()
+        {
+            //Arrange
+            var u1 = (await dbContext.Users.AddAsync(new AppUser("Test1"))).Entity;
+            var u2 = (await dbContext.Users.AddAsync(new AppUser("Test2"))).Entity;
+            var conversation2 = (await dbContext.Conversations.AddAsync(new Conversation
+            {
+                FirstUserId = u1.Id,
+                SecondUserId = u2.Id
+            })).Entity;
+            await dbContext.SaveChangesAsync();
+            var message = await messageService.SendMessage(conversation2.Id, u1.Id, "Test Message");
+            //Act
+            var result = await messageService.IsDelivered(u1.Id, message.Id);
+            //Assert
+            Assert.False(result);
+        }
+
+        [Fact]
+        public async Task IsDelivered_True()
+        {
+            //Arrange
+            var u1 = (await dbContext.Users.AddAsync(new AppUser("Test1"))).Entity;
+            var u2 = (await dbContext.Users.AddAsync(new AppUser("Test2"))).Entity;
+            var conversation2 = (await dbContext.Conversations.AddAsync(new Conversation
+            {
+                FirstUserId = u1.Id,
+                SecondUserId = u2.Id
+            })).Entity;
+            await dbContext.SaveChangesAsync();
+            var message = await messageService.SendMessage(conversation2.Id, u1.Id, "Test Message");
+            await messageService.GetNewMessages(u2.Id, 0);
+            //Act
+            var result = await messageService.IsDelivered(u1.Id, message.Id);
+            //Assert
+            Assert.True(result);
+        }
     }
 }
