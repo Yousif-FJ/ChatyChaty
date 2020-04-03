@@ -65,7 +65,7 @@ namespace ChatyChaty.Services
             {
                 DisplayName = User.DisplayName,
                 Username = User.UserName,
-                PhotoURL = pictureProvider.GetPlaceHolderURL()
+                PhotoURL = null
             };
 
             return new AuthenticationResult
