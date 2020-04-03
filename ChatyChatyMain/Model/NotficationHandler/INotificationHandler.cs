@@ -13,5 +13,6 @@ namespace ChatyChaty.Model.NotficationHandler
         Task UserGotChatUpdate(long UserId);
         Task UserGotNewMessage(long UserId);
         Task UserUpdatedProfile(long UserId);
+        Task NotifySenderMessagesWhereDelivered(IEnumerable<long> SenderId);
     }
 }

@@ -27,6 +27,7 @@ namespace ChatyChaty.Model.NotficationHandler
             };
             NotificationUpdate.ChatUpdate = false;
             NotificationUpdate.MessageUpdate = false;
+            NotificationUpdate.DeliveredUpdate = false;
             dbContext.Notifications.Update(NotificationUpdate);
             await dbContext.SaveChangesAsync();
             return NotificationResponsee;
@@ -40,17 +41,32 @@ namespace ChatyChaty.Model.NotficationHandler
                 user.Notification = new Notification
                 {
                     ChatUpdate = false,
-                    MessageUpdate = false
+                    MessageUpdate = false,
+                    DeliveredUpdate = false
                 };
             }
             else
             {
                 user.Notification.MessageUpdate = false;
                 user.Notification.ChatUpdate = false;
+                user.Notification.DeliveredUpdate = false;
             }
             dbContext.Users.Update(user);
             await dbContext.SaveChangesAsync();
         }
+
+        public async Task NotifySenderMessagesWhereDelivered(IEnumerable<long> SenderIds)
+        {
+            var notifications = await dbContext.Notifications.Where(u => SenderIds.Contains(u.Id)).ToListAsync();
+            foreach (var notification in notifications)
+            {
+                notification.DeliveredUpdate = true;
+            }
+            dbContext.Notifications.UpdateRange(notifications);
+            await dbContext.SaveChangesAsync();
+        }
+
+
 
         public async Task UserGotChatUpdate(long UserId)
         {
