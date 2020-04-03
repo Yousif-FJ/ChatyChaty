@@ -38,13 +38,13 @@ namespace ChatyChaty.Model.MessageRepository
         public async Task<Conversation> FindConversationForUsers(long User1Id, long User2Id)
         {
             var conversation = await dBContext.Conversations.FirstOrDefaultAsync(
-                c => c.FirstUserId == User1Id || c.SecondUserId == User1Id
+                c => c.FirstUserId == User1Id && c.SecondUserId == User2Id 
             );
 
             if (conversation == null)
             {
                 conversation = await dBContext.Conversations.FirstOrDefaultAsync(
-                    c => c.FirstUserId == User2Id || c.SecondUserId == User2Id
+                    c => c.FirstUserId == User2Id && c.SecondUserId == User1Id
                 );
             }
             return conversation;
