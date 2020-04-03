@@ -10,6 +10,7 @@ namespace ChatyChaty.Model.DBModel
         public long Id { get; set; }
         public bool ChatUpdate { get; set; }
         public bool MessageUpdate { get; set; }
+        public bool DeliveredUpdate { get; set; }
         public AppUser AppUser { get; set; }
     }
 }

@@ -26,7 +26,7 @@ namespace ChatyChaty.Controllers.v2
         }
 
         /// <summary>
-        /// Check if there is new upadtes for messages or chats
+        /// Check if there is new updates for messages or chats
         /// </summary>
         /// <remarks>
         /// <br>Use GetNewMessages If Messages updates is true, Use GetChat then GetNewMessage If ChatUpdate is true.</br>
@@ -35,7 +35,8 @@ namespace ChatyChaty.Controllers.v2
         /// <br> 
         /// {
         /// "chatUpdate": true,
-        /// "messageUpdate": false
+        /// "messageUpdate": false,
+        /// "deliveredUpdate": false
         /// }
         /// </br>
         /// </remarks>
@@ -49,7 +50,8 @@ namespace ChatyChaty.Controllers.v2
             var response = new CheckForUpdatesResponse
             {
                 ChatUpdate = result.ChatUpdate,
-                MessageUpdate = result.MessageUpdate
+                MessageUpdate = result.MessageUpdate,
+                DeliveredUpdate = result.DeliveredUpdate
             };
             return Ok(response);
         }

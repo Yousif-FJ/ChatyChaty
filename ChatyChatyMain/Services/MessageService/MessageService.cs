@@ -129,12 +129,13 @@ namespace ChatyChaty.Services
             var MarkMessages = new List<Message>();
             foreach (var message in NewMessages)
             {
-                if (message.SenderId != UserId)
+                if (message.SenderId != UserId && !message.Delivered )
                 {
                     MarkMessages.Add(message);
                 }
             }
             await messageRepository.MarkAsRead(MarkMessages);
+            await notificationHandler.NotifySenderMessagesWhereDelivered(MarkMessages.Select(m => m.SenderId));
             return NewMessages;
         }
 
