@@ -26,6 +26,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Npgsql;
 
 namespace ChatyChaty
 {
@@ -45,7 +46,6 @@ namespace ChatyChaty
             //register services ----------------------------------------------------------
             services.AddMvc();
 
-            services.AddDbContext<ChatyChatyContext>();
 
             services.AddIdentity<AppUser, Role>()
                .AddEntityFrameworkStores<ChatyChatyContext>();
@@ -65,6 +65,40 @@ namespace ChatyChaty
             services.AddScoped<INotificationHandler, NotificationHandler>();
 
             services.AddScoped<IMessageService, MessageService>();
+
+
+
+            //configure DBcontext ----------------------------------------------------------
+
+            services.AddDbContext<ChatyChatyContext>(optionsBuilder =>
+            {
+                string databaseUrl;
+                if (Environment.GetEnvironmentVariable("DATABASE_URL") != null)
+                {
+                    databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+                }
+                else
+                {
+                    throw new Exception("Couldn't get connection string");
+                }
+                var databaseUri = new Uri(databaseUrl);
+                var userInfo = databaseUri.UserInfo.Split(':');
+
+                var builder = new NpgsqlConnectionStringBuilder
+                {
+                    Host = databaseUri.Host,
+                    Port = databaseUri.Port,
+                    Username = userInfo[0],
+                    Password = userInfo[1],
+                    Database = databaseUri.LocalPath.TrimStart('/'),
+                    SslMode = SslMode.Require,
+                    TrustServerCertificate = true
+                };
+
+
+                optionsBuilder.UseNpgsql(builder.ToString());
+            });
+
 
             //configure identity -----------------------------------------------------------
 

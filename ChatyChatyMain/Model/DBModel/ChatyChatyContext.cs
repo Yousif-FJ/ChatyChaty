@@ -22,38 +22,6 @@ namespace ChatyChaty.Model.DBModel
         public DbSet<Notification> Notifications { get; set; }
 
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-                string databaseUrl;
-                if (Environment.GetEnvironmentVariable("DATABASE_URL") != null)
-                {
-                    databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
-                }
-                else
-                {
-                    throw new Exception("Couldn't get connection string");
-                }
-                var databaseUri = new Uri(databaseUrl);
-                var userInfo = databaseUri.UserInfo.Split(':');
-
-                var builder = new NpgsqlConnectionStringBuilder
-                {
-                    Host = databaseUri.Host,
-                    Port = databaseUri.Port,
-                    Username = userInfo[0],
-                    Password = userInfo[1],
-                    Database = databaseUri.LocalPath.TrimStart('/'),
-                    SslMode = SslMode.Require,
-                    TrustServerCertificate = true
-                };
-
-
-                optionsBuilder.UseNpgsql(builder.ToString()); 
-            }
-        }
-
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
