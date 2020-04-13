@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using ChatyChaty.ValidationAttribute;
 using Microsoft.AspNetCore.Authorization;
 using ChatyChaty.ControllerSchema.v2;
+using System.Security.Claims;
 
 namespace ChatyChaty.Controllers.v2
 {
@@ -84,7 +85,7 @@ namespace ChatyChaty.Controllers.v2
         }
 
         /// <summary>
-        /// Check if the use is Authenticated
+        /// Check if the use is Authenticated And return the logged in user (For testing)
         /// </summary>
         /// <returns></returns>
         /// <response code="401">Not Authenticated</response>
@@ -94,7 +95,8 @@ namespace ChatyChaty.Controllers.v2
         [Authorize]
         public IActionResult IsAuthenticated()
         {
-            return Ok();
+            var UserNameClaim = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Name);
+            return Ok($"Current Active User Is {UserNameClaim.Value}");
         }
 
 
