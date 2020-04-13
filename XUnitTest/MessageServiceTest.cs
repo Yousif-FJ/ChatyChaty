@@ -43,6 +43,8 @@ namespace XUnitTest
             Assert.True(conversation != null && 
                 conversation.FirstUserId == sender.Id && 
                 conversation.SecondUserId == reciver.Id);
+            var notification = await dbContext.Notifications.FindAsync(reciver.Id);
+            Assert.True(notification.ChatUpdate);
         }
 
         [Fact]

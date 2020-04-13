@@ -108,5 +108,25 @@ namespace XUnitTest
             Assert.False(notification2.MessageUpdate);
             Assert.False(notification2.ChatUpdate);
         }
+
+        [Fact]
+        public async Task UserUpdatedProfile_update()
+        {
+            //Arrange
+            var user1 = (await dbContext.Users.AddAsync(new AppUser("Test1"))).Entity;
+            var user2 = (await dbContext.Users.AddAsync(new AppUser("Test2"))).Entity;
+            dbContext.SaveChanges();
+            await notificationHandler.IntializeNofificationHandler(user1.Id);
+            await notificationHandler.IntializeNofificationHandler(user2.Id);
+            //Act
+            await notificationHandler.UserGotChatUpdate(user1.Id);
+            await notificationHandler.UserGotNewMessage(user1.Id);
+            //Assert
+            var notification = await notificationHandler.CheckForUpdates(user1.Id);
+            Assert.True(notification.Id == user1.Id);
+            Assert.True(notification.ChatUpdate);
+            Assert.True(notification.MessageUpdate);
+            Assert.False(notification.DeliveredUpdate);
+        }
     }
 }
