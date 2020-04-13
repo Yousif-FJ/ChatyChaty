@@ -111,10 +111,9 @@ namespace ChatyChaty.Services
             }
 
             var conversation = await messageRepository.FindConversationForUsers(SenderDB.Id, ReciverDB.Id);
-
             if (conversation == null)
             {
-                return (await messageRepository.CreateConversationForUsers(SenderDB.Id, ReciverDB.Id)).Id;
+                conversation = await messageRepository.CreateConversationForUsers(SenderDB.Id, ReciverDB.Id);
             }
 
             await notificationHandler.UserGotChatUpdate(ReciverDB.Id);
