@@ -1,5 +1,4 @@
-﻿using ChatyChaty.Model.OldModel;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Npgsql;
@@ -16,7 +15,6 @@ namespace ChatyChaty.Model.DBModel
         {
         }
 
-        public DbSet<Message1> MessagesSet { get; set; }
         public DbSet<Message> Messages { get; set; }
         public DbSet<Conversation> Conversations { get; set; }
         public DbSet<Notification> Notifications { get; set; }

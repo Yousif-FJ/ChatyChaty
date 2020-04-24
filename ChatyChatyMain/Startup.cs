@@ -9,7 +9,6 @@ using ChatyChaty.Model;
 using ChatyChaty.Model.DBModel;
 using ChatyChaty.Model.MessageRepository;
 using ChatyChaty.Model.NotficationHandler;
-using ChatyChaty.Model.OldModel;
 using ChatyChaty.Services;
 using CloudinaryDotNet;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -51,8 +50,6 @@ namespace ChatyChaty
                .AddEntityFrameworkStores<ChatyChatyContext>();
 
             services.AddScoped<IAccountManager, AccountManager>();
-
-            services.AddScoped<IMessageRepository1, MessagesRepository1>();
 
             services.AddSingleton<Cloudinary>();
 
