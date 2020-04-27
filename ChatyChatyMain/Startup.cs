@@ -10,6 +10,7 @@ using ChatyChaty.Model.DBModel;
 using ChatyChaty.Model.MessageRepository;
 using ChatyChaty.Model.NotficationHandler;
 using ChatyChaty.Services;
+using ChatyChaty.Services.GoogleFirebase;
 using CloudinaryDotNet;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -183,6 +184,8 @@ namespace ChatyChaty
                     };
             });
 
+            //Test google authentication
+            services.AddSingleton<FirstTest>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
