@@ -10,9 +10,9 @@ namespace ChatyChaty.Services.GoogleFirebase
 {
     public class FirstTest
     {
-        private readonly ILogger logger;
+        private readonly ILogger<FirstTest> logger;
 
-        public FirstTest(ILogger logger)
+        public FirstTest(ILogger<FirstTest> logger)
         {
             this.logger = logger;
             try
@@ -25,10 +25,8 @@ namespace ChatyChaty.Services.GoogleFirebase
             }
 			catch (Exception e)
 			{
-                logger.LogWarning($"GoogleCredential throw an exception:{e.Message}");
+                logger.LogWarning($"GoogleCredential threw an exception:{e.Message}");
 			}
-
-
         }
     }
 }
