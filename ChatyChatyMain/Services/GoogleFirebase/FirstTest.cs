@@ -15,17 +15,29 @@ namespace ChatyChaty.Services.GoogleFirebase
         public FirstTest(ILogger<FirstTest> logger)
         {
             this.logger = logger;
+            FirebaseApp App;
             try
 			{
-                var App = FirebaseApp.Create(new AppOptions()
+                if (Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS")!= null)
                 {
-                    Credential = GoogleCredential.GetApplicationDefault(),
-                });
+                    App = FirebaseApp.Create(new AppOptions()
+                    {
+                        Credential = GoogleCredential.GetApplicationDefault()
+                    });
+                }
+                else
+                {
+                    App = FirebaseApp.Create(new AppOptions()
+                    {
+                        Credential = GoogleCredential.FromJson(Environment.GetEnvironmentVariable("GOOGLE_CREDENTIALS")),
+                    }); 
+                }
+
                 logger.LogWarning($"Firebase was created succefully with the name:{App.Name}");
             }
 			catch (Exception e)
 			{
-                logger.LogWarning($"GoogleCredential threw an exception:{e.Message}");
+                logger.LogWarning($"GoogleCredential threw an exception : {e.Message}");
 			}
         }
     }
