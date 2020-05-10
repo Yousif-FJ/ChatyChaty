@@ -18,21 +18,9 @@ namespace XIntegrationTest
         public async Task CreateUser_Startconversation_SendMessage_Check_Receive()
         {
             //Creating Users
-            var user1 = new AccountModel
-            {
-                DisplayName = "Test user",
-                Password = "y12345678",
-                UserName = "user1"
-            };
 
-            var user2 = new AccountModel
-            {
-                DisplayName = "Test user",
-                Password = "y12345678",
-                UserName = "user2"
-            };
-            var User1Token = await CreateAccount(user1);
-            var User2Token = await CreateAccount(user2);
+            var User1Token = await CreateAccount(userName: "user1", displayName: "Test user", password: "a12345678");
+            var User2Token = await CreateAccount(userName: "user2", displayName: "Test user", password: "a12345678");
 
             //Sign in as user1
             Authenticate(User1Token);
@@ -46,7 +34,7 @@ namespace XIntegrationTest
 
             //Create a Chat 
             using HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Get, "api/v1/Profile/GetUser");
-            requestMessage.Headers.Add("UserName", user2.UserName);
+            requestMessage.Headers.Add("UserName", "user2");
             var GetUserResult = await client.SendAsync(requestMessage);
 
 

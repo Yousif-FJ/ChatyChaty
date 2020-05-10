@@ -56,6 +56,14 @@ namespace ChatyChaty.Model.DBModel
                 .HasOne<Notification>(x => x.Notification)
                 .WithOne(x => x.AppUser)
                 .HasForeignKey<Notification>(x => x.Id);
+
+            builder.Entity<AppUser>()
+                .Property(x => x.UserName)
+                .HasMaxLength(32);
+
+            builder.Entity<AppUser>()
+                .Property(x => x.DisplayName)
+                .HasMaxLength(32);
         }
     }
 }

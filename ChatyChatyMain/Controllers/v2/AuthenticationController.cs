@@ -49,13 +49,8 @@ namespace ChatyChaty.Controllers.v2
         [HttpPost("CreateAccount")]
         public async Task<IActionResult> CreateAccount([FromBody]CreateAccountSchema accountSchema)
         {
-           var authenticationResult = await authenticationManager.CreateAccount(new AccountModel
-           {
-               UserName = accountSchema.UserName,
-               Password = accountSchema.Password,
-               DisplayName = accountSchema.DisplayName
-           }
-               );
+           var authenticationResult = await authenticationManager.CreateAccount(
+               accountSchema.UserName, accountSchema.Password, accountSchema.DisplayName);
 
             if (!authenticationResult.Success)
             {
@@ -122,11 +117,8 @@ namespace ChatyChaty.Controllers.v2
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody]LoginAccountSchema accountSchema)
         {
-            var authenticationResult = await authenticationManager.Login(new AccountModel()
-            {
-                UserName = accountSchema.UserName,
-                Password = accountSchema.Password
-            });
+            var authenticationResult = await authenticationManager.Login(
+                accountSchema.UserName, accountSchema.Password);
 
             if (!authenticationResult.Success)
             {

@@ -48,14 +48,14 @@ namespace XIntegrationTest
             client.DefaultRequestHeaders.Authorization =  new AuthenticationHeaderValue("bearer",token);
         }
 
-        protected async Task<string> CreateAccount(AccountModel accountSchema)
+        protected async Task<string> CreateAccount(string userName, string displayName, string password)
         {
 
             var response = await client.PostAsJsonAsync("/api/v2/Authentication/CreateAccount", new CreateAccountSchema 
             {
-                UserName = accountSchema.UserName,
-                Password = accountSchema.Password,
-                DisplayName = accountSchema.DisplayName
+                UserName = userName,
+                Password = password,
+                DisplayName = displayName
             });
             return (await response.Content.ReadAsAsync<AuthenticationResponse>()).Token;
         }

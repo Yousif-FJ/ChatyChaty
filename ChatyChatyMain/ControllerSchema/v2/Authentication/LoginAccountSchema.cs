@@ -9,6 +9,7 @@ namespace ChatyChaty.ControllerSchema.v2
     public class LoginAccountSchema
     {
         [Required]
+        [MaxLength(32)]
         public string UserName { get; set; }
         [Required]
         public string Password { get; set; }
