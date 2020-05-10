@@ -8,7 +8,8 @@ namespace ChatyChaty.Services
 {
     public interface IAuthenticationManager
     {
-        Task<AuthenticationResult> CreateAccount(AccountModel accountModel);
-        Task<AuthenticationResult> Login(AccountModel accountModel);
+        Task<AuthenticationResult> CreateAccount(string username, string password, string displayName);
+        Task<AuthenticationResult> Login(string username, string password);
+        Task<AuthenticationResult> ChangePassword(string userName, string currentPassword, string newPassword);
     }
 }
