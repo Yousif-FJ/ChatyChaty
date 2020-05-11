@@ -104,9 +104,9 @@ namespace ChatyChaty.Services
         }
 
 
-        public async Task<AuthenticationResult> ChangePassword(string userName, string currentPassword, string newPassword)
+        public async Task<AuthenticationResult> ChangePassword(string Id, string currentPassword, string newPassword)
         {
-            var user = await userManager.FindByNameAsync(userName);
+            var user = await userManager.FindByIdAsync(Id);
             if (user is null)
             {
                 throw new ArgumentException("Passed user doesn't exist");
