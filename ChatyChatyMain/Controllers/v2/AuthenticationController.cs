@@ -10,6 +10,7 @@ using ChatyChaty.ValidationAttribute;
 using Microsoft.AspNetCore.Authorization;
 using ChatyChaty.ControllerSchema.v2;
 using System.Security.Claims;
+using ChatyChaty.ControllerSchema.v2.Authentication;
 
 namespace ChatyChaty.Controllers.v2
 {
@@ -105,9 +106,9 @@ namespace ChatyChaty.Controllers.v2
         ///  "token": "*The Token*",
         ///  "errors": null,
         ///  "profile": {
-        /// "username": "*UserName*",
-        ///    "displayName": "*DisplayName*",
-        ///    "photoURL": "*Picture URL*"
+        ///   "username": "*UserName*",
+        ///   "displayName": "*DisplayName*",
+        ///   "photoURL": "*Picture URL*"
         ///  }
         ///}
         /// </remarks>
@@ -146,6 +147,38 @@ namespace ChatyChaty.Controllers.v2
                 Profile = profileSchema
             };
             return Ok(authenticationSchema);
+        }
+
+
+        /// <summary>
+        /// Change the logged in user password
+        /// </summary>
+        /// <remarks>
+        /// <br>Currently this doesn't make existing logins sessions invalid. </br>
+        /// <br>If you set the new password back to the same current password you won't get any errors</br>
+        /// Example response: 
+        /// {
+        ///  "success": true,
+        ///  "errors": []
+        /// }
+        /// </remarks>
+        /// <param name="passwordSchema"></param>
+        /// <returns></returns>
+        /// <response code="200">Password change Succeed or failed</response>
+        /// <response code="400">Model validation failed</response>
+        /// <response code="500">Server Error (This shouldn't happen)</response>
+        [Authorize]
+        [HttpPatch("ChangePassword")]
+        public async Task<IActionResult> ChangePassword(ChangePasswordSchema passwordSchema)
+        {
+            var UserId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
+            var result = await authenticationManager.ChangePassword(UserId, passwordSchema.CurrentPassword, passwordSchema.NewPassword);
+            ChangePasswordResponse changePasswordResponse = new ChangePasswordResponse
+            {
+                Success = result.Success,
+                Errors = result.Errors
+            };
+            return Ok(changePasswordResponse);
         }
     }
 }
