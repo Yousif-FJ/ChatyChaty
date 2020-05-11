@@ -18,11 +18,14 @@ namespace XUnitTest
         private readonly ChatyChatyContext dbContext;
         public MessageServiceTest()
         {
+            //construct an In-Memory Database
             var options = new DbContextOptionsBuilder<ChatyChatyContext>()
-                .UseInMemoryDatabase(databaseName: "Add_writes_to_database")
+                .UseInMemoryDatabase(databaseName: "database")
                 .Options;
             var context = new ChatyChatyContext(options);
             dbContext = context;
+
+            //construct a message repositor and notfication handler then a message service
             var MessageRepositor = new MessageRepository(context);
             NotificationHandler notificationHandler = new NotificationHandler(dbContext);
             messageService = new MessageService(MessageRepositor,notificationHandler);

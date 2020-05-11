@@ -20,10 +20,12 @@ namespace XIntegrationTest
         protected readonly HttpClient client;
         public IntegrationTestBase()
         {
+            //construct an In-Memory server with chaty startup class
             var Factory = new WebApplicationFactory<Startup>().WithWebHostBuilder(builder =>
             {
                 builder.ConfigureServices(services =>
                 {
+                    //Remove the real DB refrence and use an In-Memory one
                     var descriptor = services.SingleOrDefault(
                         d => d.ServiceType ==
                             typeof(DbContextOptions<ChatyChatyContext>));
@@ -38,6 +40,7 @@ namespace XIntegrationTest
                     });
                 });
             });
+            //create a special client that work the In-Memory app
             client = Factory.CreateClient();
         }
 
