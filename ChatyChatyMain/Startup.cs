@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using ChatyChaty.Hubs;
 using ChatyChaty.Model;
 using ChatyChaty.Model.DBModel;
 using ChatyChaty.Model.MessageRepository;
@@ -46,7 +47,6 @@ namespace ChatyChaty
             //register services ----------------------------------------------------------
             services.AddMvc();
 
-
             services.AddIdentity<AppUser, Role>()
                .AddEntityFrameworkStores<ChatyChatyContext>();
 
@@ -64,6 +64,7 @@ namespace ChatyChaty
 
             services.AddScoped<IMessageService, MessageService>();
 
+            services.AddSignalR();
 
 
             //configure DBcontext ----------------------------------------------------------
@@ -134,6 +135,24 @@ namespace ChatyChaty
                         IssuerSigningKey = new SymmetricSecurityKey(
                             Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_SECRET"))
                              )
+                    };
+                    //Receive token in query for the hub
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            var accessToken = context.Request.Query["access_token"];
+
+                            // If the request is for our hub...
+                            var path = context.HttpContext.Request.Path;
+                            if (!string.IsNullOrEmpty(accessToken) &&
+                                (path.StartsWithSegments("/hubs/main")))
+                            {
+                                // Read the token out of the query string
+                                context.Token = accessToken;
+                            }
+                            return Task.CompletedTask;
+                        }
                     };
                 });
 
@@ -209,8 +228,11 @@ namespace ChatyChaty
 
             app.UseAuthorization();
 
+            app.UseStaticFiles();
+
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapHub<MainHub>("/chathub");
                 endpoints.MapControllers();
             });
         }

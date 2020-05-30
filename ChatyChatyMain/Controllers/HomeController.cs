@@ -19,5 +19,12 @@ namespace ChatyChaty.Controllers
         {
             return View();
         }
+
+        [Route("/HubClient")]
+        [HttpGet]
+        public IActionResult HubClient()
+        {
+            return View();
+        }
     }
 }
