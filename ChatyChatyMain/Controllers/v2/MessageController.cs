@@ -17,8 +17,6 @@ namespace ChatyChaty.Controllers.v2
     [Authorize]
     [ApiController]
     [Route("api/v2/[controller]")]
-    [Consumes("application/json")]
-    [Produces("application/json")]
     public class MessageController : ControllerBase
     {
         private readonly IMessageService messageService;

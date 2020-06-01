@@ -76,8 +76,6 @@ namespace ChatyChaty.Controllers.v1
         /// <response code="401">Unaithenticated</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [Authorize]
-        [Consumes("application/json")]
-        [Produces("application/json")]
         [HttpGet("GetUser")]
         public async Task<IActionResult> GetUser([FromHeader]string UserName)
         {
@@ -119,8 +117,6 @@ namespace ChatyChaty.Controllers.v1
         /// <response code="401">Unaithenticated</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [Authorize]
-        [Consumes("application/json")]
-        [Produces("application/json")]
         [HttpGet("GetChats")]
         public async Task<IActionResult> GetChats()
         {
@@ -158,8 +154,6 @@ namespace ChatyChaty.Controllers.v1
         /// <param name="NewDisplayName"></param>
         /// <returns></returns>
         [Authorize]
-        [Consumes("application/json")]
-        [Produces("application/json")]
         [HttpPatch("UpdateDisplayName")]
         public async Task<IActionResult> UpdateDisplayName([FromBody]string NewDisplayName)
         {

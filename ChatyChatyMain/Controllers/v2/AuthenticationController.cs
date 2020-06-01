@@ -14,8 +14,6 @@ using System.Security.Claims;
 namespace ChatyChaty.Controllers.v2
 {
     [Route("api/v2/[controller]")]
-    [Consumes("application/json")]
-    [Produces("application/json")]
     [ApiController]
     public class AuthenticationController : ControllerBase
     {

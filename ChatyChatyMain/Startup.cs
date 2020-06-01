@@ -11,6 +11,7 @@ using ChatyChaty.Model.MessageRepository;
 using ChatyChaty.Model.NotficationHandler;
 using ChatyChaty.Services;
 using ChatyChaty.Services.GoogleFirebase;
+using ChatyChaty.ValidationAttribute;
 using CloudinaryDotNet;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -19,6 +20,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -44,9 +46,13 @@ namespace ChatyChaty
         {
 
             //register services ----------------------------------------------------------
-            services.AddMvc();
+            services.AddMvc(option =>
+            {
+                option.Filters.Add(new ProducesAttribute("application/json"));
+                option.Filters.Add(new ConsumesAttribute("application/json"));
+            });
 
-
+            
             services.AddIdentity<AppUser, Role>()
                .AddEntityFrameworkStores<ChatyChatyContext>();
 
