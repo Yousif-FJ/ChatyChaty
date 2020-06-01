@@ -10,7 +10,6 @@ using ChatyChaty.ValidationAttribute;
 using Microsoft.AspNetCore.Authorization;
 using ChatyChaty.ControllerSchema.v2;
 using System.Security.Claims;
-using ChatyChaty.ControllerSchema.v2.Authentication;
 
 namespace ChatyChaty.Controllers.v2
 {
@@ -48,6 +47,7 @@ namespace ChatyChaty.Controllers.v2
         /// <response code="400">Model validation failed</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [HttpPost("CreateAccount")]
+        [Obsolete]
         public async Task<IActionResult> CreateAccount([FromBody]CreateAccountSchema accountSchema)
         {
            var authenticationResult = await authenticationManager.CreateAccount(
@@ -89,6 +89,7 @@ namespace ChatyChaty.Controllers.v2
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [HttpGet("IsAuthenticated")]
         [Authorize]
+        [Obsolete]
         public IActionResult IsAuthenticated()
         {
             var UserNameClaim = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Name);
@@ -116,6 +117,7 @@ namespace ChatyChaty.Controllers.v2
         /// <response code="400">Model validation failed</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [HttpPost("Login")]
+        [Obsolete]
         public async Task<IActionResult> Login([FromBody]LoginAccountSchema accountSchema)
         {
             var authenticationResult = await authenticationManager.Login(
@@ -168,6 +170,7 @@ namespace ChatyChaty.Controllers.v2
         /// <response code="400">Model validation failed</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [Authorize]
+        [Obsolete]
         [HttpPatch("ChangePassword")]
         public async Task<IActionResult> ChangePassword(ChangePasswordSchema passwordSchema)
         {

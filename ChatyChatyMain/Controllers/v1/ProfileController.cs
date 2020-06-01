@@ -45,7 +45,7 @@ namespace ChatyChaty.Controllers.v1
         [Produces("application/json")]
         [HttpPost("SetPhotoForSelf")]
         public async Task<IActionResult> SetPhotoForSelf([FromForm]UploadFileSchema uploadFile)
-        {         
+        {
             var UserId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
             var URL = await accountManager.SetPhoto(long.Parse(UserId), uploadFile.PhotoFile);
 
