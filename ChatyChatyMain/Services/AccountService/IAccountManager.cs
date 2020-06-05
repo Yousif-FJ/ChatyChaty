@@ -12,8 +12,8 @@ namespace ChatyChaty.Services
 {
     public interface IAccountManager
     {
-        Task<AppUser> GetUser(string UserName);
+        Task<ProfileAccountModel> GetUser(string UserName);
         Task<string> UpdateDisplayName(long UserId, string NewDisplayName);
-        Task<string> SetPhoto(long UserId, IFormFile formFile);
+        Task<PhotoUrlModel> SetPhoto(long UserId, IFormFile formFile);
     }
 }

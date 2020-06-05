@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using XUnitTest.MockClasses;
 
 namespace XUnitTest
 {
@@ -28,7 +29,7 @@ namespace XUnitTest
             //construct a message repositor and notfication handler then a message service
             var MessageRepositor = new MessageRepository(context);
             NotificationHandler notificationHandler = new NotificationHandler(dbContext);
-            messageService = new MessageService(MessageRepositor,notificationHandler);
+            messageService = new MessageService(MessageRepositor,notificationHandler, new MockPictureProvider());
         }
 
 

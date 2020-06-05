@@ -1,8 +1,12 @@
-﻿using CloudinaryDotNet;
+﻿using ChatyChaty.Model.AccountModel;
+using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,13 +18,15 @@ namespace ChatyChaty.Services
     public class CloudinaryPictureProvider : IPictureProvider
     {
         private readonly Cloudinary cloudinary;
+        private readonly ILogger<CloudinaryPictureProvider> logger;
         private const string PlaceHolderURL
             = "https://res.cloudinary.com/da5y8c0lx/image/upload/ChatyChaty/Placeholder_h5xlzr.jpg";
         private const string FileConatiner = "ChatyChaty";
 
-        public CloudinaryPictureProvider(Cloudinary cloudinary)
+        public CloudinaryPictureProvider(Cloudinary cloudinary, ILogger<CloudinaryPictureProvider> logger)
         {
             this.cloudinary = cloudinary;
+            this.logger = logger;
         }
 
         /// <summary>
@@ -31,7 +37,7 @@ namespace ChatyChaty.Services
         /// <param name="UserName"></param>
         /// <param name="formFile"></param>
         /// <returns>The Uploaded Photo idetitifier</returns>
-        public async Task<string> ChangePhoto(long UserID, string UserName, IFormFile formFile)
+        public async Task<PhotoUrlModel> ChangePhoto(long UserID, string UserName, IFormFile formFile)
         {
             ImageUploadParams uploadParams = new ImageUploadParams()
             {
@@ -42,11 +48,20 @@ namespace ChatyChaty.Services
             var uploadResult = await cloudinary.UploadAsync(uploadParams);
             if (uploadResult.Error is null)
             {
-                return uploadResult.PublicId;
+                return new PhotoUrlModel
+                {
+                    Success = true,
+                    URL = uploadResult.SecureUri.AbsoluteUri
+                };
             }
             else
             {
-                throw new Exception(uploadResult.Error.Message);
+                logger.LogError($"Img upload error : {uploadResult.Error.Message}");
+                return new PhotoUrlModel
+                {
+                    Success = false,
+                    Errors = new Collection<string>() { "An error occurred in the server" }
+                };
             }
         }
 
@@ -61,7 +76,7 @@ namespace ChatyChaty.Services
             var resourceResult = await cloudinary.GetResourceAsync(GetPublicId(UserID, UserName));
             if (resourceResult.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                return resourceResult.Url;
+                return resourceResult.SecureUrl;
             }
             return null;
         }

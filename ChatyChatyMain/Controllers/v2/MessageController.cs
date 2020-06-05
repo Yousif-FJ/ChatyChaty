@@ -20,12 +20,10 @@ namespace ChatyChaty.Controllers.v2
     public class MessageController : ControllerBase
     {
         private readonly IMessageService messageService;
-        private readonly IAccountManager accountManager;
 
         public MessageController(IMessageService messageService, IAccountManager accountManager)
         {
             this.messageService = messageService;
-            this.accountManager = accountManager;
         }
 
 

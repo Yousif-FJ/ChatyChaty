@@ -1,5 +1,5 @@
 ﻿using ChatyChaty.Model.DBModel;
-using ChatyChaty.Model.Messaging_model;
+using ChatyChaty.Model.MessagingModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;

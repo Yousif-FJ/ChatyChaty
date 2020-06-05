@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ChatyChaty.ControllerSchema.v2
 {
-    public class AuthenticationResponse
+    public class AuthenticationResponse 
     {
         public bool Success { get; set; }
         public string Token { get; set; }

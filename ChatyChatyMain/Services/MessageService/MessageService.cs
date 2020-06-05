@@ -1,6 +1,6 @@
 ﻿using ChatyChaty.Model.DBModel;
 using ChatyChaty.Model.MessageRepository;
-using ChatyChaty.Model.Messaging_model;
+using ChatyChaty.Model.MessagingModel;
 using ChatyChaty.Model.NotficationHandler;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -14,11 +14,15 @@ namespace ChatyChaty.Services
     {
         private readonly IMessageRepository messageRepository;
         private readonly INotificationHandler notificationHandler;
+        private readonly IPictureProvider pictureProvider;
 
-        public MessageService(IMessageRepository messageRepository, INotificationHandler notificationHandler)
+        public MessageService(IMessageRepository messageRepository, 
+            INotificationHandler notificationHandler, 
+            IPictureProvider pictureProvider)
         {
             this.messageRepository = messageRepository;
             this.notificationHandler = notificationHandler;
+            this.pictureProvider = pictureProvider;
         }
 
         /// <summary>
@@ -175,7 +179,8 @@ namespace ChatyChaty.Services
                     ConversationId = conversation.Id,
                     SecondUserDisplayName = SecondUser.DisplayName,
                     SecondUserUsername = SecondUser.UserName,
-                    SecondUserId = SecondUser.Id
+                    SecondUserId = SecondUser.Id,
+                    SecondUserPhoto = await pictureProvider.GetPhotoURL(SecondUser.Id, SecondUser.UserName)
                 });
 
             }

@@ -36,35 +36,41 @@ namespace ChatyChaty.Services
             this.pictureProvider = pictureProvider;
         }
 
-        public async Task<AppUser> GetUser(string UserName)
+        public async Task<ProfileAccountModel> GetUser(string username)
         {
-            var user = await userManager.FindByNameAsync(UserName);
-            return user;
+            var user = await userManager.FindByNameAsync(username);
+            var PhotoUrl= await pictureProvider.GetPhotoURL(user.Id, user.UserName);
+            return new ProfileAccountModel
+            {
+                Username = user.UserName,
+                UserId = user.Id,
+                DisplayName = user.DisplayName,
+                PhotoURL = PhotoUrl
+            };
         }
 
-        public async Task<string> SetPhoto(long UserId, IFormFile formFile)
+        public async Task<PhotoUrlModel> SetPhoto(long userId, IFormFile formFile)
         {
-            var user = await messageRepository.GetUser(UserId);
+            var user = await messageRepository.GetUser(userId);
             if (user == null)
             {
                 throw new ArgumentOutOfRangeException("Invalid userId");
             }
-            await pictureProvider.ChangePhoto(user.Id, user.UserName, formFile);
-            var URL = await pictureProvider.GetPhotoURL(user.Id, user.UserName);
+            var setPhotoResult = await pictureProvider.ChangePhoto(user.Id, user.UserName, formFile);
             await notificationHandler.UserUpdatedProfile(user.Id);
-            return URL;
+            return setPhotoResult;
         }
 
-        public async Task<string> UpdateDisplayName(long UserId, string NewDisplayName)
+        public async Task<string> UpdateDisplayName(long userId, string newDisplayName)
         {
-            var user = await messageRepository.GetUser(UserId);
+            var user = await messageRepository.GetUser(userId);
             if (user is null)
             {
                 throw new ArgumentOutOfRangeException("Invalid UserId");
             }
-            var NewName = await messageRepository.UpdateDisplayName(UserId, NewDisplayName);
+            var newName = await messageRepository.UpdateDisplayName(userId, newDisplayName);
             await notificationHandler.UserUpdatedProfile(user.Id);
-            return NewName;
+            return newName;
         }
     }
 }

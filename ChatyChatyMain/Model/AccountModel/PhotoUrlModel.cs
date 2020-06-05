@@ -5,12 +5,10 @@ using System.Threading.Tasks;
 
 namespace ChatyChaty.Model.AccountModel
 {
-    public class AuthenticationResult
+    public class PhotoUrlModel
     {
         public bool Success { get; set; }
-        public string Token { get; set; }
         public IEnumerable<string> Errors { get; set; }
-        public ProfileAccountModel Profile { get; set; }
+        public string URL { get; set; }
     }
 }
-
