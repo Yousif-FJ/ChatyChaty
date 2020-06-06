@@ -10,7 +10,7 @@ namespace ChatyChaty.ControllerSchema.v3
     public class ResponseBase
     {
         public bool Success { get; set; }
-        public IEnumerable<Error> Errors { get; set; }
+        public IEnumerable<string> Errors { get; set; }
         public virtual object Data { get; set; }
 
         public ResponseBase(){}
@@ -22,9 +22,7 @@ namespace ChatyChaty.ControllerSchema.v3
                 throw new InvalidOperationException("ModelState is valid, expected invalid modelstate");
             }
             Success = false;
-            Errors = modelState.Keys
-                .SelectMany(key => modelState[key].Errors.Select(x => new Error(key, x.ErrorMessage)))
-                .ToList();
+            Errors = modelState.Values.SelectMany(v => v.Errors.Select(b => b.ErrorMessage));
         }
     }
 }

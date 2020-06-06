@@ -21,7 +21,7 @@ namespace ChatyChaty.Controllers.v2
     {
         private readonly IMessageService messageService;
 
-        public MessageController(IMessageService messageService, IAccountManager accountManager)
+        public MessageController(IMessageService messageService)
         {
             this.messageService = messageService;
         }

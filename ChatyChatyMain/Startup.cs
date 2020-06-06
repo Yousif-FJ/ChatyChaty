@@ -147,6 +147,7 @@ namespace ChatyChaty
             //configure swagger -------------------------------------------------------------
             services.AddSwaggerGen(c =>
             {
+                c.CustomSchemaIds(x => x.FullName);
                 c.SwaggerDoc("v1", new OpenApiInfo { Version = "v1", Title = "ChatyChatyAPI" });
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
