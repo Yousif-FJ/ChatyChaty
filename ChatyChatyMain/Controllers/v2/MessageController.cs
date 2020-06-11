@@ -60,12 +60,12 @@ namespace ChatyChaty.Controllers.v2
         {
             var UserId = long.Parse(HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
             var result = await messageService.GetNewMessages(UserId, LastMessageId);
-            if (result == null)
+            if (result.Error != null)
             {
                 return BadRequest();
             }
             var Messages = new List<NewMessagesResponse>();
-            foreach (var message in result)
+            foreach (var message in result.Messages)
             {
                 Messages.Add(new NewMessagesResponse
                 {
@@ -98,11 +98,11 @@ namespace ChatyChaty.Controllers.v2
         {
             var UserIdClaim = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
             var Result = await messageService.IsDelivered(long.Parse(UserIdClaim.Value), MessageId);
-            if (Result == null)
+            if (Result.Error != null)
             {
                 return BadRequest();
             }
-            return Ok(Result.Value);
+            return Ok(Result.IsDelivered.Value);
         }
 
 
@@ -133,10 +133,10 @@ namespace ChatyChaty.Controllers.v2
         {
             var UserIdClaim = HttpContext.User.Claims.FirstOrDefault(
                 claim => claim.Type == ClaimTypes.NameIdentifier);
-            var message = await messageService.SendMessage(messageSchema.ChatId,
+            var result = await messageService.SendMessage(messageSchema.ChatId,
                 long.Parse(UserIdClaim.Value), messageSchema.Body);
 
-            if (message == null)
+            if (result.Error != null)
             {
                 return BadRequest();
             }
@@ -144,9 +144,9 @@ namespace ChatyChaty.Controllers.v2
                 claim => claim.Type == ClaimTypes.Name);
             var response = new NewMessagesResponse
             {
-                Body = message.Body,
-                MessageId = message.Id,
-                ChatId = message.ConversationId,
+                Body = result.Message.Body,
+                MessageId = result.Message.Id,
+                ChatId = result.Message.ConversationId,
                 Sender = UserNameClaim.Value,
                 Delivered = false
             };

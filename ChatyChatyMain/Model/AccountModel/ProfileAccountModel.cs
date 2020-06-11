@@ -10,6 +10,6 @@ namespace ChatyChaty.Model.AccountModel
         public string Username { get; set; }
         public string DisplayName { get; set; }
         public string PhotoURL { get; set; }
-        public long? UserId { get; set; }
+        public long? Id { get; set; }
     }
 }

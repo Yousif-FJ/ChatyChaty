@@ -2,6 +2,7 @@
 using ChatyChaty.Model.AccountModel;
 using ChatyChaty.Model.DBModel;
 using ChatyChaty.Model.MessageRepository;
+using ChatyChaty.Model.MessagingModel;
 using ChatyChaty.Model.NotficationHandler;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -43,9 +44,54 @@ namespace ChatyChaty.Services
             return new ProfileAccountModel
             {
                 Username = user.UserName,
-                UserId = user.Id,
+                Id = user.Id,
                 DisplayName = user.DisplayName,
                 PhotoURL = PhotoUrl
+            };
+        }
+
+        /// <summary>
+        /// create or get a conversation between 2 users
+        /// </summary>
+        /// <param name="senderId">First user Id</param>
+        /// <param name="receiverUsername">Second user Id</param>
+        /// <returns>A long that represent the created conversation Id</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">thrown when sender users don't exist</exception>
+        public async Task<NewConversationModel> NewConversation(long senderId, string receiverUsername)
+        {
+            var senderDB = await messageRepository.GetUser(senderId);
+            var reciverDB = await GetUser(receiverUsername);
+            if (senderDB == null)
+            {
+                //throw exception because userId should come from trusted source (authentication header)
+                throw new ArgumentOutOfRangeException("Invalid sender IDs");
+            }
+            if (reciverDB == null)
+            {
+                return new NewConversationModel
+                {
+                    Error = "Requested user doesn't exist"
+                };
+            }
+            //get or create the conversation
+            var conversation = await messageRepository.FindConversationForUsers(senderDB.Id, reciverDB.Id.Value);
+            if (conversation == null)
+            {
+                conversation = await messageRepository.CreateConversationForUsers(senderDB.Id, reciverDB.Id.Value);
+            }
+
+            await notificationHandler.UserGotChatUpdate(reciverDB.Id.Value);
+
+            return new NewConversationModel
+            {
+                Conversation = new ConversationInfo
+                {
+                    ConversationId = conversation.Id,
+                    SecondUserId = reciverDB.Id.Value,
+                    SecondUserDisplayName = reciverDB.DisplayName,
+                    SecondUserUsername = reciverDB.Username,
+                    SecondUserPhoto = await pictureProvider.GetPhotoURL(reciverDB.Id.Value, reciverDB.Username)
+                }
             };
         }
 

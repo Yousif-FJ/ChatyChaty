@@ -90,7 +90,7 @@ namespace ChatyChaty.Controllers.v1
                         Error = "No such a Username"
                     });
             }
-            var conversationId = await messageService.NewConversation(long.Parse(UserId), user.UserId.Value);
+            var conversationId = await messageService.NewConversation(long.Parse(UserId), user.Id.Value);
             var response = new GetUserProfileResponse
             {
                 Success = true,
@@ -99,7 +99,7 @@ namespace ChatyChaty.Controllers.v1
                 {
                     DisplayName = user.DisplayName,
                     Username = user.Username,
-                    PhotoURL = await pictureProvider.GetPhotoURL(user.UserId.Value, user.Username)
+                    PhotoURL = await pictureProvider.GetPhotoURL(user.Id.Value, user.Username)
                 }
             };
             return Ok(response);
