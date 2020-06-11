@@ -76,38 +76,36 @@ namespace ChatyChaty.Controllers.v3
         ///  "PhotoURL": "*URL*"}
         /// }
         /// </remarks>
-        /// <param name="UserName"></param>
+        /// <param name="userName"></param>
         /// <returns></returns>
         /// <response code="200">When user was found or not</response>
         /// <response code="401">Unauthenticated</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [Authorize]
         [HttpGet("GetUser")]
-        public async Task<IActionResult> GetUser([FromHeader]string UserName)
+        public async Task<IActionResult> GetUser([FromHeader]string userName)
         {
-            var UserId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
-            var user = await accountManager.GetUser(UserName);
-            if (user == null)
+            var userId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
+            var result = await accountManager.NewConversation(long.Parse(userId), userName);
+            if (result.Error != null)
             {
-                return Ok(
-                    new GetUserProfileResponse
-                    {
-                        Success = false,
-                        Errors = new Collection<string> { "No such a Username" }
-                    });
+                return Ok(new GetUserProfileResponse
+                {
+                    Success = false,
+                    Errors = new Collection<string> { result.Error }
+                });
             }
-            var conversationId = await messageService.NewConversation(long.Parse(UserId), user.UserId.Value);
             var response = new GetUserProfileResponse
             {
                 Success = true,
                 Data = new GetUserProfileResponseBase
                 { 
-                    ChatId = conversationId,
+                    ChatId = result.Conversation.ConversationId,
                     Profile = new ProfileSchema
                     {
-                        DisplayName = user.DisplayName,
-                        Username = user.Username,
-                        PhotoURL = user.PhotoURL
+                        DisplayName = result.Conversation.SecondUserDisplayName,
+                        Username = result.Conversation.SecondUserUsername,
+                        PhotoURL = result.Conversation.SecondUserPhoto
                     }
                 }
             };

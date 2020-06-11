@@ -61,7 +61,7 @@ namespace ChatyChaty.Controllers.v3
                     Errors = authenticationResult.Errors,
                     Success = authenticationResult.Success,
                 };
-                return Ok(authenticationSchemaF);
+                return BadRequest(authenticationSchemaF);
             }
 
             ProfileSchema profileSchema = new ProfileSchema
@@ -119,7 +119,7 @@ namespace ChatyChaty.Controllers.v3
                     Errors = authenticationResult.Errors,
                     Success = authenticationResult.Success,
                 };
-                return Ok(authenticationSchemaF);
+                return BadRequest(authenticationSchemaF);
             }
 
             ProfileSchema profileSchema = new ProfileSchema
@@ -164,14 +164,21 @@ namespace ChatyChaty.Controllers.v3
         [HttpPatch("ChangePassword")]
         public async Task<IActionResult> ChangePassword([FromBody]ChangePasswordSchema passwordSchema)
         {
-            var UserId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
-            var result = await authenticationManager.ChangePassword(UserId, passwordSchema.CurrentPassword, passwordSchema.NewPassword);
+            var userId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
+            var result = await authenticationManager.ChangePassword(userId, passwordSchema.CurrentPassword, passwordSchema.NewPassword);
             var changePasswordResponse = new ResponseBase
             {
                 Success = result.Success,
-                Errors = result.Errors
+                Errors = result.Errors,
             };
-            return Ok(changePasswordResponse);
+            if (result.Success == false)
+            {
+                return BadRequest(changePasswordResponse);
+            }
+            else
+            {
+                return Ok(changePasswordResponse);
+            }
         }
     }
 }
