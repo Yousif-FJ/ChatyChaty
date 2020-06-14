@@ -37,25 +37,33 @@ namespace ChatyChaty.Controllers.v3
         /// </summary>
         /// <remarks>
         /// Return the photo URL as a string (surrounded by "")</remarks>
-        /// <param name="uploadFile"></param>
         /// <returns></returns>
         /// <response code="400">The uploaded Photo must be a vaild img with png, jpg or jpeg with less than 4MB size</response>
         /// <response code="401">Unauthenticated</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [Authorize]
-        [Consumes("multipart/form-data")]
-        [Produces("application/json")]
         [HttpPost("SetPhotoForSelf")]
         public async Task<IActionResult> SetPhotoForSelf([FromForm]UploadFileSchema uploadFile)
         {
-            var UserId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
-            var URL = await accountManager.SetPhoto(long.Parse(UserId), uploadFile.PhotoFile);
-            var response = new ResponseBase
+            var userId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
+            var setPhotoResult = await accountManager.SetPhoto(long.Parse(userId), uploadFile.PhotoFile);
+            if (setPhotoResult.Success == true)
             {
-                Data = URL,
-                Success = true
-            };
-                return Ok(response);
+                return Ok(new ResponseBase<string>
+                {
+                    Success = true,
+                    Data = setPhotoResult.URL
+                }); 
+            }
+            else
+            {
+                return BadRequest(new ResponseBase<string>
+                {
+                    Success = false,
+                    Errors = setPhotoResult.Errors
+                });
+            }
+
         }
 
 
@@ -68,18 +76,21 @@ namespace ChatyChaty.Controllers.v3
         /// Example response:
         /// {
         ///  "success": true,
-        ///  "error": null,
-        ///  "chatId": 1,
-        ///  "profile":{
-        ///  "username": "*UserName*",
-        ///  "displayName": "*DisplayName*",
-        ///  "PhotoURL": "*URL*"}
+        ///  "errors": null,
+        ///  "data":{
+        ///     "chatId": 1,
+        ///     "profile":{
+        ///     "username": "*UserName*",
+        ///     "displayName": "*DisplayName*",
+        ///     "PhotoURL": "*URL*"}
+        ///         }
         /// }
         /// </remarks>
-        /// <param name="userName"></param>
         /// <returns></returns>
-        /// <response code="200">When user was found or not</response>
+        /// <response code="200">When user was found</response>
+        /// <response code="400">Model validation error</response>
         /// <response code="401">Unauthenticated</response>
+        /// <response code="404">User not found</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [Authorize]
         [HttpGet("GetUser")]
@@ -89,13 +100,13 @@ namespace ChatyChaty.Controllers.v3
             var result = await accountManager.NewConversation(long.Parse(userId), userName);
             if (result.Error != null)
             {
-                return Ok(new GetUserProfileResponse
+                return NotFound(new ResponseBase<GetUserProfileResponseBase>
                 {
                     Success = false,
                     Errors = new Collection<string> { result.Error }
                 });
             }
-            var response = new GetUserProfileResponse
+            var response = new ResponseBase<GetUserProfileResponseBase>
             {
                 Success = true,
                 Data = new GetUserProfileResponseBase
@@ -113,11 +124,23 @@ namespace ChatyChaty.Controllers.v3
         }
 
         /// <summary>
-        /// Get a list of all chat's information like username and ... (Require authentication)
+        /// Get a list of all chat's information like username and ... so on (Require authentication)
         /// </summary>
-        /// <remarks>This is used when there is an update in chat info
+        /// <remarks>This is used when there is an update in chat info example response:
         /// <br>
-        ///
+        /// {
+        ///  "success": true,
+        ///  "errors": null,
+        ///  "data":[
+        ///         {
+        ///     "chatId": 1,
+        ///     "profile":{
+        ///     "username": "*UserName*",
+        ///     "displayName": "*DisplayName*",
+        ///     "PhotoURL": "*URL*"}
+        ///         }
+        ///     ]
+        /// }
         /// </br>
         /// </remarks>
         /// <returns></returns>
@@ -148,7 +171,7 @@ namespace ChatyChaty.Controllers.v3
                 }
                     );
             };
-            var response = new GetChatsResponse()
+            var response = new ResponseBase<IEnumerable<GetUserProfileResponseBase>>()
             {
                 Success = true,
                 Data = chatList
@@ -161,21 +184,32 @@ namespace ChatyChaty.Controllers.v3
         /// Set or update the DisplayName of the authenticated user (Require authentication)
         /// </summary>
         /// <remarks>
-        /// Take the name as a json string (surrounded by "") and
-        /// Return the name as a json string (surrounded by "")
+        /// example reposne:
+        /// <br>
+        /// {
+        ///  "success": true,
+        ///  "errors": null,
+        ///  "data": "*newName*"
+        /// }
+        /// </br>
         /// </remarks>
-        /// <param name="NewDisplayName"></param>
+        /// <param name="newDisplayName"></param>
         /// <returns></returns>
-        /// <reposne  code="200">Success</reposne>
+        /// <response code="200">Success</response>
+        /// <response code="400">Model validation error</response>
         /// <response code="401">Unauthenticated</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [Authorize]
         [HttpPatch("UpdateDisplayName")]
-        public async Task<IActionResult> UpdateDisplayName([FromBody]string NewDisplayName)
+        public async Task<IActionResult> UpdateDisplayName([FromBody]string newDisplayName)
         {
             var UserId = long.Parse(HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
-            var newName = await accountManager.UpdateDisplayName(UserId, NewDisplayName);
-            return Ok(newName);
+            var newName = await accountManager.UpdateDisplayName(UserId, newDisplayName);
+            return Ok(new ResponseBase<string>
+            {
+                Success = true,
+                Data = newName
+            });
         }
     }
 }

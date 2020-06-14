@@ -65,7 +65,7 @@ namespace ChatyChaty.Controllers.v3
             var result = await messageService.GetNewMessages(userId, lastMessageId);
             if (result.Error != null)
             {
-                return BadRequest(new NewMessagesResponse
+                return BadRequest(new ResponseBase<IEnumerable<MessageInfoBase>>
                 {
                     Success = false,
                     Errors = new Collection<string>() { result.Error }
@@ -83,7 +83,7 @@ namespace ChatyChaty.Controllers.v3
                     Delivered = message.SenderId == userId ? message.Delivered : (bool?)null
                 }); ;
             }
-            return Ok(new NewMessagesResponse
+            return Ok(new ResponseBase<IEnumerable<MessageInfoBase>>
             {
                 Success = true,
                 Data = Messages
@@ -116,16 +116,16 @@ namespace ChatyChaty.Controllers.v3
             var result = await messageService.IsDelivered(long.Parse(userIdClaim.Value), messageId);
             if (result.Error != null)
             {
-                return BadRequest(new CheckDeliveryResponse
+                return BadRequest(new ResponseBase<bool?>
                 {
                     Success = false,
                     Errors = new Collection<string> { result.Error }
                 });
             }
-            return Ok(new CheckDeliveryResponse
+            return Ok(new ResponseBase<bool?>
             {
                 Success = true,
-                Data = true
+                Data = result.IsDelivered
             });
         }
 
@@ -137,13 +137,15 @@ namespace ChatyChaty.Controllers.v3
         /// and get the chat info from the action GetChatInfo.
         /// <br>Example response:</br>
         /// <br>
-        ///    {
+        ///  "success": true,
+        ///  "errors": null,
+        ///  "data": {
         ///    "chatId": 1,
         ///    "messageId": 1,
         ///    "sender": "*Username*",
         ///    "body": "*The message*",
         ///    "delivered": null
-        ///    }
+        ///         }
         /// </br>
         /// </remarks>
         /// <param name="messageSchema">Object representing the message info</param>
@@ -162,7 +164,7 @@ namespace ChatyChaty.Controllers.v3
 
             if (result.Error != null)
             {
-                return BadRequest(new SendMessageResponse
+                return BadRequest(new ResponseBase<MessageInfoBase>
                 {
                     Success = false,
                     Errors = new Collection<string> { result.Error}
@@ -178,7 +180,7 @@ namespace ChatyChaty.Controllers.v3
                 Sender = userNameClaim.Value,
                 Delivered = false
             };
-            return Ok(new SendMessageResponse
+            return Ok(new ResponseBase<MessageInfoBase>
             {
                 Success = true,
                 Data = responseBase

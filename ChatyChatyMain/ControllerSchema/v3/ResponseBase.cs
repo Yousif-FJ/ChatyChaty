@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace ChatyChaty.ControllerSchema.v3
 {
-    public class ResponseBase
+    public class ResponseBase<T>
     {
         public bool Success { get; set; }
         public IEnumerable<string> Errors { get; set; }
-        public virtual object Data { get; set; }
+        public T Data { get; set; }
 
         public ResponseBase(){}
 

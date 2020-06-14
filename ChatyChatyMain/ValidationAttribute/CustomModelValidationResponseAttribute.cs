@@ -14,7 +14,7 @@ namespace ChatyChaty.ValidationAttribute
         {
             if (!context.ModelState.IsValid)
             {
-                context.Result = new BadRequestObjectResult(new ResponseBase(context.ModelState));
+                context.Result = new BadRequestObjectResult(new ResponseBase<object>(context.ModelState));
             }
             else
             {

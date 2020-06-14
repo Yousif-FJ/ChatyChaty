@@ -45,14 +45,8 @@ namespace ChatyChaty
         public void ConfigureServices(IServiceCollection services)
         {
 
-            //register services ----------------------------------------------------------
-            services.AddMvc(option =>
-            {
-                option.Filters.Add(new ProducesAttribute("application/json"));
-                option.Filters.Add(new ConsumesAttribute("application/json"));
-            });
+            //register classes in DI -----------------------------------------------------
 
-            
             services.AddIdentity<AppUser, Role>()
                .AddEntityFrameworkStores<ChatyChatyContext>();
 
@@ -70,7 +64,15 @@ namespace ChatyChaty
 
             services.AddScoped<IMessageService, MessageService>();
 
+            //Test google authentication
+            services.AddSingleton<FirstTest>();
 
+            //configure MVC ---------------------------------------------------------------
+            services.AddMvc(option =>
+            {
+                option.Filters.Add(new ProducesAttribute("application/json"));
+                option.Filters.Add(new ConsumesAttribute("application/json"));
+            });
 
             //configure DBcontext ----------------------------------------------------------
 
@@ -122,6 +124,7 @@ namespace ChatyChaty
             });
 
 
+            //configure BearerJWT -----------------------------------------------------------
             services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -181,7 +184,7 @@ namespace ChatyChaty
               });
             });
 
-            //configure identity to disable redirect ---------------------------------
+            //configure cookie to disable redirect -----------------------------------------
             services.ConfigureApplicationCookie(options =>
             {
                 options.Events.OnRedirectToLogin = context =>
@@ -191,8 +194,6 @@ namespace ChatyChaty
                     };
             });
 
-            //Test google authentication
-            services.AddSingleton<FirstTest>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

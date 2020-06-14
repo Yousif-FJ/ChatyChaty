@@ -5,11 +5,6 @@ using System.Threading.Tasks;
 
 namespace ChatyChaty.ControllerSchema.v3
 {
-    public class GetUserProfileResponse : ResponseBase
-    {
-        public new GetUserProfileResponseBase Data { get; set; }
-    }
-
     public class GetUserProfileResponseBase
     {
         public long? ChatId { get; set; }
