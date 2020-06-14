@@ -2,6 +2,7 @@
 using ChatyChaty.Model.AccountModel;
 using ChatyChaty.Model.DBModel;
 using ChatyChaty.Model.MessageRepository;
+using ChatyChaty.Model.MessagingModel;
 using ChatyChaty.Model.NotficationHandler;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -36,35 +37,86 @@ namespace ChatyChaty.Services
             this.pictureProvider = pictureProvider;
         }
 
-        public async Task<AppUser> GetUser(string UserName)
+        public async Task<ProfileAccountModel> GetUser(string username)
         {
-            var user = await userManager.FindByNameAsync(UserName);
-            return user;
+            var user = await userManager.FindByNameAsync(username);
+            var PhotoUrl= await pictureProvider.GetPhotoURL(user.Id, user.UserName);
+            return new ProfileAccountModel
+            {
+                Username = user.UserName,
+                Id = user.Id,
+                DisplayName = user.DisplayName,
+                PhotoURL = PhotoUrl
+            };
         }
 
-        public async Task<string> SetPhoto(long UserId, IFormFile formFile)
+        /// <summary>
+        /// create or get a conversation between 2 users
+        /// </summary>
+        /// <param name="senderId">First user Id</param>
+        /// <param name="receiverUsername">Second user Id</param>
+        /// <returns>A long that represent the created conversation Id</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">thrown when sender users don't exist</exception>
+        public async Task<NewConversationModel> NewConversation(long senderId, string receiverUsername)
         {
-            var user = await messageRepository.GetUser(UserId);
+            var senderDB = await messageRepository.GetUser(senderId);
+            var reciverDB = await GetUser(receiverUsername);
+            if (senderDB == null)
+            {
+                //throw exception because userId should come from trusted source (authentication header)
+                throw new ArgumentOutOfRangeException("Invalid sender IDs");
+            }
+            if (reciverDB == null)
+            {
+                return new NewConversationModel
+                {
+                    Error = "Requested user doesn't exist"
+                };
+            }
+            //get or create the conversation
+            var conversation = await messageRepository.FindConversationForUsers(senderDB.Id, reciverDB.Id.Value);
+            if (conversation == null)
+            {
+                conversation = await messageRepository.CreateConversationForUsers(senderDB.Id, reciverDB.Id.Value);
+            }
+
+            await notificationHandler.UserGotChatUpdate(reciverDB.Id.Value);
+
+            return new NewConversationModel
+            {
+                Conversation = new ConversationInfo
+                {
+                    ConversationId = conversation.Id,
+                    SecondUserId = reciverDB.Id.Value,
+                    SecondUserDisplayName = reciverDB.DisplayName,
+                    SecondUserUsername = reciverDB.Username,
+                    SecondUserPhoto = await pictureProvider.GetPhotoURL(reciverDB.Id.Value, reciverDB.Username)
+                }
+            };
+        }
+
+        public async Task<PhotoUrlModel> SetPhoto(long userId, IFormFile formFile)
+        {
+            var user = await messageRepository.GetUser(userId);
             if (user == null)
             {
                 throw new ArgumentOutOfRangeException("Invalid userId");
             }
-            await pictureProvider.ChangePhoto(user.Id, user.UserName, formFile);
-            var URL = await pictureProvider.GetPhotoURL(user.Id, user.UserName);
+            var setPhotoResult = await pictureProvider.ChangePhoto(user.Id, user.UserName, formFile);
             await notificationHandler.UserUpdatedProfile(user.Id);
-            return URL;
+            return setPhotoResult;
         }
 
-        public async Task<string> UpdateDisplayName(long UserId, string NewDisplayName)
+        public async Task<string> UpdateDisplayName(long userId, string newDisplayName)
         {
-            var user = await messageRepository.GetUser(UserId);
+            var user = await messageRepository.GetUser(userId);
             if (user is null)
             {
                 throw new ArgumentOutOfRangeException("Invalid UserId");
             }
-            var NewName = await messageRepository.UpdateDisplayName(UserId, NewDisplayName);
+            var newName = await messageRepository.UpdateDisplayName(userId, newDisplayName);
             await notificationHandler.UserUpdatedProfile(user.Id);
-            return NewName;
+            return newName;
         }
     }
 }

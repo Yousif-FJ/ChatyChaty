@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using XUnitTest.MockClasses;
 
 namespace XUnitTest
 {
@@ -28,7 +29,7 @@ namespace XUnitTest
             //construct a message repositor and notfication handler then a message service
             var MessageRepositor = new MessageRepository(context);
             NotificationHandler notificationHandler = new NotificationHandler(dbContext);
-            messageService = new MessageService(MessageRepositor,notificationHandler);
+            messageService = new MessageService(MessageRepositor,notificationHandler, new MockPictureProvider());
         }
 
 
@@ -107,7 +108,7 @@ namespace XUnitTest
             //Act
             var MessagesResult = await messageService.GetNewMessages(u1.Id, 0);
             //Assert
-            var Messagelist = new List<Message>(MessagesResult);
+            var Messagelist = new List<Message>(MessagesResult.Messages);
             Assert.True(Messagelist[0].Body == "test1");
             Assert.True(Messagelist[1].Body == "test2");
             Assert.True(Messagelist[0].ConversationId == conversation1.Id);
@@ -155,7 +156,7 @@ namespace XUnitTest
             //Act
             var MessagesResult = await messageService.GetNewMessages(u2.Id, 0);
             //Assert
-            var Messagelist = new List<Message>(MessagesResult);
+            var Messagelist = new List<Message>(MessagesResult.Messages);
             Assert.True(Messagelist[0].Body == "test1");
             Assert.True(Messagelist[0].ConversationId == conversation1.Id);
             Assert.True(Messagelist.Count == 1);
@@ -173,11 +174,11 @@ namespace XUnitTest
                 SecondUserId = u2.Id
             })).Entity;
             await dbContext.SaveChangesAsync();
-            var message = await messageService.SendMessage(conversation2.Id, u1.Id, "Test Message");
+            var messageResult = await messageService.SendMessage(conversation2.Id, u1.Id, "Test Message");
             //Act
-            var result = await messageService.IsDelivered(u1.Id, message.Id);
+            var result = await messageService.IsDelivered(u1.Id, messageResult.Message.Id);
             //Assert
-            Assert.False(result);
+            Assert.False(result.IsDelivered);
         }
 
         [Fact]
@@ -192,12 +193,12 @@ namespace XUnitTest
                 SecondUserId = u2.Id
             })).Entity;
             await dbContext.SaveChangesAsync();
-            var message = await messageService.SendMessage(conversation2.Id, u1.Id, "Test Message");
+            var messageResult = await messageService.SendMessage(conversation2.Id, u1.Id, "Test Message");
             await messageService.GetNewMessages(u2.Id, 0);
             //Act
-            var result = await messageService.IsDelivered(u1.Id, message.Id);
+            var result = await messageService.IsDelivered(u1.Id, messageResult.Message.Id);
             //Assert
-            Assert.True(result);
+            Assert.True(result.IsDelivered);
         }
     }
 }

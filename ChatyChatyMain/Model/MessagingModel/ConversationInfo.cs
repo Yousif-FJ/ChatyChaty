@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ChatyChaty.Model.Messaging_model
+namespace ChatyChaty.Model.MessagingModel
 {
     public class ConversationInfo
     {
@@ -11,5 +11,6 @@ namespace ChatyChaty.Model.Messaging_model
         public string SecondUserDisplayName { get; set; }
         public string SecondUserUsername { get; set; }
         public long SecondUserId { get; set; }
+        public string SecondUserPhoto { get; set; }
     }
 }

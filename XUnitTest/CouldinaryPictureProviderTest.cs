@@ -1,6 +1,7 @@
 using ChatyChaty.Services;
 using CloudinaryDotNet;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 using System.Net;
@@ -16,8 +17,9 @@ namespace XUnitTest
         private readonly CloudinaryPictureProvider pictureProvider;
         public CouldinaryPictureProviderTest()
         {
+            var logger = new Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory().CreateLogger<CloudinaryPictureProvider>(); ;
             var pictureProvider = new CloudinaryPictureProvider(
-                new Cloudinary());
+                new Cloudinary(), logger);
             this.pictureProvider = pictureProvider;
         }
 

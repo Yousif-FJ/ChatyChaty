@@ -8,12 +8,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ChatyChaty.ValidationAttribute;
 using Microsoft.AspNetCore.Authorization;
-using ChatyChaty.ControllerSchema.v2;
+using ChatyChaty.ControllerSchema.v3;
 using System.Security.Claims;
 
-namespace ChatyChaty.Controllers.v2
+namespace ChatyChaty.Controllers.v3
 {
-    [Route("api/v2/[controller]")]
+    [SuppressAutoModelStateResponse]
+    [CustomModelValidationResponse]
+    [Route("api/v3/[controller]")]
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
@@ -30,35 +32,38 @@ namespace ChatyChaty.Controllers.v2
         /// </summary>
         /// <remarks>
         /// Sample Response: 
+        /// <br>
         /// {
         ///  "success": true,
-        ///  "token": "*The Token*",
         ///  "errors": null,
-        ///  "profile": {
-        /// "username": "*UserName*",
-        ///    "displayName": "*DisplayName*",
-        ///    "photoURL": "*Picture URL*"
+        ///  "data":{
+        ///     "token": "*The Token*",
+        ///     "profile": {
+        ///         "username": "*UserName*",
+        ///         "displayName": "*DisplayName*",
+        ///         "photoURL": "*Picture URL*"
+        ///         }
         ///  }
         ///}
+        ///</br>
         /// </remarks>
         /// <response code="200">Login Succeed or failed</response>
         /// <response code="400">Model validation failed</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
-        [HttpPost("CreateAccount")]
-        [Obsolete]
+        [HttpPost("NewAccount")]
         public async Task<IActionResult> CreateAccount([FromBody]CreateAccountSchema accountSchema)
         {
            var authenticationResult = await authenticationManager.CreateAccount(
-               accountSchema.UserName, accountSchema.Password, accountSchema.DisplayName);
+               accountSchema.Username, accountSchema.Password, accountSchema.DisplayName);
 
             if (!authenticationResult.Success)
             {
-                AuthenticationResponse authenticationSchemaF = new AuthenticationResponse()
+                ResponseBase<AuthenticationResponseBase> authenticationSchemaF = new ResponseBase<AuthenticationResponseBase>()
                 {
                     Errors = authenticationResult.Errors,
                     Success = authenticationResult.Success,
                 };
-                return Ok(authenticationSchemaF);
+                return BadRequest(authenticationSchemaF);
             }
 
             ProfileSchema profileSchema = new ProfileSchema
@@ -68,30 +73,16 @@ namespace ChatyChaty.Controllers.v2
                 PhotoURL = authenticationResult.Profile.PhotoURL
             };
 
-            AuthenticationResponse authenticationSchema = new AuthenticationResponse()
+            ResponseBase<AuthenticationResponseBase> authenticationSchema = new ResponseBase<AuthenticationResponseBase>()
             {
-                Errors = authenticationResult.Errors,
                 Success = authenticationResult.Success,
-                Token = authenticationResult.Token,
-                Profile = profileSchema
+                Data = new AuthenticationResponseBase
+                {
+                    Token = authenticationResult.Token,
+                    Profile = profileSchema
+                }
             };
-                return Ok(authenticationSchema);
-        }
-
-        /// <summary>
-        /// Check if the use is Authenticated And return the logged in user (For testing)
-        /// </summary>
-        /// <returns></returns>
-        /// <response code="401">Not Authenticated</response>
-        /// <response code="200">Authenticated</response>
-        /// <response code="500">Server Error (This shouldn't happen)</response>
-        [HttpGet("IsAuthenticated")]
-        [Authorize]
-        [Obsolete]
-        public IActionResult IsAuthenticated()
-        {
-            var UserNameClaim = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Name);
-            return Ok($"Current Active User Is {UserNameClaim.Value}");
+            return Ok(authenticationSchema);
         }
 
 
@@ -100,37 +91,39 @@ namespace ChatyChaty.Controllers.v2
         /// </summary>
         /// <remarks>
         /// Sample Response: 
+        /// <br>
         /// {
         ///  "success": true,
-        ///  "token": "*The Token*",
         ///  "errors": null,
-        ///  "profile": {
-        ///   "username": "*UserName*",
-        ///   "displayName": "*DisplayName*",
-        ///   "photoURL": "*Picture URL*"
+        ///  "data":{
+        ///     "token": "*The Token*",
+        ///     "profile": {
+        ///         "username": "*UserName*",
+        ///         "displayName": "*DisplayName*",
+        ///         "photoURL": "*Picture URL*"
+        ///         }
         ///  }
         ///}
+        /// </br>
         /// </remarks>
         /// <response code="200">Login Succeed or failed</response>
         /// <response code="400">Model validation failed</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
-        [HttpPost("Login")]
-        [Obsolete]
+        [HttpPost("Account")]
         public async Task<IActionResult> Login([FromBody]LoginAccountSchema accountSchema)
         {
             var authenticationResult = await authenticationManager.Login(
-                accountSchema.UserName, accountSchema.Password);
+                accountSchema.Username, accountSchema.Password);
 
             if (!authenticationResult.Success)
             {
-                AuthenticationResponse authenticationSchemaF = new AuthenticationResponse()
+                ResponseBase<AuthenticationResponseBase> authenticationSchemaF = new ResponseBase<AuthenticationResponseBase>()
                 {
                     Errors = authenticationResult.Errors,
                     Success = authenticationResult.Success,
                 };
-                return Ok(authenticationSchemaF);
+                return BadRequest(authenticationSchemaF);
             }
-
 
             ProfileSchema profileSchema = new ProfileSchema
             {
@@ -139,12 +132,15 @@ namespace ChatyChaty.Controllers.v2
                 PhotoURL = authenticationResult.Profile.PhotoURL
             };
 
-            AuthenticationResponse authenticationSchema = new AuthenticationResponse()
+            ResponseBase<AuthenticationResponseBase> authenticationSchema = new ResponseBase<AuthenticationResponseBase>()
             {
                 Errors = authenticationResult.Errors,
                 Success = authenticationResult.Success,
-                Token = authenticationResult.Token,
-                Profile = profileSchema
+                Data = new AuthenticationResponseBase
+                {
+                    Token = authenticationResult.Token,
+                    Profile = profileSchema
+                }
             };
             return Ok(authenticationSchema);
         }
@@ -157,29 +153,37 @@ namespace ChatyChaty.Controllers.v2
         /// <br>Currently this doesn't make existing logins sessions invalid. </br>
         /// <br>If you set the new password back to the same current password you won't get any errors</br>
         /// Example response: 
+        /// <br>
         /// {
         ///  "success": true,
-        ///  "errors": []
+        ///  "errors": [],
+        ///  "data": null
         /// }
+        /// </br>
         /// </remarks>
-        /// <param name="passwordSchema"></param>
         /// <returns></returns>
         /// <response code="200">Password change Succeed or failed</response>
         /// <response code="400">Model validation failed</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [Authorize]
-        [Obsolete]
-        [HttpPatch("ChangePassword")]
-        public async Task<IActionResult> ChangePassword(ChangePasswordSchema passwordSchema)
+        [HttpPatch("Password")]
+        public async Task<IActionResult> ChangePassword([FromBody]ChangePasswordSchema passwordSchema)
         {
-            var UserId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
-            var result = await authenticationManager.ChangePassword(UserId, passwordSchema.CurrentPassword, passwordSchema.NewPassword);
-            ChangePasswordResponse changePasswordResponse = new ChangePasswordResponse
+            var userId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
+            var result = await authenticationManager.ChangePassword(userId, passwordSchema.CurrentPassword, passwordSchema.NewPassword);
+            var changePasswordResponse = new ResponseBase<object>
             {
                 Success = result.Success,
-                Errors = result.Errors
+                Errors = result.Errors,
             };
-            return Ok(changePasswordResponse);
+            if (result.Success == false)
+            {
+                return BadRequest(changePasswordResponse);
+            }
+            else
+            {
+                return Ok(changePasswordResponse);
+            }
         }
     }
 }
