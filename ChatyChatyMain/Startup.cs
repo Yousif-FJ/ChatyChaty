@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
+using ChatyChaty.ControllerSchema.v3;
 using ChatyChaty.Model;
 using ChatyChaty.Model.DBModel;
 using ChatyChaty.Model.MessageRepository;
@@ -15,6 +18,7 @@ using ChatyChaty.ValidationAttribute;
 using CloudinaryDotNet;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -132,6 +136,24 @@ namespace ChatyChaty
             })
                 .AddJwtBearer(options =>
                 {
+                    //passing a delegate to replace the default not authorized response
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnChallenge = async delegate (JwtBearerChallengeContext context)
+                        {
+                            context.Response.ContentType = "application/json";
+                            context.HandleResponse();
+                            context.Response.StatusCode = 401;
+                            await context.Response.WriteAsync(
+                                JsonSerializer.Serialize(
+                                new ResponseBase<object>
+                                {
+                                    Success = false,
+                                    Errors = new Collection<string> { "The user is not authenticated" }
+                                })
+                            );
+                        }
+                    };
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true,
@@ -183,17 +205,6 @@ namespace ChatyChaty
                   }
               });
             });
-
-            //configure cookie to disable redirect -----------------------------------------
-            services.ConfigureApplicationCookie(options =>
-            {
-                options.Events.OnRedirectToLogin = context =>
-                    {
-                        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                        return Task.CompletedTask;
-                    };
-            });
-
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -201,6 +212,10 @@ namespace ChatyChaty
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseExceptionHandler("/error");
             }
 
             app.UseSwagger();
