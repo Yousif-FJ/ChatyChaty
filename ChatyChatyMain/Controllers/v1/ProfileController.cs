@@ -44,6 +44,7 @@ namespace ChatyChaty.Controllers.v1
         [Consumes("multipart/form-data")]
         [Produces("application/json")]
         [HttpPost("SetPhotoForSelf")]
+        [Obsolete]
         public async Task<IActionResult> SetPhotoForSelf([FromForm]UploadFileSchema uploadFile)
         {
             var UserId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
@@ -60,6 +61,7 @@ namespace ChatyChaty.Controllers.v1
         /// <remarks><br>This is used to start a chat with a user</br>
         /// <br>You may get the DisplayName as null due to account greated before the last change</br>
         /// Example response:
+        /// <br>
         /// {
         ///  "success": true,
         ///  "error": null,
@@ -69,6 +71,7 @@ namespace ChatyChaty.Controllers.v1
         ///  "displayName": "*DisplayName*",
         ///  "PhotoURL": "*URL*"}
         /// }
+        /// </br>
         /// </remarks>
         /// <param name="UserName"></param>
         /// <returns></returns>
@@ -77,6 +80,7 @@ namespace ChatyChaty.Controllers.v1
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [Authorize]
         [HttpGet("GetUser")]
+        [Obsolete]
         public async Task<IActionResult> GetUser([FromHeader]string UserName)
         {
             var UserId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
@@ -118,6 +122,7 @@ namespace ChatyChaty.Controllers.v1
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [Authorize]
         [HttpGet("GetChats")]
+        [Obsolete]
         public async Task<IActionResult> GetChats()
         {
             var UserId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
@@ -155,6 +160,7 @@ namespace ChatyChaty.Controllers.v1
         /// <returns></returns>
         [Authorize]
         [HttpPatch("UpdateDisplayName")]
+        [Obsolete]
         public async Task<IActionResult> UpdateDisplayName([FromBody]string NewDisplayName)
         {
             var UserId = long.Parse(HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value);

@@ -12,7 +12,6 @@ using ChatyChaty.ValidationAttribute;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using WebApplication1.ValidationAttributes;
 
 namespace ChatyChaty.Controllers.v3
 {
@@ -36,13 +35,19 @@ namespace ChatyChaty.Controllers.v3
         /// Set photo or replace existing one (Require authentication)
         /// </summary>
         /// <remarks>
-        /// Return the photo URL as a string (surrounded by "")</remarks>
-        /// <returns></returns>
+        /// <br>
+        /// {
+        ///  "success": true,
+        ///  "errors": null,
+        ///  "data": "*photoUrl*"
+        /// }
+        /// </br>
+        /// </remarks>
         /// <response code="400">The uploaded Photo must be a vaild img with png, jpg or jpeg with less than 4MB size</response>
         /// <response code="401">Unauthenticated</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [Authorize]
-        [HttpPost("SetPhotoForSelf")]
+        [HttpPost("Photo")]
         public async Task<IActionResult> SetPhotoForSelf([FromForm]UploadFileSchema uploadFile)
         {
             var userId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
@@ -74,6 +79,7 @@ namespace ChatyChaty.Controllers.v3
         /// <remarks><br>This is used to start a chat with a user</br>
         /// <br>You may get the DisplayName as null due to account greated before the last change</br>
         /// Example response:
+        /// <br>
         /// {
         ///  "success": true,
         ///  "errors": null,
@@ -85,6 +91,7 @@ namespace ChatyChaty.Controllers.v3
         ///     "PhotoURL": "*URL*"}
         ///         }
         /// }
+        /// </br>
         /// </remarks>
         /// <returns></returns>
         /// <response code="200">When user was found</response>
@@ -93,7 +100,7 @@ namespace ChatyChaty.Controllers.v3
         /// <response code="404">User not found</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [Authorize]
-        [HttpGet("GetUser")]
+        [HttpGet("User")]
         public async Task<IActionResult> GetUser([FromHeader]string userName)
         {
             var userId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
@@ -148,7 +155,7 @@ namespace ChatyChaty.Controllers.v3
         /// <response code="401">Unauthenticated</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [Authorize]
-        [HttpGet("GetChats")]
+        [HttpGet("Chats")]
         public async Task<IActionResult> GetChats()
         {
             var userId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
@@ -200,7 +207,7 @@ namespace ChatyChaty.Controllers.v3
         /// <response code="401">Unauthenticated</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [Authorize]
-        [HttpPatch("UpdateDisplayName")]
+        [HttpPatch("DisplayName")]
         public async Task<IActionResult> UpdateDisplayName([FromBody]string newDisplayName)
         {
             var UserId = long.Parse(HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value);

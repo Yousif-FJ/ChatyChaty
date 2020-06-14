@@ -32,6 +32,7 @@ namespace ChatyChaty.Controllers.v3
         /// </summary>
         /// <remarks>
         /// Sample Response: 
+        /// <br>
         /// {
         ///  "success": true,
         ///  "errors": null,
@@ -44,11 +45,12 @@ namespace ChatyChaty.Controllers.v3
         ///         }
         ///  }
         ///}
+        ///</br>
         /// </remarks>
         /// <response code="200">Login Succeed or failed</response>
         /// <response code="400">Model validation failed</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
-        [HttpPost("CreateAccount")]
+        [HttpPost("NewAccount")]
         public async Task<IActionResult> CreateAccount([FromBody]CreateAccountSchema accountSchema)
         {
            var authenticationResult = await authenticationManager.CreateAccount(
@@ -89,6 +91,7 @@ namespace ChatyChaty.Controllers.v3
         /// </summary>
         /// <remarks>
         /// Sample Response: 
+        /// <br>
         /// {
         ///  "success": true,
         ///  "errors": null,
@@ -101,11 +104,12 @@ namespace ChatyChaty.Controllers.v3
         ///         }
         ///  }
         ///}
+        /// </br>
         /// </remarks>
         /// <response code="200">Login Succeed or failed</response>
         /// <response code="400">Model validation failed</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
-        [HttpPost("Login")]
+        [HttpPost("Account")]
         public async Task<IActionResult> Login([FromBody]LoginAccountSchema accountSchema)
         {
             var authenticationResult = await authenticationManager.Login(
@@ -149,18 +153,20 @@ namespace ChatyChaty.Controllers.v3
         /// <br>Currently this doesn't make existing logins sessions invalid. </br>
         /// <br>If you set the new password back to the same current password you won't get any errors</br>
         /// Example response: 
+        /// <br>
         /// {
         ///  "success": true,
         ///  "errors": [],
         ///  "data": null
         /// }
+        /// </br>
         /// </remarks>
         /// <returns></returns>
         /// <response code="200">Password change Succeed or failed</response>
         /// <response code="400">Model validation failed</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [Authorize]
-        [HttpPatch("ChangePassword")]
+        [HttpPatch("Password")]
         public async Task<IActionResult> ChangePassword([FromBody]ChangePasswordSchema passwordSchema)
         {
             var userId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;

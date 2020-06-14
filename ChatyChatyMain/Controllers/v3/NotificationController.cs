@@ -32,7 +32,7 @@ namespace ChatyChaty.Controllers.v3
         /// <remarks>
         /// <br>Use GetNewMessages If Messages updates is true, Use GetChat then GetNewMessage If ChatUpdate is true.</br>
         /// <br>Once this method is called the values will be reset for chat and message updates</br>
-        /// <br>Example Response:</br>
+        /// Example Response:
         /// <br> 
         ///  "success": true,
         ///  "errors": null,
@@ -45,7 +45,7 @@ namespace ChatyChaty.Controllers.v3
         /// </remarks>
         /// <returns></returns>
         [Authorize]
-        [HttpGet("CheckForUpdates")]
+        [HttpGet("Updates")]
         public async Task<IActionResult> CheckForUpdates()
         {
             var userId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;

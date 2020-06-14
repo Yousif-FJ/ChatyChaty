@@ -56,6 +56,7 @@ namespace ChatyChaty.Controllers.v2
         /// <response code="403">Not Authenticated</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [HttpGet("GetNewMessages")]
+        [Obsolete]
         public async Task<IActionResult> GetNewMessages([FromHeader]long LastMessageId)
         {
             var UserId = long.Parse(HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
@@ -94,6 +95,7 @@ namespace ChatyChaty.Controllers.v2
         /// <response code="403">Not Authenticated</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [HttpGet("CheckDelivered")]
+        [Obsolete]
         public async Task<IActionResult> CheckDelivered([FromHeader]long MessageId)
         {
             var UserIdClaim = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
@@ -129,6 +131,7 @@ namespace ChatyChaty.Controllers.v2
         /// <response code="403">Not Authenticated</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [HttpPost("SendMessage")]
+        [Obsolete]
         public async Task<IActionResult> SendMessage([FromBody]SendMessageSchema messageSchema)
         {
             var UserIdClaim = HttpContext.User.Claims.FirstOrDefault(

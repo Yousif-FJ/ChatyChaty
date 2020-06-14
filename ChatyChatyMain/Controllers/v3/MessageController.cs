@@ -56,9 +56,9 @@ namespace ChatyChaty.Controllers.v3
         /// <returns></returns>
         /// <response code="200">An array of messages</response>
         /// <response code="400">Invalid MessageId</response>
-        /// <response code="403">Not Authenticated</response>
+        /// <response code="401">Not Authenticated</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
-        [HttpGet("GetNewMessages")]
+        [HttpGet("NewMessages")]
         public async Task<IActionResult> GetNewMessages([FromHeader]long lastMessageId)
         {
             var userId = long.Parse(HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
@@ -107,9 +107,9 @@ namespace ChatyChaty.Controllers.v3
         /// <returns></returns>
         /// <response code="200">A bool whether the message is Delivered or not</response>
         /// <response code="400">The user doesn't own the message or invalid MessageId</response>
-        /// <response code="403">Not Authenticated</response>
+        /// <response code="401">Not Authenticated</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
-        [HttpGet("CheckDelivered")]
+        [HttpGet("Delivered")]
         public async Task<IActionResult> CheckDelivered([FromHeader]long messageId)
         {
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
@@ -152,9 +152,9 @@ namespace ChatyChaty.Controllers.v3
         /// <returns></returns>
         /// <response code="200">sent! You get the message back in the response</response>
         /// <response code="400">The user doesn't own the chat</response>
-        /// <response code="403">Not Authenticated</response>
+        /// <response code="401">Not Authenticated</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
-        [HttpPost("SendMessage")]
+        [HttpPost("Message")]
         public async Task<IActionResult> SendMessage([FromBody]SendMessageSchema messageSchema)
         {
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(

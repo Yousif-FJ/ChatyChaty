@@ -41,6 +41,7 @@ namespace ChatyChaty.Controllers.v2
         /// <returns></returns>
         [Authorize]
         [HttpGet("CheckForUpdates")]
+        [Obsolete]
         public async Task<IActionResult> CheckForUpdates()
         {
             var UserId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
