@@ -32,13 +32,14 @@ namespace ChatyChaty.Controllers.v3
         /// Get new messages by supplying the last messageId of the last chat (Require authentication)
         /// </summary>
         /// <remarks>
-        /// You should use CheckForNewMessages first for performance (I'm not sure if it makes much difference will test latter).
-        /// You may supply 0 as last messageId if there are no messages.
-        /// Expect delivered to be null for the message you received.
-        /// You may get the full chat info (like sender username and picture) using the ChatId,
-        /// You can use the action GetChatInfo to get the chat info. 
+        /// <br>Use CheckForNewMessages first for performance.</br>
+        /// <br>You may supply 0 as last messageId if there are no messages.</br>
+        /// <br>Expect delivered to be null for the message you received.</br>
+        /// <br>You may get the full chat info (like sender username and picture) using the ChatId,
+        /// You can use the action GetChatInfo to get the chat info.</br>
         /// Example response:
         /// <br>
+        /// {
         ///  "success": true,
         ///  "errors": null,
         ///  "data":[
@@ -48,8 +49,8 @@ namespace ChatyChaty.Controllers.v3
         ///    "sender": "*Username*",
         ///    "body": "*The message*",
         ///    "delivered": true
-        ///  }
-        /// ]
+        ///  }]
+        /// }
         /// </br>
         /// </remarks>
         /// <param name="lastMessageId"></param>
@@ -94,13 +95,16 @@ namespace ChatyChaty.Controllers.v3
         /// <summary>
         /// Check if the message is Delivered or not (Require authentication)
         /// </summary>
-        /// <remarks>Only works if the message was sent by the user himself.
-        /// should be only used when the chat is open, to reduce performance hit
+        /// <remarks>
+        /// <br>Only works if the message was sent by the user himself.</br>
+        /// <br>should be only used when the chat is open, to reduce performance hit</br>
         /// <br>Example response:</br>
         /// <br>
+        /// {
         ///  "success": true,
         ///  "errors": null,
         ///  "data": true
+        ///  }
         /// </br>
         /// </remarks>
         /// <param name="messageId">long represent the message Id</param>
@@ -133,10 +137,12 @@ namespace ChatyChaty.Controllers.v3
         /// <summary>
         /// Send New message with the chatId(Require authentication)
         /// </summary>
-        /// <remarks>you can get the chatId using the action GetUser,
-        /// and get the chat info from the action GetChatInfo.
+        /// <remarks>
+        /// <br>you can get the chatId using the action GetUser,
+        /// and get the chat info from the action GetChatInfo.</br>
         /// <br>Example response:</br>
         /// <br>
+        /// {       
         ///  "success": true,
         ///  "errors": null,
         ///  "data": {
@@ -146,6 +152,7 @@ namespace ChatyChaty.Controllers.v3
         ///    "body": "*The message*",
         ///    "delivered": null
         ///         }
+        /// }
         /// </br>
         /// </remarks>
         /// <param name="messageSchema">Object representing the message info</param>

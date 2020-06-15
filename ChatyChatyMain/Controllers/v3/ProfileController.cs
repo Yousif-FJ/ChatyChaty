@@ -35,6 +35,7 @@ namespace ChatyChaty.Controllers.v3
         /// Set photo or replace existing one (Require authentication)
         /// </summary>
         /// <remarks>
+        /// <br>Example response:</br>
         /// <br>
         /// {
         ///  "success": true,
@@ -78,7 +79,7 @@ namespace ChatyChaty.Controllers.v3
         /// </summary>
         /// <remarks><br>This is used to start a chat with a user</br>
         /// <br>You may get the DisplayName as null due to account greated before the last change</br>
-        /// Example response:
+        /// <br>Example response:</br>
         /// <br>
         /// {
         ///  "success": true,
@@ -133,7 +134,9 @@ namespace ChatyChaty.Controllers.v3
         /// <summary>
         /// Get a list of all chat's information like username and ... so on (Require authentication)
         /// </summary>
-        /// <remarks>This is used when there is an update in chat info example response:
+        /// <remarks>
+        /// <br>This is used when there is an update in chat info.</br>
+        /// <br>Example response:</br>
         /// <br>
         /// {
         ///  "success": true,
@@ -191,7 +194,7 @@ namespace ChatyChaty.Controllers.v3
         /// Set or update the DisplayName of the authenticated user (Require authentication)
         /// </summary>
         /// <remarks>
-        /// example reposne:
+        /// <br>Example reposne:</br>
         /// <br>
         /// {
         ///  "success": true,
