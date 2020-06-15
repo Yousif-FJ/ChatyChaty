@@ -31,7 +31,7 @@ namespace ChatyChaty.Controllers.v3
         /// Create an account and retrieve JWT token with Profile 
         /// </summary>
         /// <remarks>
-        /// Sample Response: 
+        /// <br>Example Response: </br>
         /// <br>
         /// {
         ///  "success": true,
@@ -44,8 +44,8 @@ namespace ChatyChaty.Controllers.v3
         ///         "photoURL": "*Picture URL*"
         ///         }
         ///  }
-        ///}
-        ///</br>
+        /// }
+        /// </br>
         /// </remarks>
         /// <response code="200">Login Succeed or failed</response>
         /// <response code="400">Model validation failed</response>
@@ -90,7 +90,7 @@ namespace ChatyChaty.Controllers.v3
         /// Login with an existing account and retrieve JWT token with Profile
         /// </summary>
         /// <remarks>
-        /// Sample Response: 
+        /// <br>Example Response: </br>
         /// <br>
         /// {
         ///  "success": true,
@@ -152,7 +152,7 @@ namespace ChatyChaty.Controllers.v3
         /// <remarks>
         /// <br>Currently this doesn't make existing logins sessions invalid. </br>
         /// <br>If you set the new password back to the same current password you won't get any errors</br>
-        /// Example response: 
+        /// <br>Example response: </br>
         /// <br>
         /// {
         ///  "success": true,

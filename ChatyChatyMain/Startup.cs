@@ -150,8 +150,11 @@ namespace ChatyChaty
                                 {
                                     Success = false,
                                     Errors = new Collection<string> { "The user is not authenticated" }
+                                }, new JsonSerializerOptions
+                                {
+                                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
                                 })
-                            );
+                            ); ;
                         }
                     };
                     options.TokenValidationParameters = new TokenValidationParameters

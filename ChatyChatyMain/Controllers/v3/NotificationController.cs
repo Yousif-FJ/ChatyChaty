@@ -32,8 +32,9 @@ namespace ChatyChaty.Controllers.v3
         /// <remarks>
         /// <br>Use GetNewMessages If Messages updates is true, Use GetChat then GetNewMessage If ChatUpdate is true.</br>
         /// <br>Once this method is called the values will be reset for chat and message updates</br>
-        /// Example Response:
+        /// <br>Example Response:</br>
         /// <br> 
+        /// {
         ///  "success": true,
         ///  "errors": null,
         ///  "data": {
@@ -41,6 +42,7 @@ namespace ChatyChaty.Controllers.v3
         ///     "messageUpdate": false,
         ///     "deliveredUpdate": false
         ///         }
+        /// }
         /// </br>
         /// </remarks>
         /// <returns></returns>
