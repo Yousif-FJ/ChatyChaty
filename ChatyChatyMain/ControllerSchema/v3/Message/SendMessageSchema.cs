@@ -4,13 +4,13 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ChatyChaty.ControllerSchema.v2
+namespace ChatyChaty.ControllerSchema.v3
 {
-    public class ChangePasswordSchema
+    public class SendMessageSchema 
     {
         [Required]
-        public string CurrentPassword { get; set; }
+        public long ChatId { get; set; }
         [Required]
-        public string NewPassword { get; set; }
+        public string Body { get; set; }
     }
 }

@@ -44,8 +44,9 @@ namespace ChatyChaty.Controllers.v1
         [Consumes("multipart/form-data")]
         [Produces("application/json")]
         [HttpPost("SetPhotoForSelf")]
+        [Obsolete]
         public async Task<IActionResult> SetPhotoForSelf([FromForm]UploadFileSchema uploadFile)
-        {         
+        {
             var UserId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
             var URL = await accountManager.SetPhoto(long.Parse(UserId), uploadFile.PhotoFile);
 
@@ -60,6 +61,7 @@ namespace ChatyChaty.Controllers.v1
         /// <remarks><br>This is used to start a chat with a user</br>
         /// <br>You may get the DisplayName as null due to account greated before the last change</br>
         /// Example response:
+        /// <br>
         /// {
         ///  "success": true,
         ///  "error": null,
@@ -69,6 +71,7 @@ namespace ChatyChaty.Controllers.v1
         ///  "displayName": "*DisplayName*",
         ///  "PhotoURL": "*URL*"}
         /// }
+        /// </br>
         /// </remarks>
         /// <param name="UserName"></param>
         /// <returns></returns>
@@ -76,9 +79,8 @@ namespace ChatyChaty.Controllers.v1
         /// <response code="401">Unaithenticated</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [Authorize]
-        [Consumes("application/json")]
-        [Produces("application/json")]
         [HttpGet("GetUser")]
+        [Obsolete]
         public async Task<IActionResult> GetUser([FromHeader]string UserName)
         {
             var UserId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
@@ -92,7 +94,7 @@ namespace ChatyChaty.Controllers.v1
                         Error = "No such a Username"
                     });
             }
-            var conversationId = await messageService.NewConversation(long.Parse(UserId), user.Id);
+            var conversationId = await messageService.NewConversation(long.Parse(UserId), user.Id.Value);
             var response = new GetUserProfileResponse
             {
                 Success = true,
@@ -100,8 +102,8 @@ namespace ChatyChaty.Controllers.v1
                 Profile = new ProfileResponse
                 {
                     DisplayName = user.DisplayName,
-                    Username = user.UserName,
-                    PhotoURL = await pictureProvider.GetPhotoURL(user.Id, user.UserName)
+                    Username = user.Username,
+                    PhotoURL = await pictureProvider.GetPhotoURL(user.Id.Value, user.Username)
                 }
             };
             return Ok(response);
@@ -119,9 +121,8 @@ namespace ChatyChaty.Controllers.v1
         /// <response code="401">Unaithenticated</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [Authorize]
-        [Consumes("application/json")]
-        [Produces("application/json")]
         [HttpGet("GetChats")]
+        [Obsolete]
         public async Task<IActionResult> GetChats()
         {
             var UserId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
@@ -158,9 +159,8 @@ namespace ChatyChaty.Controllers.v1
         /// <param name="NewDisplayName"></param>
         /// <returns></returns>
         [Authorize]
-        [Consumes("application/json")]
-        [Produces("application/json")]
         [HttpPatch("UpdateDisplayName")]
+        [Obsolete]
         public async Task<IActionResult> UpdateDisplayName([FromBody]string NewDisplayName)
         {
             var UserId = long.Parse(HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value);

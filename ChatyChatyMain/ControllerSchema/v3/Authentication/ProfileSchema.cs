@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ChatyChaty.Model.AccountModel
+namespace ChatyChaty.ControllerSchema.v3
 {
-    public class Profile
+    public class ProfileSchema
     {
         public string Username { get; set; }
         public string DisplayName { get; set; }

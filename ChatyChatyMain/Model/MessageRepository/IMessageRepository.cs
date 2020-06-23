@@ -8,18 +8,18 @@ namespace ChatyChaty.Model.MessageRepository
 {
     public interface IMessageRepository
     {
-        Task<AppUser> GetUser(long Id);
-        Task<Conversation> GetConversation(long Id);
-        Task<Message> GetMessage(long Id);
-        Task<bool> IsConversationForUser(long ConversationId, long UserId);
-        Task<Conversation> FindConversationForUsers(long User1Id, long User2Id);
-        Task<Conversation> CreateConversationForUsers(long User1Id, long User2Id);
+        Task<AppUser> GetUserAsync(long Id);
+        Task<Conversation> GetConversationAsync(long Id);
+        Task<Message> GetMessageAsync(long Id);
+        Task<bool> IsConversationForUserAsync(long ConversationId, long UserId);
+        Task<Conversation> FindConversationForUsersAsync(long User1Id, long User2Id);
+        Task<Conversation> CreateConversationForUsersAsync(long User1Id, long User2Id);
         IQueryable<long> GetUserConversationIds(long UserId);
-        Task<IEnumerable<Conversation>> GetUserConversationsWithUsers(long UserId);
-        Task<IEnumerable<Message>> GetMessagesFromConversationIds(long MessageId, IQueryable<long> ConversationsIds);
-        Task MarkAsRead(IEnumerable<Message> Messages);
-        Task<Message> AddMessage(Message Message);
-        Task<bool> IsThereNewMessageInConversationIds(long MessageId, IQueryable<long> ConversationsIds);
-        Task<string> UpdateDisplayName(long UserId, string NewDisplayName);
+        Task<IEnumerable<Conversation>> GetUserConversationsWithUsersAsync(long UserId);
+        Task<IEnumerable<Message>> GetMessagesFromConversationIdsAsync(long MessageId, IQueryable<long> ConversationsIds);
+        Task MarkAsReadAsync(IEnumerable<Message> Messages);
+        Task<Message> AddMessageAsync(Message Message);
+        Task<bool> IsThereNewMessageInConversationIdsAsync(long MessageId, IQueryable<long> ConversationsIds);
+        Task<string> UpdateDisplayNameAsync(long UserId, string NewDisplayName);
     }
 }

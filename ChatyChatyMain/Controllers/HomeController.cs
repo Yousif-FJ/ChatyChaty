@@ -9,7 +9,7 @@ namespace ChatyChaty.Controllers
 {
     public class HomeController : Controller
     {
-        public HomeController(FirstTest firstTest)
+        public HomeController()
         {
 
         }

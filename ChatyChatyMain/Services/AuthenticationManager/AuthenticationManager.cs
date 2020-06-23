@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -42,7 +43,7 @@ namespace ChatyChaty.Services
                 return new AuthenticationResult
                 {
                     Success = false,
-                    Errors = new List<string>() { new string("Account creation is disabled for security reasons") }
+                    Errors = new Collection<string>() { "Account Creation is disabled" }
                 };
             }
             AppUser identityUser = new AppUser(username)
@@ -55,12 +56,12 @@ namespace ChatyChaty.Services
                 return new AuthenticationResult
                 {
                     Success = false,
-                    Errors = AccountCreationResult.Errors.Select(x => x.Description)
+                    Errors =  AccountCreationResult.Errors.Select(e => e.Description )
                 };
             }
             var user = await userManager.FindByNameAsync(username);
             await notificationHandler.IntializeNofificationHandler(user.Id);
-            var profile = new Profile
+            var profile = new ProfileAccountModel
             {
                 DisplayName = user.DisplayName,
                 Username = user.UserName,
@@ -88,7 +89,7 @@ namespace ChatyChaty.Services
                 };
             }
             await notificationHandler.IntializeNofificationHandler(user.Id);
-            var profile = new Profile
+            var profile = new ProfileAccountModel
             {
                 DisplayName = user.DisplayName,
                 Username = user.UserName,
