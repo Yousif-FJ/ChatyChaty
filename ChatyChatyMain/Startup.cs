@@ -169,24 +169,6 @@ namespace ChatyChaty
                             Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_SECRET"))
                              )
                     };
-                    //Receive token in query for the hub
-                    options.Events = new JwtBearerEvents
-                    {
-                        OnMessageReceived = context =>
-                        {
-                            var accessToken = context.Request.Query["access_token"];
-
-                            // If the request is for our hub...
-                            var path = context.HttpContext.Request.Path;
-                            if (!string.IsNullOrEmpty(accessToken) &&
-                                (path.StartsWithSegments("/hubs/main")))
-                            {
-                                // Read the token out of the query string
-                                context.Token = accessToken;
-                            }
-                            return Task.CompletedTask;
-                        }
-                    };
                 });
 
 
