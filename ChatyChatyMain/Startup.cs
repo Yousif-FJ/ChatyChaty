@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using ChatyChaty.Hubs;
+using ChatyChaty.Hubs.v1;
 using ChatyChaty.ControllerSchema.v3;
 using ChatyChaty.Model;
 using ChatyChaty.Model.DBModel;
@@ -239,7 +239,7 @@ namespace ChatyChaty
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapHub<MainHub>("/chathub");
+                endpoints.MapHub<MainHub>("/v1/chathub");
                 endpoints.MapControllers();
             });
         }
