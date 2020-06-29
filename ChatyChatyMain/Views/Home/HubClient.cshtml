@@ -12,36 +12,20 @@
 
 
 <div id="main-controller-container" hidden="hidden">
-<hr />
+    <hr />
     <h2>Actions menu</h2>
     <ul class="nav nav-tabs mt-2" id="myTab" role="tablist">
-        <li class="nav-item" role="presentation">
-            <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Home</a>
-        </li>
-        <li class="nav-item" role="presentation">
-            <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Profile</a>
-        </li>
-        <li class="nav-item" role="presentation">
-            <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Contact</a>
+        <li hidden id="tamplateLi" class="nav-item" role="presentation">
+            <a class="nav-link active" data-toggle="tab" role="tab"></a>
         </li>
     </ul>
 
 
     <div class="tab-content" id="myTabContent">
-        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-            <div class="form-group">
-                <labe>Message</labe>
-                <input class="form-control" type="text" id="messageInput" />
-            </div>
-            <input class="btn btn-primary" type="button" id="sendButton" value="Send Message" />
-        </div>
-
-        <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-            ...
-        </div>
-
-        <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
-            ...
+        <div hidden class="tab-pane fade show active" id="tamplateForm" role="tabpanel">
+            <labe></labe>
+            <input class="form-control" type="text" id="tamplateInput" />
+            <button class="btn btn-primary mt-2" type="button" id="sendButtonTamplate">Send</button>
         </div>
     </div>
 
