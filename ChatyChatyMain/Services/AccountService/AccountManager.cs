@@ -3,7 +3,6 @@ using ChatyChaty.Model.AccountModel;
 using ChatyChaty.Model.DBModel;
 using ChatyChaty.Model.MessageRepository;
 using ChatyChaty.Model.MessagingModel;
-using ChatyChaty.Model.NotficationHandler;
 using Google.Apis.Upload;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -20,6 +19,9 @@ using System.Threading.Tasks;
 
 namespace ChatyChaty.Services
 {
+    /// <summary>
+    /// Class that handle Account and profile related logic
+    /// </summary>
     public class AccountManager : IAccountManager
     {
         private readonly UserManager<AppUser> userManager;
@@ -86,7 +88,7 @@ namespace ChatyChaty.Services
                 conversation = await messageRepository.CreateConversationForUsersAsync(senderDB.Id, reciverDB.Id.Value);
             }
 
-            await notificationHandler.UserGotChatUpdate(reciverDB.Id.Value);
+            await notificationHandler.UsersGotChatUpdateAsync(reciverDB.Id.Value);
 
             return new NewConversationModel
             {
@@ -109,7 +111,8 @@ namespace ChatyChaty.Services
                 throw new ArgumentOutOfRangeException("Invalid userId");
             }
             var setPhotoResult = await pictureProvider.ChangePhoto(user.Id, user.UserName, formFile);
-            await notificationHandler.UserUpdatedProfile(user.Id);
+            var userIdsGotUpdate = await messageRepository.GetUserContactIdsAsync(user.Id);
+            await notificationHandler.UsersGotChatUpdateAsync(userIdsGotUpdate.ToArray());
             return setPhotoResult;
         }
 
@@ -121,7 +124,8 @@ namespace ChatyChaty.Services
                 throw new ArgumentOutOfRangeException("Invalid UserId");
             }
             var newName = await messageRepository.UpdateDisplayNameAsync(userId, newDisplayName);
-            await notificationHandler.UserUpdatedProfile(user.Id);
+            var userIdsGotUpdate = await messageRepository.GetUserContactIdsAsync(user.Id);
+            await notificationHandler.UsersGotChatUpdateAsync(userIdsGotUpdate.ToArray());
             return newName;
         }
 

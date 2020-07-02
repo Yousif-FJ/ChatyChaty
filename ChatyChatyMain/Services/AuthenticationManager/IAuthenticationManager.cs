@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace ChatyChaty.Services
 {
+    /// <summary>
+    /// Interface that handle authentication and security related logic
+    /// </summary>
     public interface IAuthenticationManager
     {
         Task<AuthenticationResult> CreateAccount(string username, string password, string displayName);

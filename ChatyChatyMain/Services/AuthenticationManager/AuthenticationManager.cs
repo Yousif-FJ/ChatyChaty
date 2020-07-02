@@ -1,7 +1,6 @@
 ﻿using ChatyChaty.Model.AccountModel;
 using ChatyChaty.Model.DBModel;
 using ChatyChaty.Model.MessageRepository;
-using ChatyChaty.Model.NotficationHandler;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -16,6 +15,9 @@ using System.Threading.Tasks;
 
 namespace ChatyChaty.Services
 {
+    /// <summary>
+    /// Class that handle authentication and security related logic
+    /// </summary>
     public class AuthenticationManager : IAuthenticationManager
     {
         private readonly UserManager<AppUser> userManager;
@@ -60,7 +62,7 @@ namespace ChatyChaty.Services
                 };
             }
             var user = await userManager.FindByNameAsync(username);
-            await notificationHandler.IntializeNofificationHandler(user.Id);
+            await notificationHandler.IntializeNotificationHandlerAsync(user.Id);
             var profile = new ProfileAccountModel
             {
                 DisplayName = user.DisplayName,
@@ -88,7 +90,7 @@ namespace ChatyChaty.Services
                     Errors = new List<string> { new string("Invalid Login cridentials") }
                 };
             }
-            await notificationHandler.IntializeNofificationHandler(user.Id);
+            await notificationHandler.IntializeNotificationHandlerAsync(user.Id);
             var profile = new ProfileAccountModel
             {
                 DisplayName = user.DisplayName,

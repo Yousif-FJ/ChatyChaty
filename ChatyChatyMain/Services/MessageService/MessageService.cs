@@ -1,7 +1,6 @@
 ﻿using ChatyChaty.Model.DBModel;
 using ChatyChaty.Model.MessageRepository;
 using ChatyChaty.Model.MessagingModel;
-using ChatyChaty.Model.NotficationHandler;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace ChatyChaty.Services
 {
+    /// <summary>
+    /// Class that handle the messaging logic
+    /// </summary>
     public class MessageService : IMessageService
     {
         private readonly IMessageRepository messageRepository;
@@ -91,11 +93,11 @@ namespace ChatyChaty.Services
 
             if (conversation.FirstUserId == Sender.Id)
             {
-                await notificationHandler.UserGotNewMessage(conversation.SecondUserId);
+                await notificationHandler.UserGotNewMessageAsync(conversation.SecondUserId);
             }
             else
             {
-                await notificationHandler.UserGotNewMessage(conversation.FirstUserId);
+                await notificationHandler.UserGotNewMessageAsync(conversation.FirstUserId);
             }
 
             var message = new Message
@@ -133,14 +135,14 @@ namespace ChatyChaty.Services
                 conversation = await messageRepository.CreateConversationForUsersAsync(senderDB.Id, reciverDB.Id);
             }
 
-            await notificationHandler.UserGotChatUpdate(reciverDB.Id);
+            await notificationHandler.UsersGotChatUpdateAsync(reciverDB.Id);
             
             return conversation.Id;
         }
 
         public async Task<GetNewMessagesModel> GetNewMessages(long userId, long lastMessageId)
         {
-            var userConversationsId = messageRepository.GetUserConversationIds(userId);
+            var userConversationsId = messageRepository.GetUserConversationIdsAsync(userId);
             var newMessages = await messageRepository.GetMessagesFromConversationIdsAsync(lastMessageId, userConversationsId);
             //Mark messages as read
             var markMessages = new List<Message>();
@@ -152,7 +154,7 @@ namespace ChatyChaty.Services
                 }
             }
             await messageRepository.MarkAsReadAsync(markMessages);
-            await notificationHandler.NotifySenderMessagesWhereDelivered(markMessages.Select(m => m.SenderId));
+            await notificationHandler.UsersGotMessageDeliveredAsync(markMessages.Select(m => m.SenderId).ToArray());
             if (newMessages != null)
             {
                 return new GetNewMessagesModel { Messages = newMessages };
@@ -218,7 +220,7 @@ namespace ChatyChaty.Services
     /// <returns>A bool whether there is new message</returns>
     public async Task<bool?> CheckForNewMessages(long userId, long lastMessageId)
         {
-            var userConversationsId = messageRepository.GetUserConversationIds(userId);
+            var userConversationsId = messageRepository.GetUserConversationIdsAsync(userId);
             return await messageRepository.IsThereNewMessageInConversationIdsAsync(lastMessageId,userConversationsId) ;
         }
     }

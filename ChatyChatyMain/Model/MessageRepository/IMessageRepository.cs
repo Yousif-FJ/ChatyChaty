@@ -6,20 +6,24 @@ using System.Threading.Tasks;
 
 namespace ChatyChaty.Model.MessageRepository
 {
+    /// <summary>
+    /// Interface that encapsulate the logic of accessing messages from a source
+    /// </summary>
     public interface IMessageRepository
     {
         Task<AppUser> GetUserAsync(long Id);
         Task<Conversation> GetConversationAsync(long Id);
         Task<Message> GetMessageAsync(long Id);
-        Task<bool> IsConversationForUserAsync(long ConversationId, long UserId);
-        Task<Conversation> FindConversationForUsersAsync(long User1Id, long User2Id);
-        Task<Conversation> CreateConversationForUsersAsync(long User1Id, long User2Id);
-        IQueryable<long> GetUserConversationIds(long UserId);
-        Task<IEnumerable<Conversation>> GetUserConversationsWithUsersAsync(long UserId);
-        Task<IEnumerable<Message>> GetMessagesFromConversationIdsAsync(long MessageId, IQueryable<long> ConversationsIds);
-        Task MarkAsReadAsync(IEnumerable<Message> Messages);
-        Task<Message> AddMessageAsync(Message Message);
-        Task<bool> IsThereNewMessageInConversationIdsAsync(long MessageId, IQueryable<long> ConversationsIds);
-        Task<string> UpdateDisplayNameAsync(long UserId, string NewDisplayName);
+        Task<bool> IsConversationForUserAsync(long conversationId, long userId);
+        Task<Conversation> FindConversationForUsersAsync(long user1Id, long user2Id);
+        Task<Conversation> CreateConversationForUsersAsync(long user1Id, long user2Id);
+        Task<IEnumerable<long>> GetUserContactIdsAsync(long userId);
+        IQueryable<long> GetUserConversationIdsAsync(long userId);
+        Task<IEnumerable<Conversation>> GetUserConversationsWithUsersAsync(long userId);
+        Task<IEnumerable<Message>> GetMessagesFromConversationIdsAsync(long messageId, IQueryable<long> conversationsIds);
+        Task MarkAsReadAsync(IEnumerable<Message> messages);
+        Task<Message> AddMessageAsync(Message message);
+        Task<bool> IsThereNewMessageInConversationIdsAsync(long messageId, IQueryable<long> conversationsIds);
+        Task<string> UpdateDisplayNameAsync(long userId, string newDisplayName);
     }
 }

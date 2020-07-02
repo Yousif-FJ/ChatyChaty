@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace ChatyChaty.Services
 {
+    /// <summary>
+    /// A class that manage uploading and accessing Photos stored in a Provider
+    /// </summary>
     public interface IPictureProvider
     {
         public string GetPlaceHolderURL();
