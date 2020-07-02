@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace ChatyChaty.Services
 {
+    /// <summary>
+    /// Interface that handle the messaging logic
+    /// </summary>
     public interface IMessageService
     {
         Task<long> NewConversation(long senderId, long receiverId);

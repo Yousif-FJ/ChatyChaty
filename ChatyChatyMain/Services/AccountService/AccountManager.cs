@@ -3,10 +3,11 @@ using ChatyChaty.Model.AccountModel;
 using ChatyChaty.Model.DBModel;
 using ChatyChaty.Model.MessageRepository;
 using ChatyChaty.Model.MessagingModel;
-using ChatyChaty.Model.NotficationHandler;
+using Google.Apis.Upload;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -18,29 +19,36 @@ using System.Threading.Tasks;
 
 namespace ChatyChaty.Services
 {
+    /// <summary>
+    /// Class that handle Account and profile related logic
+    /// </summary>
     public class AccountManager : IAccountManager
     {
         private readonly UserManager<AppUser> userManager;
         private readonly IMessageRepository messageRepository;
         private readonly INotificationHandler notificationHandler;
         private readonly IPictureProvider pictureProvider;
+        private readonly ILogger<AccountManager> logger;
 
         public AccountManager(
             UserManager<AppUser> userManager,
             IMessageRepository messageRepository,
             INotificationHandler notificationHandler,
-            IPictureProvider pictureProvider)
+            IPictureProvider pictureProvider,
+            ILogger<AccountManager> logger
+            )
         {
             this.userManager = userManager;
             this.messageRepository = messageRepository;
             this.notificationHandler = notificationHandler;
             this.pictureProvider = pictureProvider;
+            this.logger = logger;
         }
 
         public async Task<ProfileAccountModel> GetUser(string username)
         {
             var user = await userManager.FindByNameAsync(username);
-            var PhotoUrl= await pictureProvider.GetPhotoURL(user.Id, user.UserName);
+            var PhotoUrl = await pictureProvider.GetPhotoURL(user.Id, user.UserName);
             return new ProfileAccountModel
             {
                 Username = user.UserName,
@@ -59,7 +67,7 @@ namespace ChatyChaty.Services
         /// <exception cref="System.ArgumentOutOfRangeException">thrown when sender users don't exist</exception>
         public async Task<NewConversationModel> NewConversation(long senderId, string receiverUsername)
         {
-            var senderDB = await messageRepository.GetUser(senderId);
+            var senderDB = await messageRepository.GetUserAsync(senderId);
             var reciverDB = await GetUser(receiverUsername);
             if (senderDB == null)
             {
@@ -74,13 +82,13 @@ namespace ChatyChaty.Services
                 };
             }
             //get or create the conversation
-            var conversation = await messageRepository.FindConversationForUsers(senderDB.Id, reciverDB.Id.Value);
+            var conversation = await messageRepository.FindConversationForUsersAsync(senderDB.Id, reciverDB.Id.Value);
             if (conversation == null)
             {
-                conversation = await messageRepository.CreateConversationForUsers(senderDB.Id, reciverDB.Id.Value);
+                conversation = await messageRepository.CreateConversationForUsersAsync(senderDB.Id, reciverDB.Id.Value);
             }
 
-            await notificationHandler.UserGotChatUpdate(reciverDB.Id.Value);
+            await notificationHandler.UsersGotChatUpdateAsync(reciverDB.Id.Value);
 
             return new NewConversationModel
             {
@@ -97,26 +105,41 @@ namespace ChatyChaty.Services
 
         public async Task<PhotoUrlModel> SetPhoto(long userId, IFormFile formFile)
         {
-            var user = await messageRepository.GetUser(userId);
+            var user = await messageRepository.GetUserAsync(userId);
             if (user == null)
             {
                 throw new ArgumentOutOfRangeException("Invalid userId");
             }
             var setPhotoResult = await pictureProvider.ChangePhoto(user.Id, user.UserName, formFile);
-            await notificationHandler.UserUpdatedProfile(user.Id);
+            var userIdsGotUpdate = await messageRepository.GetUserContactIdsAsync(user.Id);
+            await notificationHandler.UsersGotChatUpdateAsync(userIdsGotUpdate.ToArray());
             return setPhotoResult;
         }
 
         public async Task<string> UpdateDisplayName(long userId, string newDisplayName)
         {
-            var user = await messageRepository.GetUser(userId);
+            var user = await messageRepository.GetUserAsync(userId);
             if (user is null)
             {
                 throw new ArgumentOutOfRangeException("Invalid UserId");
             }
-            var newName = await messageRepository.UpdateDisplayName(userId, newDisplayName);
-            await notificationHandler.UserUpdatedProfile(user.Id);
+            var newName = await messageRepository.UpdateDisplayNameAsync(userId, newDisplayName);
+            var userIdsGotUpdate = await messageRepository.GetUserContactIdsAsync(user.Id);
+            await notificationHandler.UsersGotChatUpdateAsync(userIdsGotUpdate.ToArray());
             return newName;
         }
+
+        public async Task<bool> DeleteAccount(long userId) 
+        {
+            var user = await messageRepository.GetUserAsync(userId);
+            var result = await userManager.DeleteAsync(user);
+            if (result.Succeeded)
+            {
+                return result.Succeeded;
+            }
+            logger.LogWarning($"Account deletion failed with the errors : {string.Join(",", result.Errors.Select(e => e.Description))}");
+            return false;
+        }
+
     }
 }

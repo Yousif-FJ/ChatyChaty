@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace ChatyChaty.Model.MessageRepository
 {
+    /// <summary>
+    /// class that encapsulate the logic of accessing messages from EntityFramework managed DB
+    /// </summary>
     public class MessageRepository : IMessageRepository
     {
         private readonly ChatyChatyContext dBContext;
@@ -16,14 +19,14 @@ namespace ChatyChaty.Model.MessageRepository
             dBContext = DBContext;
         }
 
-        public async Task<Message> AddMessage(Message Message)
+        public async Task<Message> AddMessageAsync(Message Message)
         {
             var DBMessage = await dBContext.Messages.AddAsync(Message);
             await dBContext.SaveChangesAsync();
             return DBMessage.Entity;
         }
 
-        public async Task<Conversation> CreateConversationForUsers(long User1Id, long User2Id)
+        public async Task<Conversation> CreateConversationForUsersAsync(long User1Id, long User2Id)
         {
             var conversation = new Conversation()
             {
@@ -35,7 +38,7 @@ namespace ChatyChaty.Model.MessageRepository
             return resultConv.Entity;
         }
 
-        public async Task<Conversation> FindConversationForUsers(long User1Id, long User2Id)
+        public async Task<Conversation> FindConversationForUsersAsync(long User1Id, long User2Id)
         {
             var conversation = await dBContext.Conversations.FirstOrDefaultAsync(
                 c => c.FirstUserId == User1Id && c.SecondUserId == User2Id 
@@ -50,18 +53,18 @@ namespace ChatyChaty.Model.MessageRepository
             return conversation;
         }
 
-        public async Task<Conversation> GetConversation(long ConversationId)
+        public async Task<Conversation> GetConversationAsync(long ConversationId)
         {
             return await dBContext.Conversations
                 .FirstOrDefaultAsync(c => c.Id == ConversationId);
         }
 
-        public async Task<Message> GetMessage(long Id)
+        public async Task<Message> GetMessageAsync(long Id)
         {
             return await dBContext.Messages.FindAsync(Id);
         }
 
-        public async Task<IEnumerable<Message>> GetMessagesFromConversationIds(long MessageId, IQueryable<long> ConversationsIds)
+        public async Task<IEnumerable<Message>> GetMessagesFromConversationIdsAsync(long MessageId, IQueryable<long> ConversationsIds)
         {
             return await dBContext.Messages.Where(
                 m => m.Id > MessageId &&
@@ -69,19 +72,44 @@ namespace ChatyChaty.Model.MessageRepository
                 ).Include(c => c.Sender).ToListAsync();
         }
 
-        public async Task<AppUser> GetUser(long Id)
+        public async Task<AppUser> GetUserAsync(long Id)
         {
             return await dBContext.Users.FindAsync(Id);
         }
 
-        public IQueryable<long> GetUserConversationIds(long UserId)
+        public async Task<IEnumerable<long>> GetUserContactIdsAsync(long userId)
+        {
+            var conversations = await dBContext.Conversations
+               .Where(c => (c.FirstUserId == userId || c.SecondUserId == userId))
+               .ToListAsync();
+
+            List<long> userIdsList = new List<long>();
+            foreach (var conversation in conversations)
+            {
+                if (conversation.FirstUserId == userId)
+                {
+                    userIdsList.Add(conversation.SecondUserId);
+                }
+                else if (conversation.SecondUserId == userId)
+                {
+                    userIdsList.Add(conversation.FirstUserId);
+                }
+                else
+                {
+                    throw new ArgumentOutOfRangeException("Conversatoin is not for the user");
+                }
+            }
+            return userIdsList;
+        }
+
+        public IQueryable<long> GetUserConversationIdsAsync(long UserId)
         {
             return dBContext.Conversations
                 .Where(c => (c.FirstUserId == UserId || c.SecondUserId == UserId))
                 .Select(c => c.Id);
         }
 
-        public async Task<IEnumerable<Conversation>> GetUserConversationsWithUsers(long UserId)
+        public async Task<IEnumerable<Conversation>> GetUserConversationsWithUsersAsync(long UserId)
         {
             return await dBContext.Conversations
                 .Where(c => (c.FirstUserId == UserId || c.SecondUserId == UserId))
@@ -89,14 +117,14 @@ namespace ChatyChaty.Model.MessageRepository
                 .ToListAsync();
         }
 
-        public async Task<bool> IsConversationForUser(long ConversationId, long UserId)
+        public async Task<bool> IsConversationForUserAsync(long ConversationId, long UserId)
         {
             return await dBContext.Conversations
                 .Include(c => c.Messages)
                 .AnyAsync(c => c.Id == ConversationId);
         }
 
-        public async Task<bool> IsThereNewMessageInConversationIds(long MessageId, IQueryable<long> ConversationsIds)
+        public async Task<bool> IsThereNewMessageInConversationIdsAsync(long MessageId, IQueryable<long> ConversationsIds)
         {
             return await dBContext.Messages.AnyAsync(
                  m => m.Id > MessageId &&
@@ -104,7 +132,7 @@ namespace ChatyChaty.Model.MessageRepository
                  );
         }
 
-        public async Task MarkAsRead(IEnumerable<Message> Messages)
+        public async Task MarkAsReadAsync(IEnumerable<Message> Messages)
         {
             foreach (var Message in Messages)
             {
@@ -114,7 +142,7 @@ namespace ChatyChaty.Model.MessageRepository
             await dBContext.SaveChangesAsync();
         }
 
-        public async Task<string> UpdateDisplayName(long UserId, string NewDisplayName)
+        public async Task<string> UpdateDisplayNameAsync(long UserId, string NewDisplayName)
         {
             var User = await dBContext.Users.FindAsync(UserId);
             User.DisplayName = NewDisplayName;

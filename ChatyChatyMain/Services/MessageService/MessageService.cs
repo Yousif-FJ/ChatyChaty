@@ -1,7 +1,6 @@
 ﻿using ChatyChaty.Model.DBModel;
 using ChatyChaty.Model.MessageRepository;
 using ChatyChaty.Model.MessagingModel;
-using ChatyChaty.Model.NotficationHandler;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace ChatyChaty.Services
 {
+    /// <summary>
+    /// Class that handle the messaging logic
+    /// </summary>
     public class MessageService : IMessageService
     {
         private readonly IMessageRepository messageRepository;
@@ -36,13 +38,13 @@ namespace ChatyChaty.Services
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the UserId doesn't exist</exception>
         public async Task<IsDeliveredModel> IsDelivered(long userId, long messageId)
         {
-            var user = await messageRepository.GetUser(userId);
+            var user = await messageRepository.GetUserAsync(userId);
             if (user == null)
             {
                 throw new ArgumentOutOfRangeException("Invalid Id");
             }
 
-            var message = await messageRepository.GetMessage(messageId);
+            var message = await messageRepository.GetMessageAsync(messageId);
             if (message == null )
             {
                 return new IsDeliveredModel
@@ -73,29 +75,29 @@ namespace ChatyChaty.Services
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the UserId doesn't exist</exception>
         public async Task<SendMessageModel> SendMessage(long ConversationId, long SenderId, string MessageBody)
         {
-            var conversation = await messageRepository.GetConversation(ConversationId);
+            var conversation = await messageRepository.GetConversationAsync(ConversationId);
             if (conversation == null)
             {
                 return new SendMessageModel { Error = "Invalid ChatId" };
             }
-            var Sender = await messageRepository.GetUser(SenderId);
+            var Sender = await messageRepository.GetUserAsync(SenderId);
             if (Sender == null)
             {
                 throw new ArgumentOutOfRangeException("Invalid Ids");
             }
 
-            if (!await messageRepository.IsConversationForUser(conversation.Id, SenderId))
+            if (!await messageRepository.IsConversationForUserAsync(conversation.Id, SenderId))
             {
                 return new SendMessageModel { Error = "Invalid ChatId" };
             }
 
             if (conversation.FirstUserId == Sender.Id)
             {
-                await notificationHandler.UserGotNewMessage(conversation.SecondUserId);
+                await notificationHandler.UserGotNewMessageAsync(conversation.SecondUserId);
             }
             else
             {
-                await notificationHandler.UserGotNewMessage(conversation.FirstUserId);
+                await notificationHandler.UserGotNewMessageAsync(conversation.FirstUserId);
             }
 
             var message = new Message
@@ -106,7 +108,7 @@ namespace ChatyChaty.Services
                 ConversationId = conversation.Id
             };
 
-            var returnedMessage = await messageRepository.AddMessage(message);
+            var returnedMessage = await messageRepository.AddMessageAsync(message);
 
             return new SendMessageModel { Message = returnedMessage };
         }
@@ -120,28 +122,28 @@ namespace ChatyChaty.Services
         /// <exception cref="System.ArgumentOutOfRangeException">thrown when one or both users don't exist</exception>
         public async Task<long> NewConversation(long senderId, long receiverId)
         {
-            var senderDB = await messageRepository.GetUser(senderId);
-            var reciverDB = await messageRepository.GetUser(receiverId);
+            var senderDB = await messageRepository.GetUserAsync(senderId);
+            var reciverDB = await messageRepository.GetUserAsync(receiverId);
             if (senderDB == null || reciverDB == null)
             {
                 throw new ArgumentOutOfRangeException("Invalid IDs");
             }
 
-            var conversation = await messageRepository.FindConversationForUsers(senderDB.Id, reciverDB.Id);
+            var conversation = await messageRepository.FindConversationForUsersAsync(senderDB.Id, reciverDB.Id);
             if (conversation == null)
             {
-                conversation = await messageRepository.CreateConversationForUsers(senderDB.Id, reciverDB.Id);
+                conversation = await messageRepository.CreateConversationForUsersAsync(senderDB.Id, reciverDB.Id);
             }
 
-            await notificationHandler.UserGotChatUpdate(reciverDB.Id);
+            await notificationHandler.UsersGotChatUpdateAsync(reciverDB.Id);
             
             return conversation.Id;
         }
 
         public async Task<GetNewMessagesModel> GetNewMessages(long userId, long lastMessageId)
         {
-            var userConversationsId = messageRepository.GetUserConversationIds(userId);
-            var newMessages = await messageRepository.GetMessagesFromConversationIds(lastMessageId, userConversationsId);
+            var userConversationsId = messageRepository.GetUserConversationIdsAsync(userId);
+            var newMessages = await messageRepository.GetMessagesFromConversationIdsAsync(lastMessageId, userConversationsId);
             //Mark messages as read
             var markMessages = new List<Message>();
             foreach (var message in newMessages)
@@ -151,8 +153,8 @@ namespace ChatyChaty.Services
                     markMessages.Add(message);
                 }
             }
-            await messageRepository.MarkAsRead(markMessages);
-            await notificationHandler.NotifySenderMessagesWhereDelivered(markMessages.Select(m => m.SenderId));
+            await messageRepository.MarkAsReadAsync(markMessages);
+            await notificationHandler.UsersGotMessageDeliveredAsync(markMessages.Select(m => m.SenderId).ToArray());
             if (newMessages != null)
             {
                 return new GetNewMessagesModel { Messages = newMessages };
@@ -172,13 +174,13 @@ namespace ChatyChaty.Services
         /// <returns>a list of conversations</returns>
         public async Task<IEnumerable<ConversationInfo>> GetConversations(long userId)
         {
-            var user = await messageRepository.GetUser(userId);
+            var user = await messageRepository.GetUserAsync(userId);
             if (user == null)
             {
                 throw new ArgumentOutOfRangeException("Invalid Ids");
             };
 
-            var conversations = await messageRepository.GetUserConversationsWithUsers(userId);
+            var conversations = await messageRepository.GetUserConversationsWithUsersAsync(userId);
 
             var response = new List<ConversationInfo>();
 
@@ -218,8 +220,8 @@ namespace ChatyChaty.Services
     /// <returns>A bool whether there is new message</returns>
     public async Task<bool?> CheckForNewMessages(long userId, long lastMessageId)
         {
-            var userConversationsId = messageRepository.GetUserConversationIds(userId);
-            return await messageRepository.IsThereNewMessageInConversationIds(lastMessageId,userConversationsId) ;
+            var userConversationsId = messageRepository.GetUserConversationIdsAsync(userId);
+            return await messageRepository.IsThereNewMessageInConversationIdsAsync(lastMessageId,userConversationsId) ;
         }
     }
 }

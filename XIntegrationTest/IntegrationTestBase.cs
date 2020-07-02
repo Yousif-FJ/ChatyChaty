@@ -60,6 +60,7 @@ namespace XIntegrationTest
                 Password = password,
                 DisplayName = displayName
             });
+            var textResponse = await response.Content.ReadAsStringAsync();
             return (await response.Content.ReadAsAsync<AuthenticationResponse>()).Token;
         }
     }
