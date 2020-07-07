@@ -11,6 +11,9 @@ using System.Threading.Tasks;
 
 namespace ChatyChaty.Services
 {
+    /// <summary>
+    /// Interface that handle Account and profile related logic
+    /// </summary>
     public interface IAccountManager
     {
         Task<ProfileAccountModel> GetUser(string UserName);

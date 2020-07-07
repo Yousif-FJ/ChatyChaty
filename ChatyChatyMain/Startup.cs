@@ -12,7 +12,7 @@ using ChatyChaty.ControllerSchema.v3;
 using ChatyChaty.Model;
 using ChatyChaty.Model.DBModel;
 using ChatyChaty.Model.MessageRepository;
-using ChatyChaty.Model.NotficationHandler;
+using ChatyChaty.Model.NotificationRepository;
 using ChatyChaty.Services;
 using ChatyChaty.Services.GoogleFirebase;
 using ChatyChaty.ValidationAttribute;
@@ -57,6 +57,8 @@ namespace ChatyChaty
 
             services.AddScoped<IAccountManager, AccountManager>();
 
+            services.AddScoped<INotificationRepository, NotificationRepository>();
+
             services.AddSingleton<Cloudinary>();
 
             services.AddScoped<IMessageRepository, MessageRepository>();
@@ -80,7 +82,7 @@ namespace ChatyChaty
 
             //configure DBcontext ----------------------------------------------------------
 
-            services.AddDbContext<ChatyChatyContext>(optionsBuilder =>
+            services.AddDbContextPool<ChatyChatyContext>(optionsBuilder =>
             {
                 string databaseUrl;
                 if (Environment.GetEnvironmentVariable("DATABASE_URL") != null)

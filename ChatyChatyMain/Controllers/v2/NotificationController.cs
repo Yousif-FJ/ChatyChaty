@@ -4,7 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using ChatyChaty.ControllerSchema.v2;
-using ChatyChaty.Model.NotficationHandler;
+using ChatyChaty.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -45,7 +45,7 @@ namespace ChatyChaty.Controllers.v2
         public async Task<IActionResult> CheckForUpdates()
         {
             var UserId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
-            var result = await notificationHandler.CheckForUpdates(long.Parse(UserId));
+            var result = await notificationHandler.CheckForUpdatesAsync(long.Parse(UserId));
             var response = new CheckForUpdatesResponse
             {
                 ChatUpdate = result.ChatUpdate,

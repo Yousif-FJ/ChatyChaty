@@ -55,7 +55,8 @@ namespace ChatyChaty.Model.DBModel
             builder.Entity<AppUser>()
                 .HasOne<Notification>(x => x.Notification)
                 .WithOne(x => x.AppUser)
-                .HasForeignKey<Notification>(x => x.Id);
+                .HasForeignKey<Notification>(x => x.UserId)
+                .IsRequired();
 
             builder.Entity<AppUser>()
                 .Property(x => x.UserName)

@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace ChatyChaty.Model.MessageRepository
 {
+    /// <summary>
+    /// class that encapsulate the logic of accessing messages from EntityFramework managed DB
+    /// </summary>
     public class MessageRepository : IMessageRepository
     {
         private readonly ChatyChatyContext dBContext;
@@ -74,7 +77,32 @@ namespace ChatyChaty.Model.MessageRepository
             return await dBContext.Users.FindAsync(Id);
         }
 
-        public IQueryable<long> GetUserConversationIds(long UserId)
+        public async Task<IEnumerable<long>> GetUserContactIdsAsync(long userId)
+        {
+            var conversations = await dBContext.Conversations
+               .Where(c => (c.FirstUserId == userId || c.SecondUserId == userId))
+               .ToListAsync();
+
+            List<long> userIdsList = new List<long>();
+            foreach (var conversation in conversations)
+            {
+                if (conversation.FirstUserId == userId)
+                {
+                    userIdsList.Add(conversation.SecondUserId);
+                }
+                else if (conversation.SecondUserId == userId)
+                {
+                    userIdsList.Add(conversation.FirstUserId);
+                }
+                else
+                {
+                    throw new ArgumentOutOfRangeException("Conversatoin is not for the user");
+                }
+            }
+            return userIdsList;
+        }
+
+        public IQueryable<long> GetUserConversationIdsAsync(long UserId)
         {
             return dBContext.Conversations
                 .Where(c => (c.FirstUserId == UserId || c.SecondUserId == UserId))
