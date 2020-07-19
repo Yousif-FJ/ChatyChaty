@@ -147,15 +147,11 @@ namespace ChatyChaty
                             context.HandleResponse();
                             context.Response.StatusCode = 401;
                             await context.Response.WriteAsync(
-                                JsonSerializer.Serialize(
                                 new ResponseBase<object>
                                 {
                                     Success = false,
                                     Errors = new Collection<string> { "The user is not authenticated" }
-                                }, new JsonSerializerOptions
-                                {
-                                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-                                })
+                                }.ToJson()
                             ); ;
                         }
                     };
