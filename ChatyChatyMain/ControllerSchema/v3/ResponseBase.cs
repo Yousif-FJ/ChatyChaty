@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace ChatyChaty.ControllerSchema.v3
@@ -23,6 +24,14 @@ namespace ChatyChaty.ControllerSchema.v3
             }
             Success = false;
             Errors = modelState.Values.SelectMany(v => v.Errors.Select(b => b.ErrorMessage));
+        }
+
+        public string ToJson()
+        {
+            return JsonSerializer.Serialize(this, new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            });
         }
     }
 }
