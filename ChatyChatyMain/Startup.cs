@@ -152,24 +152,9 @@ namespace ChatyChaty
                                     Success = false,
                                     Errors = new Collection<string> { "The user is not authenticated" }
                                 }.ToJson()
-                            ); ;
-                        }
-                    };
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = false,
-                        ValidateIssuerSigningKey = true,
-                        ValidIssuer = Configuration["Jwt:Issuer"],
-                        ValidAudience = Configuration["Jwt:Issuer"],
-                        IssuerSigningKey = new SymmetricSecurityKey(
-                            Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_SECRET"))
-                             )
-                    };
-                    //Receive token in query for the hub
-                    options.Events = new JwtBearerEvents
-                    {
+                            );
+                        },
+                        //Receive token in query for the hub
                         OnMessageReceived = context =>
                         {
                             var accessToken = context.Request.Query["access_token"];
@@ -184,6 +169,19 @@ namespace ChatyChaty
                             }
                             return Task.CompletedTask;
                         }
+
+                    };
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = false,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = Configuration["Jwt:Issuer"],
+                        ValidAudience = Configuration["Jwt:Issuer"],
+                        IssuerSigningKey = new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_SECRET"))
+                             )
                     };
                 });
 
