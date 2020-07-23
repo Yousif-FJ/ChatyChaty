@@ -147,15 +147,11 @@ namespace ChatyChaty
                             context.HandleResponse();
                             context.Response.StatusCode = 401;
                             await context.Response.WriteAsync(
-                                JsonSerializer.Serialize(
                                 new ResponseBase<object>
                                 {
                                     Success = false,
                                     Errors = new Collection<string> { "The user is not authenticated" }
-                                }, new JsonSerializerOptions
-                                {
-                                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-                                })
+                                }.ToJson()
                             ); ;
                         }
                     };
@@ -178,7 +174,8 @@ namespace ChatyChaty
             services.AddSwaggerGen(c =>
             {
                 c.CustomSchemaIds(x => x.FullName);
-                c.SwaggerDoc("v1", new OpenApiInfo { Version = "v1", Title = "ChatyChatyAPI" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "ChatyChatyAPI - V1", Version = "v1" });
+                c.SwaggerDoc("v2", new OpenApiInfo { Title = "ChatyChatyAPI - V2", Version = "v2" });
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
@@ -228,7 +225,7 @@ namespace ChatyChaty
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
-
+                c.SwaggerEndpoint("/swagger/v2/swagger.json", "v2");
             });
 
             app.UseRouting();

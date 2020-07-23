@@ -64,7 +64,7 @@ namespace ChatyChaty.Model.MessageRepository
             return await dBContext.Messages.FindAsync(Id);
         }
 
-        public async Task<IEnumerable<Message>> GetMessagesFromConversationIdsAsync(long MessageId, IQueryable<long> ConversationsIds)
+        public async Task<IEnumerable<Message>> GetMessagesFromConversationIdsAsync(long MessageId, IEnumerable<long> ConversationsIds)
         {
             return await dBContext.Messages.Where(
                 m => m.Id > MessageId &&
@@ -102,11 +102,12 @@ namespace ChatyChaty.Model.MessageRepository
             return userIdsList;
         }
 
-        public IQueryable<long> GetUserConversationIdsAsync(long UserId)
+        public async Task<IEnumerable<long>> GetUserConversationIdsAsync(long UserId)
         {
-            return dBContext.Conversations
+            return await dBContext.Conversations
                 .Where(c => (c.FirstUserId == UserId || c.SecondUserId == UserId))
-                .Select(c => c.Id);
+                .Select(c => c.Id)
+                .ToListAsync();
         }
 
         public async Task<IEnumerable<Conversation>> GetUserConversationsWithUsersAsync(long UserId)
@@ -124,7 +125,7 @@ namespace ChatyChaty.Model.MessageRepository
                 .AnyAsync(c => c.Id == ConversationId);
         }
 
-        public async Task<bool> IsThereNewMessageInConversationIdsAsync(long MessageId, IQueryable<long> ConversationsIds)
+        public async Task<bool> IsThereNewMessageInConversationIdsAsync(long MessageId, IEnumerable<long> ConversationsIds)
         {
             return await dBContext.Messages.AnyAsync(
                  m => m.Id > MessageId &&
