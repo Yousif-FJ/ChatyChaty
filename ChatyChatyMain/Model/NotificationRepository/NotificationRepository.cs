@@ -91,7 +91,7 @@ namespace ChatyChaty.Model.NotificationRepository
             var notification = await dbContext.Notifications.FirstOrDefaultAsync(n => n.UserId == userId);
             if (notification != null)
             {
-                notification.ChatUpdate = true;
+                notification.MessageUpdate = true;
                 dbContext.Notifications.Update(notification);
                 await dbContext.SaveChangesAsync();
             }

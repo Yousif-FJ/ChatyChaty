@@ -12,6 +12,7 @@ using ChatyChaty.ControllerSchema.v2;
 using System.Net.Http.Headers;
 using ChatyChaty.Model.AccountModel;
 using System.Linq;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace XIntegrationTest
 {
@@ -25,16 +26,13 @@ namespace XIntegrationTest
             {
                 builder.ConfigureServices(services =>
                 {
-                    //Remove the real DB refrence and use an In-Memory one
-                    var descriptor = services.SingleOrDefault(
-                        d => d.ServiceType ==
-                            typeof(DbContextOptions<ChatyChatyContext>));
+                //Remove the real DB refrence 
+                var descriptor = services.SingleOrDefault(
+                    d => d.ServiceType == typeof(DbContextOptions<ChatyChatyContext>));
+                services.Remove(descriptor);
 
-                    if (descriptor != null)
-                    {
-                        services.Remove(descriptor);
-                    }
-                    services.AddDbContext<ChatyChatyContext>(options =>
+                    //use an In-Memory db  
+                    services.AddDbContextPool<ChatyChatyContext>(options =>
                     {
                         options.UseInMemoryDatabase("TestDb");
                     });

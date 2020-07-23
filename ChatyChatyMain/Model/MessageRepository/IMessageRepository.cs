@@ -18,12 +18,12 @@ namespace ChatyChaty.Model.MessageRepository
         Task<Conversation> FindConversationForUsersAsync(long user1Id, long user2Id);
         Task<Conversation> CreateConversationForUsersAsync(long user1Id, long user2Id);
         Task<IEnumerable<long>> GetUserContactIdsAsync(long userId);
-        IQueryable<long> GetUserConversationIdsAsync(long userId);
+        Task<IEnumerable<long>> GetUserConversationIdsAsync(long userId);
         Task<IEnumerable<Conversation>> GetUserConversationsWithUsersAsync(long userId);
-        Task<IEnumerable<Message>> GetMessagesFromConversationIdsAsync(long messageId, IQueryable<long> conversationsIds);
+        Task<IEnumerable<Message>> GetMessagesFromConversationIdsAsync(long messageId, IEnumerable<long> conversationsIds);
         Task MarkAsReadAsync(IEnumerable<Message> messages);
         Task<Message> AddMessageAsync(Message message);
-        Task<bool> IsThereNewMessageInConversationIdsAsync(long messageId, IQueryable<long> conversationsIds);
+        Task<bool> IsThereNewMessageInConversationIdsAsync(long messageId, IEnumerable<long> conversationsIds);
         Task<string> UpdateDisplayNameAsync(long userId, string newDisplayName);
     }
 }

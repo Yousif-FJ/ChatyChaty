@@ -3,7 +3,10 @@ using ChatyChaty.Model.MessageRepository;
 using ChatyChaty.Model.NotificationRepository;
 using ChatyChaty.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -28,8 +31,9 @@ namespace XUnitTest
 
             //construct a message repositor and notfication handler then a message service
             var MessageRepositor = new MessageRepository(context);
-            NotificationHandler notificationHandler = new NotificationHandler(new NotificationRepository(dbContext));
-            messageService = new MessageService(MessageRepositor,notificationHandler, new MockPictureProvider());
+
+            var notificationHandlerMock = new Mock<INotificationHandler>() ;
+            messageService = new MessageService(MessageRepositor, notificationHandlerMock.Object, new MockPictureProvider());
         }
 
 
@@ -47,8 +51,6 @@ namespace XUnitTest
             Assert.True(conversation != null && 
                 conversation.FirstUserId == sender.Id && 
                 conversation.SecondUserId == reciver.Id);
-            var notification = await dbContext.Notifications.FindAsync(reciver.Id);
-            Assert.True(notification.ChatUpdate);
         }
 
         [Fact]

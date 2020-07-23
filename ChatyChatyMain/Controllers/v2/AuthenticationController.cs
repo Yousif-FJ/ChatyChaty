@@ -13,6 +13,7 @@ using System.Security.Claims;
 
 namespace ChatyChaty.Controllers.v2
 {
+    [ApiExplorerSettings(GroupName = "v1")]
     [Route("api/v2/[controller]")]
     [ApiController]
     public class AuthenticationController : ControllerBase

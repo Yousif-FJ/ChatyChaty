@@ -142,7 +142,7 @@ namespace ChatyChaty.Services
 
         public async Task<GetNewMessagesModel> GetNewMessages(long userId, long lastMessageId)
         {
-            var userConversationsId = messageRepository.GetUserConversationIdsAsync(userId);
+            var userConversationsId = await messageRepository.GetUserConversationIdsAsync(userId);
             var newMessages = await messageRepository.GetMessagesFromConversationIdsAsync(lastMessageId, userConversationsId);
             //Mark messages as read
             var markMessages = new List<Message>();
@@ -155,14 +155,8 @@ namespace ChatyChaty.Services
             }
             await messageRepository.MarkAsReadAsync(markMessages);
             await notificationHandler.UsersGotMessageDeliveredAsync(markMessages.Select(m => m.SenderId).ToArray());
-            if (newMessages != null)
-            {
-                return new GetNewMessagesModel { Messages = newMessages };
-            }
-            else
-            {
-                return new GetNewMessagesModel { Error = "Invalid messageId or no new messages" };
-            }
+            //error in get new message is redundant
+            return new GetNewMessagesModel { Messages = newMessages };
         }
 
 
@@ -220,7 +214,7 @@ namespace ChatyChaty.Services
     /// <returns>A bool whether there is new message</returns>
     public async Task<bool?> CheckForNewMessages(long userId, long lastMessageId)
         {
-            var userConversationsId = messageRepository.GetUserConversationIdsAsync(userId);
+            var userConversationsId = await messageRepository.GetUserConversationIdsAsync(userId);
             return await messageRepository.IsThereNewMessageInConversationIdsAsync(lastMessageId,userConversationsId) ;
         }
     }

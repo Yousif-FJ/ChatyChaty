@@ -51,7 +51,7 @@ namespace ChatyChaty.Services
                 return new PhotoUrlModel
                 {
                     Success = true,
-                    URL = uploadResult.SecureUri.AbsoluteUri
+                    URL = uploadResult.SecureUrl.AbsoluteUri
                 };
             }
             else
