@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ChatyChaty.Controllers.v2
 {
+    [ApiExplorerSettings(GroupName = "v1")]
     [Authorize]
     [ApiController]
     [Route("api/v2/[controller]")]

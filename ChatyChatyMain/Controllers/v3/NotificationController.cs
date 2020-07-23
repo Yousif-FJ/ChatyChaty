@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ChatyChaty.Controllers.v3
 {
+    [ApiExplorerSettings(GroupName = "v2")]
     [Authorize]
     [SuppressAutoModelStateResponse]
     [CustomModelValidationResponse]
