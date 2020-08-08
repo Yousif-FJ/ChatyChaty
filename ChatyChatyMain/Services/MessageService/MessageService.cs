@@ -91,15 +91,6 @@ namespace ChatyChaty.Services
                 return new SendMessageModel { Error = "Invalid ChatId" };
             }
 
-            if (conversation.FirstUserId == Sender.Id)
-            {
-                await notificationHandler.UserGotNewMessageAsync(conversation.SecondUserId);
-            }
-            else
-            {
-                await notificationHandler.UserGotNewMessageAsync(conversation.FirstUserId);
-            }
-
             var message = new Message
             {
                 Body = MessageBody,
@@ -109,6 +100,18 @@ namespace ChatyChaty.Services
             };
 
             var returnedMessage = await messageRepository.AddMessageAsync(message);
+
+            long ReciverId;
+            if (conversation.FirstUserId == Sender.Id)
+            {
+                ReciverId = conversation.SecondUserId;
+            }
+            else
+            {
+                ReciverId = conversation.FirstUserId;
+            }
+
+            await notificationHandler.UserGotNewMessageAsync(ReciverId);
 
             return new SendMessageModel { Message = returnedMessage };
         }
