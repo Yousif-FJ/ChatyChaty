@@ -57,6 +57,10 @@ namespace ChatyChaty
 
             services.AddScoped<IAccountManager, AccountManager>();
 
+            services.AddScoped<HubHelper>();
+
+            services.AddSingleton<HubClientsStateManager>();
+
             services.AddScoped<INotificationRepository, NotificationRepository>();
 
             services.AddSingleton<Cloudinary>();

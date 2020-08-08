@@ -1,6 +1,5 @@
 ﻿using ChatyChaty.ControllerSchema.v3;
 using ChatyChaty.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using System;
@@ -12,20 +11,112 @@ using System.Threading.Tasks;
 
 namespace ChatyChaty.Hubs.v1
 {
+    /// <summary>
+    /// Main sigalR hub that handles WebSocket method calles
+    /// </summary>
     [Authorize]
     public class MainHub : Hub<IChatClient>
     {
-        private readonly IMessageService messageService;
-
-        public MainHub(IMessageService messageService)
+        public MainHub(IMessageService messageService,
+            HubClientsStateManager hubClients)
         {
             this.messageService = messageService;
+            this.hubClients = hubClients;
+            jsonSerializerOption = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            };
         }
         
+        private readonly IMessageService messageService;
+        private readonly HubClientsStateManager hubClients;
+        private readonly JsonSerializerOptions jsonSerializerOption;
+
+        public override async Task OnConnectedAsync()
+        {
+            await base.OnConnectedAsync();
+        }
+        /// <summary>
+        /// A method called by the client everytime it connects to track the last and message and keep things in sync
+        /// </summary>
+        /// <param name="lastMessageIdJson"></param>
+        /// <returns></returns>
+        public async Task RegisterSession(string lastMessageIdJson)
+        {
+            if (TryDeserialize<long>(lastMessageIdJson, out long lastMessageId) == false)
+            {
+                _ = Clients.Caller.InvalidJsonResponse(GetResponseJsonError().ToJson());
+            }
+            else
+            {
+                var userId = Context.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
+
+                var result = await messageService.GetNewMessages(long.Parse(userId), lastMessageId);
+
+                var messages = new List<MessageInfoBase>();
+                foreach (var message in result.Messages)
+                {
+                    messages.Add(new MessageInfoBase
+                    {
+                        Body = message.Body,
+                        ChatId = message.ConversationId,
+                        MessageId = message.Id,
+                        Sender = message.Sender.UserName,
+                        Delivered = message.SenderId == long.Parse(userId) ? message.Delivered : (bool?)null
+                    });
+                }
+
+                hubClients.AddClient(long.Parse(userId), lastMessageId);
+
+                _ = Clients.Caller.UpdateMessagesResponses(
+                         new ResponseBase<IEnumerable<MessageInfoBase>>
+                         {
+                             Success = true,
+                             Data = messages
+                         }.ToJson()
+                    );
+            }
+        }
+        /// <summary>
+        /// test method that echo back the recieved message to the caller
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
         public Task SendTest(string message)
         {
-            var userId = Context.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
             return Clients.Caller.TestResponse(message);
+        }
+
+        public override async Task OnDisconnectedAsync(Exception exception)
+        {
+            var userId = Context.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
+            hubClients.RemoveClient(long.Parse(userId));
+            await base.OnDisconnectedAsync(exception);
+        }
+
+        private bool TryDeserialize<T>(string inupt , out T output)
+        {
+            try
+            {
+                var lastMessageId = JsonSerializer.Deserialize<T>(inupt, jsonSerializerOption);
+                output = lastMessageId;
+                return true;
+            }
+            catch (Exception)
+            {
+                output = default;
+                return false;
+            }
+        }
+
+        static private ResponseBase<object> GetResponseJsonError()
+        {
+            return new ResponseBase<object>
+            {
+                Data = null,
+                Success = false,
+                Errors = new List<string> { "Invalid Json resquest" }
+            };
         }
     }
 }
