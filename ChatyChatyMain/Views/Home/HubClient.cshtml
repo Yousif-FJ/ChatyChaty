@@ -14,20 +14,16 @@
 <div id="main-controller-container" hidden="hidden">
     <hr />
     <h2>Actions menu</h2>
-    <ul class="nav nav-tabs mt-2" id="myTab" role="tablist">
-        <li hidden id="tamplateLi" class="nav-item" role="presentation">
-            <a class="nav-link active" data-toggle="tab" role="tab"></a>
-        </li>
-    </ul>
 
 
     <div class="tab-content" id="myTabContent">
-        <div hidden class="tab-pane fade show active" id="tamplateForm" role="tabpanel">
+        <div hidden class="mb-4 mt-2" id="tamplateForm" role="tabpanel">
             <labe></labe>
-            <input class="form-control" type="text" id="tamplateInput" />
+            <textarea  class="form-control" type="text" id="tamplateInput" ></textarea>
             <button class="btn btn-primary mt-2" type="button" id="sendButtonTamplate">Send</button>
         </div>
     </div>
+
 
 
     <hr />
@@ -39,5 +35,5 @@
     </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/3.1.3/signalr.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/3.1.6/signalr.min.js"></script>
 <script src="~/js/Script.js"></script>

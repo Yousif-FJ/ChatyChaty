@@ -18,7 +18,7 @@ function Authenticate() {
     });
 
     //list of response methods to listen to 
-    const MethodResponseList = ["TestResponse"];
+    const MethodResponseList = ["TestResponse", "UpdateMessagesResponses", "InvalidJsonResponse"];
 
     //connect and listen to the methods
     for (let i = 0; i < MethodResponseList.length; i++) {
@@ -30,18 +30,18 @@ function Authenticate() {
         });
     }
     //list of methods
-    const MethodList = ["SendTest"];
+    const MethodList = ["SendTest", "RegisterSession"];
     //list of method description
-    const MethodDesciptionList = ["Send a test message which the server will echo back to caller"];
+    const MethodDesciptionList = ["Send a test message which the server will echo back to caller",
+        "register client into connected devices, takes the last message Id as json"];
 
-    //generate html for the list of methods 
+    //generate html for the list of method names
     //get tamplate html
     const tamplateForm = document.getElementById("tamplateForm");
-    const tamplateLi = document.getElementById("tamplateLi");
 
+    //cloning tamplate to create from for each action
     for (let i = 0; i < MethodList.length; i++) {
         //processing the form
-        //clone existing html to reuse it 
         let newForm = tamplateForm.cloneNode(true);
         newForm.id = MethodList[i] + "Form";
         newForm.removeAttribute("hidden");
@@ -61,12 +61,5 @@ function Authenticate() {
         });
         document.getElementById("myTabContent").appendChild(newForm);
 
-        //processing the list item
-        let newLi = tamplateLi.cloneNode(true);
-        newLi.removeAttribute("hidden");
-        newLi.id = MethodList[i] + "Li";
-        newLi.childNodes[1].setAttribute("href", "#" + newForm.id);
-        newLi.childNodes[1].innerHTML = MethodList[i];
-        document.getElementById("myTab").appendChild(newLi);
     }
 }
