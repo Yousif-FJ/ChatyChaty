@@ -65,6 +65,7 @@ namespace ChatyChaty.Controllers.v3
         {
             var userId = long.Parse(HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
             var result = await messageService.GetNewMessages(userId, lastMessageId);
+            //the error never a value
             if (result.Error != null)
             {
                 return BadRequest(new ResponseBase<IEnumerable<MessageInfoBase>>
