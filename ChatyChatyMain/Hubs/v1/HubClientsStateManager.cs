@@ -17,9 +17,19 @@ namespace ChatyChaty.Hubs.v1
         }
         public IList<ClientState> ConnectedClients { get; }
 
-        public void AddClient(long userId, long lastMessageId)
+        public void AddUpdateClient(long userId, long lastMessageId)
         {
-            ConnectedClients.Add(new ClientState {UserId = userId ,LastMessageId = lastMessageId });
+            //check if the client already exists
+            var client = GetClient(userId);
+            if (client != null)
+            {
+                client.LastMessageId = lastMessageId;
+            }
+            //client is new
+            else
+            {
+                ConnectedClients.Add(new ClientState {UserId = userId ,LastMessageId = lastMessageId });
+            }
         }
 
         public ClientState GetClient(long userId)

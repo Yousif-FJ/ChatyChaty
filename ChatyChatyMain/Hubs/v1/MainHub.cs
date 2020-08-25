@@ -43,6 +43,7 @@ namespace ChatyChaty.Hubs.v1
         /// <returns></returns>
         public async Task RegisterSession(string lastMessageIdJson)
         {
+            //check if we have valid json
             if (TryDeserialize<long>(lastMessageIdJson, out long lastMessageId) == false)
             {
                 _ = Clients.Caller.InvalidJsonResponse(GetResponseJsonError().ToJson());
@@ -53,28 +54,36 @@ namespace ChatyChaty.Hubs.v1
 
                 var result = await messageService.GetNewMessages(long.Parse(userId), lastMessageId);
 
-                var messages = new List<MessageInfoBase>();
-                foreach (var message in result.Messages)
+                //if there are new messages
+                if (result.Messages.Count() > 0)
                 {
-                    messages.Add(new MessageInfoBase
+                    var messages = new List<MessageInfoBase>();
+                    foreach (var message in result.Messages)
                     {
-                        Body = message.Body,
-                        ChatId = message.ConversationId,
-                        MessageId = message.Id,
-                        Sender = message.Sender.UserName,
-                        Delivered = message.SenderId == long.Parse(userId) ? message.Delivered : (bool?)null
-                    });
+                        messages.Add(new MessageInfoBase
+                        {
+                            Body = message.Body,
+                            ChatId = message.ConversationId,
+                            MessageId = message.Id,
+                            Sender = message.Sender.UserName,
+                            Delivered = message.SenderId == long.Parse(userId) ? message.Delivered : (bool?)null
+                        });
+                    }
+
+                    _ = Clients.Caller.UpdateMessagesResponses(
+                             new ResponseBase<IEnumerable<MessageInfoBase>>
+                             {
+                                 Success = true,
+                                 Data = messages
+                             }.ToJson()
+                        );
+                    hubClients.AddUpdateClient(long.Parse(userId), messages.Max(m => m.MessageId));
+                }
+                else
+                {
+                    hubClients.AddUpdateClient(long.Parse(userId), lastMessageId);
                 }
 
-                hubClients.AddClient(long.Parse(userId), lastMessageId);
-
-                _ = Clients.Caller.UpdateMessagesResponses(
-                         new ResponseBase<IEnumerable<MessageInfoBase>>
-                         {
-                             Success = true,
-                             Data = messages
-                         }.ToJson()
-                    );
             }
         }
         /// <summary>
@@ -94,6 +103,13 @@ namespace ChatyChaty.Hubs.v1
             await base.OnDisconnectedAsync(exception);
         }
 
+        /// <summary>
+        /// Try Deserialize the input json and gives output, return true when success
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="inupt"></param>
+        /// <param name="output"></param>
+        /// <returns></returns>
         private bool TryDeserialize<T>(string inupt , out T output)
         {
             try

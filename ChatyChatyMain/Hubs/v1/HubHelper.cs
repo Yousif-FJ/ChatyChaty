@@ -35,35 +35,42 @@ namespace ChatyChaty.Hubs.v1
         /// <returns></returns>
         public async Task<bool> SendUpdate(long userId)
         {
+            //check if client is connected, i.e. registered in client state
             var clientState = stateManager.GetClient(userId);
             if (clientState == null)
             {
                 return false;
             }
 
+            //get new messages to keep the client in sync
             var result = await messageService.GetNewMessages(userId, clientState.LastMessageId);
-            string response;
-
-
-            var Messages = new List<MessageInfoBase>();
-            foreach (var message in result.Messages)
+            //check if there are any new messages 
+            if (result.Messages.Count()>0)
             {
-                Messages.Add(new MessageInfoBase
+                stateManager.AddUpdateClient(userId, result.Messages.Max(message => message.Id));
+
+                string response;
+
+                var Messages = new List<MessageInfoBase>();
+                foreach (var message in result.Messages)
                 {
-                    Body = message.Body,
-                    ChatId = message.ConversationId,
-                    MessageId = message.Id,
-                    Sender = message.Sender.UserName,
-                    Delivered = message.SenderId == userId ? message.Delivered : (bool?)null
-                }); ;
-            }
-            response = new ResponseBase<IEnumerable<MessageInfoBase>>
-            {
-                Success = true,
-                Data = Messages
-            }.ToJson();
+                    Messages.Add(new MessageInfoBase
+                    {
+                        Body = message.Body,
+                        ChatId = message.ConversationId,
+                        MessageId = message.Id,
+                        Sender = message.Sender.UserName,
+                        Delivered = message.SenderId == userId ? message.Delivered : (bool?)null
+                    }); ;
+                }
+                response = new ResponseBase<IEnumerable<MessageInfoBase>>
+                {
+                    Success = true,
+                    Data = Messages
+                }.ToJson();
 
-            _ = hubContext.Clients.User(userId.ToString()).UpdateMessagesResponses(response);
+                _ = hubContext.Clients.User(userId.ToString()).UpdateMessagesResponses(response);
+            }
             return true;
         }
     }
