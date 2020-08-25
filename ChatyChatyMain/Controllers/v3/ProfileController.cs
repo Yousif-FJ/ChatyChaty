@@ -6,7 +6,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Transactions;
-using ChatyChaty.ControllerSchema.v3;
+using ChatyChaty.ControllerHubSchema.v3;
 using ChatyChaty.Services;
 using ChatyChaty.ValidationAttribute;
 using Microsoft.AspNetCore.Authorization;

@@ -1,4 +1,4 @@
-﻿using ChatyChaty.ControllerSchema.v3;
+﻿using ChatyChaty.ControllerHubSchema.v3;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;

@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ChatyChaty.ValidationAttribute;
 using Microsoft.AspNetCore.Authorization;
-using ChatyChaty.ControllerSchema.v3;
+using ChatyChaty.ControllerHubSchema.v3;
 using System.Security.Claims;
 
 namespace ChatyChaty.Controllers.v3

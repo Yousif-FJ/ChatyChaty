@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using ChatyChaty.ControllerSchema.v1;
+using ChatyChaty.ControllerHubSchema.v1;
 using ChatyChaty.Services;
 using ChatyChaty.ValidationAttribute;
 using Microsoft.AspNetCore.Authorization;

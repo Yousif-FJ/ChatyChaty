@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ChatyChaty.Model.DBModel;
 using System.Threading.Tasks;
-using ChatyChaty.ControllerSchema.v2;
+using ChatyChaty.ControllerHubSchema.v2;
 using System.Net.Http.Headers;
 using ChatyChaty.Model.AccountModel;
 using System.Linq;

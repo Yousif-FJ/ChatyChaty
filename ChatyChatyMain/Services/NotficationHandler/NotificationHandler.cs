@@ -1,4 +1,4 @@
-﻿using ChatyChaty.Hubs.v1;
+﻿using ChatyChaty.Hubs.v3;
 using ChatyChaty.Model.DBModel;
 using ChatyChaty.Model.NotificationRepository;
 using Microsoft.EntityFrameworkCore;
