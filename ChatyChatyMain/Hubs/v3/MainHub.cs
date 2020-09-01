@@ -50,25 +50,15 @@ namespace ChatyChaty.Hubs.v3
             }
             else
             {
-                var userId = Context.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
+                var userId = long.Parse(Context.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
 
-                var result = await messageService.GetNewMessages(long.Parse(userId), lastMessageId);
+                var result = await messageService.GetNewMessages(userId, lastMessageId);
 
                 //if there are new messages
                 if (result.Messages.Count() > 0)
                 {
-                    var messages = new List<MessageInfoBase>();
-                    foreach (var message in result.Messages)
-                    {
-                        messages.Add(new MessageInfoBase
-                        {
-                            Body = message.Body,
-                            ChatId = message.ConversationId,
-                            MessageId = message.Id,
-                            Sender = message.Sender.UserName,
-                            Delivered = message.SenderId == long.Parse(userId) ? message.Delivered : (bool?)null
-                        });
-                    }
+                    var messages = result.Messages.ToMessageInfoResponse(userId);
+
 
                     _ = Clients.Caller.UpdateMessagesResponses(
                              new ResponseBase<IEnumerable<MessageInfoBase>>
@@ -77,11 +67,11 @@ namespace ChatyChaty.Hubs.v3
                                  Data = messages
                              }.ToJson()
                         );
-                    hubClients.AddUpdateClient(long.Parse(userId), messages.Max(m => m.MessageId));
+                    hubClients.AddUpdateClient(userId, messages.Max(m => m.MessageId));
                 }
                 else
                 {
-                    hubClients.AddUpdateClient(long.Parse(userId), lastMessageId);
+                    hubClients.AddUpdateClient(userId, lastMessageId);
                 }
 
             }

@@ -51,18 +51,8 @@ namespace ChatyChaty.Hubs.v3
 
                 string response;
 
-                var Messages = new List<MessageInfoBase>();
-                foreach (var message in result.Messages)
-                {
-                    Messages.Add(new MessageInfoBase
-                    {
-                        Body = message.Body,
-                        ChatId = message.ConversationId,
-                        MessageId = message.Id,
-                        Sender = message.Sender.UserName,
-                        Delivered = message.SenderId == userId ? message.Delivered : (bool?)null
-                    }); ;
-                }
+                var Messages = result.Messages.ToMessageInfoResponse(userId);
+
                 response = new ResponseBase<IEnumerable<MessageInfoBase>>
                 {
                     Success = true,

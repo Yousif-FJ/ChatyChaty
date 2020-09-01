@@ -74,22 +74,11 @@ namespace ChatyChaty.Controllers.v3
                     Errors = new Collection<string>() { result.Error }
                 });
             }
-            var Messages = new List<MessageInfoBase>();
-            foreach (var message in result.Messages)
-            {
-                Messages.Add(new MessageInfoBase
-                {
-                    Body = message.Body,
-                    ChatId = message.ConversationId,
-                    MessageId = message.Id,
-                    Sender = message.Sender.UserName,
-                    Delivered = message.SenderId == userId ? message.Delivered : (bool?)null
-                }); ;
-            }
+            var messages = result.Messages.ToMessageInfoResponse(userId);
             return Ok(new ResponseBase<IEnumerable<MessageInfoBase>>
             {
                 Success = true,
-                Data = Messages
+                Data = messages
             });
         }
 
