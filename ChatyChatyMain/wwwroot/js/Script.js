@@ -18,7 +18,7 @@ function Authenticate() {
     });
 
     //list of response methods to listen to 
-    const MethodResponseList = ["TestResponse", "UpdateMessagesResponses", "InvalidJsonResponse"];
+    const MethodResponseList = ["TestResponse", "UpdateMessagesResponses", "RegisterSessionErrorResponse", "SendMessageErrorResponse"];
 
     //connect and listen to the methods
     for (let i = 0; i < MethodResponseList.length; i++) {
@@ -30,10 +30,19 @@ function Authenticate() {
         });
     }
     //list of methods
-    const MethodList = ["SendTest", "RegisterSession"];
+    const MethodList = ["SendTest", "RegisterSession","SendMessage"];
     //list of method description
-    const MethodDesciptionList = ["Send a test message which the server will echo back to caller",
-        "register client into connected devices, takes the last message Id as json"];
+    const MethodDesciptionList = [
+        `Send a test string which the server will echo back to caller`,
+        `Register client into connected devices, takes the last message Id as json\n
+         sample requst:\n
+         1`,
+        `Send a message to user with the chatId everything is same with normal API with one difference,\n 
+         you don't get a response unless an error happens (like json format error or invalid resource Id),\n
+         then a json response (with type ResponseBase) is sent to the corresponding response methods\n
+         sample requst:\n
+         {"chatId": 0, "body": "string"}`
+    ];
 
     //generate html for the list of method names
     //get tamplate html

@@ -46,7 +46,7 @@ namespace ChatyChaty.Hubs.v3
             //check if we have valid json
             if (TryDeserialize<long>(lastMessageIdJson, out long lastMessageId) == false)
             {
-                _ = Clients.Caller.InvalidJsonResponse(GetResponseJsonError().ToJson());
+                _ = Clients.Caller.RegisterSessionErrorResponse(GetResponseJsonError().ToJson());
             }
             else
             {
@@ -84,6 +84,37 @@ namespace ChatyChaty.Hubs.v3
         public Task SendTest(string message)
         {
             return Clients.Caller.TestResponse(message);
+        }
+
+
+        /// <summary>
+        /// Send New message with the chatId
+        /// </summary>
+        /// <param name="messageSchemaJson">string representing the message info to be deserialized</param>
+        /// <returns></returns>
+        public async Task SendMessage(string messageSchemaJson)
+        {
+            if (TryDeserialize<SendMessageSchema>(messageSchemaJson, out SendMessageSchema messageSchema) == false)
+            {
+                _ = Clients.Caller.SendMessageErrorResponse(GetResponseJsonError().ToJson());
+            }
+            else
+            {
+                var userId = long.Parse(Context.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
+
+                var result = await messageService.SendMessage(messageSchema.ChatId, userId, messageSchema.Body);
+                if (result.Error != null)
+                {
+                    _ = Clients.Caller.SendMessageErrorResponse(
+                        new ResponseBase<object>
+                        {
+                            Data = null,
+                            Success = false,
+                            Errors = new List<string> { result.Error }
+                        }.ToJson()
+                        );
+                }
+            }
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
