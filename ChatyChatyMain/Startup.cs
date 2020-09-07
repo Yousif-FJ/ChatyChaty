@@ -74,6 +74,7 @@ namespace ChatyChaty
             services.AddScoped<IAuthenticationManager, AuthenticationManager>();
 
             services.AddScoped<INotificationHandler, NotificationHandler>();
+            services.AddScoped<INotificationGetter, NotificationGetter>();
 
             services.AddScoped<IMessageService, MessageService>();
 
