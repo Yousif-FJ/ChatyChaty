@@ -1,12 +1,14 @@
 ﻿using ChatyChaty.Model.DBModel;
 using ChatyChaty.Model.MessageRepository;
 using ChatyChaty.Model.MessagingModel;
+using ChatyChaty.Services.NotificationServices;
+using ChatyChaty.Services.PictureServices;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ChatyChaty.Services
+namespace ChatyChaty.Services.MessageServices
 {
     /// <summary>
     /// Class that handle the messaging logic

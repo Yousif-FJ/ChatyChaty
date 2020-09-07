@@ -9,13 +9,9 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using ChatyChaty.Hubs.v3;
 using ChatyChaty.ControllerHubSchema.v3;
-using ChatyChaty.Model;
 using ChatyChaty.Model.DBModel;
 using ChatyChaty.Model.MessageRepository;
 using ChatyChaty.Model.NotificationRepository;
-using ChatyChaty.Services;
-using ChatyChaty.Services.GoogleFirebase;
-using ChatyChaty.ValidationAttribute;
 using CloudinaryDotNet;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -34,6 +30,12 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Npgsql;
+using ChatyChaty.Services.GoogleFirebase;
+using ChatyChaty.Services.PictureServices;
+using ChatyChaty.Services.NotificationServices;
+using ChatyChaty.Services.MessageServices;
+using ChatyChaty.Services.AccountServices;
+using ChatyChaty.Services.AuthenticationManager;
 
 namespace ChatyChaty
 {

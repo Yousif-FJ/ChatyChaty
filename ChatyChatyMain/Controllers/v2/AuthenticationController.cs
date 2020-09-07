@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ChatyChaty.Model.AccountModel;
-using ChatyChaty.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using ChatyChaty.ValidationAttribute;
 using Microsoft.AspNetCore.Authorization;
 using ChatyChaty.ControllerHubSchema.v2;
 using System.Security.Claims;
+using ChatyChaty.Services.AuthenticationManager;
 
 namespace ChatyChaty.Controllers.v2
 {

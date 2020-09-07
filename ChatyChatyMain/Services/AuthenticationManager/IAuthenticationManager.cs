@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ChatyChaty.Services
+namespace ChatyChaty.Services.AuthenticationManager
 {
     /// <summary>
     /// Interface that handle authentication and security related logic

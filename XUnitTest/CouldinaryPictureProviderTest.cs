@@ -1,4 +1,4 @@
-using ChatyChaty.Services;
+using ChatyChaty.Services.PictureServices;
 using CloudinaryDotNet;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;

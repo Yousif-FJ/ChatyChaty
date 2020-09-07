@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ChatyChaty.Services
+namespace ChatyChaty.Services.AccountServices
 {
     /// <summary>
     /// Interface that handle Account and profile related logic

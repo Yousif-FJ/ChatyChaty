@@ -10,7 +10,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ChatyChaty.Services
+namespace ChatyChaty.Services.PictureServices
 {
     /// <summary>
     /// A class that manage uploading and accessing Photos stored in Cloudinary

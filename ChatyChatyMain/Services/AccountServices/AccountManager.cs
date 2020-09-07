@@ -3,7 +3,8 @@ using ChatyChaty.Model.AccountModel;
 using ChatyChaty.Model.DBModel;
 using ChatyChaty.Model.MessageRepository;
 using ChatyChaty.Model.MessagingModel;
-using Google.Apis.Upload;
+using ChatyChaty.Services.NotificationServices;
+using ChatyChaty.Services.PictureServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -17,7 +18,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ChatyChaty.Services
+namespace ChatyChaty.Services.AccountServices
 {
     /// <summary>
     /// Class that handle Account and profile related logic

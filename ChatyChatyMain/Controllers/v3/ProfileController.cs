@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using System.Transactions;
 using ChatyChaty.ControllerHubSchema.v3;
-using ChatyChaty.Services;
+using ChatyChaty.Services.AccountServices;
+using ChatyChaty.Services.MessageServices;
 using ChatyChaty.ValidationAttribute;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;

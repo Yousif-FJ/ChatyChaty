@@ -1,7 +1,8 @@
 ﻿using ChatyChaty.Model.DBModel;
 using ChatyChaty.Model.MessageRepository;
 using ChatyChaty.Model.NotificationRepository;
-using ChatyChaty.Services;
+using ChatyChaty.Services.MessageServices;
+using ChatyChaty.Services.NotificationServices;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;

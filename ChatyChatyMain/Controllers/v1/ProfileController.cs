@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using ChatyChaty.ControllerHubSchema.v1;
-using ChatyChaty.Services;
-using ChatyChaty.ValidationAttribute;
+using ChatyChaty.Services.AccountServices;
+using ChatyChaty.Services.MessageServices;
+using ChatyChaty.Services.PictureServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using WebApplication1.ValidationAttributes;
 
 namespace ChatyChaty.Controllers.v1
 {

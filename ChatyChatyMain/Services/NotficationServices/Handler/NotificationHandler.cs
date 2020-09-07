@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ChatyChaty.Services
+namespace ChatyChaty.Services.NotificationServices
 {
     /// <summary>
     /// Class that handles notification events logic
@@ -23,11 +23,6 @@ namespace ChatyChaty.Services
         {
             this.notificationRepository = notificationRepository;
             this.serviceProvider = serviceProvider;
-        }
-
-        public async Task<Notification> CheckForUpdatesAsync(long userId)
-        {
-            return await notificationRepository.CheckForUpdatesAsync(userId);
         }
 
         public async Task IntializeNotificationHandlerAsync(long userId)

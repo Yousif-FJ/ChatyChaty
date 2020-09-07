@@ -1,5 +1,5 @@
 ﻿using ChatyChaty.Model.AccountModel;
-using ChatyChaty.Services;
+using ChatyChaty.Services.PictureServices;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;

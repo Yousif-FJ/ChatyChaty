@@ -1,6 +1,8 @@
 ﻿using ChatyChaty.Model.AccountModel;
 using ChatyChaty.Model.DBModel;
 using ChatyChaty.Model.MessageRepository;
+using ChatyChaty.Services.NotificationServices;
+using ChatyChaty.Services.PictureServices;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -13,7 +15,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ChatyChaty.Services
+namespace ChatyChaty.Services.AuthenticationManager
 {
     /// <summary>
     /// Class that handle authentication and security related logic
