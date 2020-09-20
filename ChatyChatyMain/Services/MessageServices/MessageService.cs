@@ -147,11 +147,7 @@ namespace ChatyChaty.Services.MessageServices
                 throw new ArgumentOutOfRangeException("Invalid IDs");
             }
 
-            var conversation = await chatRepository.FindConversationForUsersAsync(senderDB.Id, reciverDB.Id);
-            if (conversation == null)
-            {
-                conversation = await chatRepository.CreateConversationForUsersAsync(senderDB.Id, reciverDB.Id);
-            }
+            var conversation = await chatRepository.GetConversationForUsersAsync(senderDB.Id, reciverDB.Id);
 
             await notificationHandler.UsersGotChatUpdateAsync(reciverDB.Id);
 

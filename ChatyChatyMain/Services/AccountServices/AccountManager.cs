@@ -87,11 +87,7 @@ namespace ChatyChaty.Services.AccountServices
                 };
             }
             //get or create the conversation
-            var conversation = await chatRepository.FindConversationForUsersAsync(senderDB.Id, reciverDB.Id.Value);
-            if (conversation == null)
-            {
-                conversation = await chatRepository.CreateConversationForUsersAsync(senderDB.Id, reciverDB.Id.Value);
-            }
+            var conversation = await chatRepository.GetConversationForUsersAsync(senderDB.Id, reciverDB.Id.Value);
 
             await notificationHandler.UsersGotChatUpdateAsync(reciverDB.Id.Value);
 

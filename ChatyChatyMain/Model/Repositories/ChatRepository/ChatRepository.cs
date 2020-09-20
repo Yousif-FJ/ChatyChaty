@@ -45,7 +45,7 @@ namespace ChatyChaty.Model.Repositories.ChatRepository
                 .AnyAsync(c => c.Id == ConversationId);
         }
 
-        public async Task<Conversation> FindConversationForUsersAsync(long User1Id, long User2Id)
+        public async Task<Conversation> GetConversationForUsersAsync(long User1Id, long User2Id)
         {
             var conversation = await dBContext.Conversations.FirstOrDefaultAsync(
                 c => c.FirstUserId == User1Id && c.SecondUserId == User2Id
@@ -57,19 +57,22 @@ namespace ChatyChaty.Model.Repositories.ChatRepository
                     c => c.FirstUserId == User2Id && c.SecondUserId == User1Id
                 );
             }
-            return conversation;
-        }
-
-        public async Task<Conversation> CreateConversationForUsersAsync(long User1Id, long User2Id)
-        {
-            var conversation = new Conversation()
+            //convestaion not found create new one
+            if (conversation == null)
             {
-                FirstUserId = User1Id,
-                SecondUserId = User2Id,
-            };
-            var resultConv = await dBContext.Conversations.AddAsync(conversation);
-            await dBContext.SaveChangesAsync();
-            return resultConv.Entity;
+                var newConversation = new Conversation()
+                {
+                    FirstUserId = User1Id,
+                    SecondUserId = User2Id,
+                };
+                var resultConv = await dBContext.Conversations.AddAsync(newConversation);
+                await dBContext.SaveChangesAsync();
+                return resultConv.Entity;
+            }
+            else
+            {
+                return conversation;
+            }
         }
 
         public async Task<IEnumerable<long>> GetUserContactIdsAsync(long userId)
