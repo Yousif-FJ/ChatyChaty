@@ -13,6 +13,8 @@ namespace ChatyChaty.Hubs.v3
         Task TestResponse(string message);
         Task RegisterSessionErrorResponse(string jsonResponse);
         Task SendMessageErrorResponse(string jsonResponse);
-        Task UpdateMessagesResponses(string JsonMessagesList);
+        Task UpdateMessagesResponses(string jsonMessagesList);
+        Task UpdateChatsResponses(string jsonChatList);
+        Task UpdateDeliveredResponses(string jsonChatLastDeliveredMessage);
     }
 }

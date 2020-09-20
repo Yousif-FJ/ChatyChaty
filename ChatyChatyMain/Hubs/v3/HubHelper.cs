@@ -17,16 +17,16 @@ namespace ChatyChaty.Hubs.v3
     {
         private readonly IHubContext<MainHub, IChatClient> hubContext;
         private readonly IMessageService messageService;
-        private readonly HubClientsStateManager stateManager;
+        private readonly HubClientsStateManager hubClients;
 
         public HubHelper(IHubContext<MainHub, IChatClient> hubContext,
             IMessageService messageService,
-            HubClientsStateManager stateManager
+            HubClientsStateManager hubClients
             )
         {
             this.hubContext = hubContext;
             this.messageService = messageService;
-            this.stateManager = stateManager;
+            this.hubClients = hubClients;
         }
         /// <summary>
         /// Method called to send message updates to a connected client, return false if the client is not connected
@@ -36,31 +36,21 @@ namespace ChatyChaty.Hubs.v3
         public async Task<bool> SendUpdate(long userId)
         {
             //check if client is connected, i.e. registered in client state
-            var clientState = stateManager.GetClient(userId);
+            var clientState = hubClients.GetClient(userId);
             if (clientState == null)
             {
                 return false;
             }
+            var lastMessageId = clientState.LastMessageId;
 
-            //get new messages to keep the client in sync
-            var result = await messageService.GetNewMessages(userId, clientState.LastMessageId);
-            //check if there are any new messages 
-            if (result.Messages.Count()>0)
-            {
-                stateManager.AddUpdateClient(userId, result.Messages.Max(message => message.Id));
+            //get new messages form message service
+            var result = await messageService.GetNewMessages(userId, lastMessageId);
 
-                string response;
+            //send update to client about new messages (using this extension method)
+            hubContext.Clients.SendMessageUpdatesAsync(result, userId, ref lastMessageId);
 
-                var Messages = result.Messages.ToMessageInfoResponse(userId);
-
-                response = new ResponseBase<IEnumerable<MessageInfoBase>>
-                {
-                    Success = true,
-                    Data = Messages
-                }.ToJson();
-
-                _ = hubContext.Clients.User(userId.ToString()).UpdateMessagesResponses(response);
-            }
+            //update client list
+            hubClients.AddUpdateClient(userId, lastMessageId);
             return true;
         }
     }

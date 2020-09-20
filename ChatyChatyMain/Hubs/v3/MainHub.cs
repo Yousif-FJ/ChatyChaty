@@ -52,28 +52,14 @@ namespace ChatyChaty.Hubs.v3
             {
                 var userId = long.Parse(Context.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
 
+                //get new messages form message service
                 var result = await messageService.GetNewMessages(userId, lastMessageId);
 
-                //if there are new messages
-                if (result.Messages.Count() > 0)
-                {
-                    var messages = result.Messages.ToMessageInfoResponse(userId);
+                //send update to client about new messages (using this extension method)
+                Clients.SendMessageUpdatesAsync(result, userId, ref lastMessageId);
 
-
-                    _ = Clients.Caller.UpdateMessagesResponses(
-                             new ResponseBase<IEnumerable<MessageInfoBase>>
-                             {
-                                 Success = true,
-                                 Data = messages
-                             }.ToJson()
-                        );
-                    hubClients.AddUpdateClient(userId, messages.Max(m => m.MessageId));
-                }
-                else
-                {
-                    hubClients.AddUpdateClient(userId, lastMessageId);
-                }
-
+                //update client list
+                hubClients.AddUpdateClient(userId, lastMessageId);
             }
         }
         /// <summary>
