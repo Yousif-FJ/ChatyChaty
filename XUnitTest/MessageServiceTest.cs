@@ -1,6 +1,8 @@
 ﻿using ChatyChaty.Model.DBModel;
-using ChatyChaty.Model.MessageRepository;
 using ChatyChaty.Model.NotificationRepository;
+using ChatyChaty.Model.Repositories.ChatRepository;
+using ChatyChaty.Model.Repositories.MessageRepository;
+using ChatyChaty.Model.Repositories.UserRepository;
 using ChatyChaty.Services.MessageServices;
 using ChatyChaty.Services.NotificationServices;
 using Microsoft.AspNetCore.Identity;
@@ -31,10 +33,12 @@ namespace XUnitTest
             dbContext = context;
 
             //construct a message repositor and notfication handler then a message service
-            var MessageRepositor = new MessageRepository(context);
+            var messageRepository = new MessageRepository(context);
+            var chatRepository = new ChatRepository(context);
+            var userRepository = new UserRepository(context);
 
             var notificationHandlerMock = new Mock<INotificationHandler>() ;
-            messageService = new MessageService(MessageRepositor, notificationHandlerMock.Object, new MockPictureProvider());
+            messageService = new MessageService(messageRepository, userRepository, chatRepository, notificationHandlerMock.Object, new MockPictureProvider());
         }
 
 

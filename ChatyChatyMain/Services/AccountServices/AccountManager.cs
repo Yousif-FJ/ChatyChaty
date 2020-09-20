@@ -1,8 +1,9 @@
 ﻿using ChatyChaty.Model;
 using ChatyChaty.Model.AccountModel;
 using ChatyChaty.Model.DBModel;
-using ChatyChaty.Model.MessageRepository;
 using ChatyChaty.Model.MessagingModel;
+using ChatyChaty.Model.Repositories.ChatRepository;
+using ChatyChaty.Model.Repositories.UserRepository;
 using ChatyChaty.Services.NotificationServices;
 using ChatyChaty.Services.PictureServices;
 using Microsoft.AspNetCore.Http;
@@ -26,21 +27,24 @@ namespace ChatyChaty.Services.AccountServices
     public class AccountManager : IAccountManager
     {
         private readonly UserManager<AppUser> userManager;
-        private readonly IMessageRepository messageRepository;
+        private readonly IUserRepository userRepository;
+        private readonly IChatRepository chatRepository;
         private readonly INotificationHandler notificationHandler;
         private readonly IPictureProvider pictureProvider;
         private readonly ILogger<AccountManager> logger;
 
         public AccountManager(
             UserManager<AppUser> userManager,
-            IMessageRepository messageRepository,
+            IUserRepository userRepository,
+            IChatRepository chatRepository,
             INotificationHandler notificationHandler,
             IPictureProvider pictureProvider,
             ILogger<AccountManager> logger
             )
         {
             this.userManager = userManager;
-            this.messageRepository = messageRepository;
+            this.userRepository = userRepository;
+            this.chatRepository = chatRepository;
             this.notificationHandler = notificationHandler;
             this.pictureProvider = pictureProvider;
             this.logger = logger;
@@ -68,7 +72,7 @@ namespace ChatyChaty.Services.AccountServices
         /// <exception cref="System.ArgumentOutOfRangeException">thrown when sender users don't exist</exception>
         public async Task<NewConversationModel> NewConversation(long senderId, string receiverUsername)
         {
-            var senderDB = await messageRepository.GetUserAsync(senderId);
+            var senderDB = await userRepository.GetUserAsync(senderId);
             var reciverDB = await GetUser(receiverUsername);
             if (senderDB == null)
             {
@@ -83,10 +87,10 @@ namespace ChatyChaty.Services.AccountServices
                 };
             }
             //get or create the conversation
-            var conversation = await messageRepository.FindConversationForUsersAsync(senderDB.Id, reciverDB.Id.Value);
+            var conversation = await chatRepository.FindConversationForUsersAsync(senderDB.Id, reciverDB.Id.Value);
             if (conversation == null)
             {
-                conversation = await messageRepository.CreateConversationForUsersAsync(senderDB.Id, reciverDB.Id.Value);
+                conversation = await chatRepository.CreateConversationForUsersAsync(senderDB.Id, reciverDB.Id.Value);
             }
 
             await notificationHandler.UsersGotChatUpdateAsync(reciverDB.Id.Value);
@@ -106,33 +110,33 @@ namespace ChatyChaty.Services.AccountServices
 
         public async Task<PhotoUrlModel> SetPhoto(long userId, IFormFile formFile)
         {
-            var user = await messageRepository.GetUserAsync(userId);
+            var user = await userRepository.GetUserAsync(userId);
             if (user == null)
             {
                 throw new ArgumentOutOfRangeException("Invalid userId");
             }
             var setPhotoResult = await pictureProvider.ChangePhoto(user.Id, user.UserName, formFile);
-            var userIdsGotUpdate = await messageRepository.GetUserContactIdsAsync(user.Id);
+            var userIdsGotUpdate = await chatRepository.GetUserContactIdsAsync(user.Id);
             await notificationHandler.UsersGotChatUpdateAsync(userIdsGotUpdate.ToArray());
             return setPhotoResult;
         }
 
         public async Task<string> UpdateDisplayName(long userId, string newDisplayName)
         {
-            var user = await messageRepository.GetUserAsync(userId);
+            var user = await userRepository.GetUserAsync(userId);
             if (user is null)
             {
                 throw new ArgumentOutOfRangeException("Invalid UserId");
             }
-            var newName = await messageRepository.UpdateDisplayNameAsync(userId, newDisplayName);
-            var userIdsGotUpdate = await messageRepository.GetUserContactIdsAsync(user.Id);
+            var newName = await userRepository.UpdateDisplayNameAsync(userId, newDisplayName);
+            var userIdsGotUpdate = await chatRepository.GetUserContactIdsAsync(user.Id);
             await notificationHandler.UsersGotChatUpdateAsync(userIdsGotUpdate.ToArray());
             return newName;
         }
 
         public async Task<bool> DeleteAccount(long userId) 
         {
-            var user = await messageRepository.GetUserAsync(userId);
+            var user = await userRepository.GetUserAsync(userId);
             var result = await userManager.DeleteAsync(user);
             if (result.Succeeded)
             {

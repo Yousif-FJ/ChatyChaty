@@ -1,6 +1,5 @@
 ﻿using ChatyChaty.Model.AccountModel;
 using ChatyChaty.Model.DBModel;
-using ChatyChaty.Model.MessageRepository;
 using ChatyChaty.Services.NotificationServices;
 using ChatyChaty.Services.PictureServices;
 using Microsoft.AspNetCore.Identity;

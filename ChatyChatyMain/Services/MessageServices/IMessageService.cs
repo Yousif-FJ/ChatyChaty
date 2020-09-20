@@ -15,7 +15,6 @@ namespace ChatyChaty.Services.MessageServices
         Task<long> NewConversation(long senderId, long receiverId);
         Task<SendMessageModel> SendMessage(long conversationId, long senderId, string messageBody);
         Task<GetNewMessagesModel> GetNewMessages(long userId, long lastMessageId);
-        Task<bool?> CheckForNewMessages(long userId, long lastMessageId);
         Task<IsDeliveredModel> IsDelivered(long userId, long messageId);
         Task<IEnumerable<ConversationInfo>> GetConversations(long userId);
     }
