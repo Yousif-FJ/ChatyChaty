@@ -1,6 +1,6 @@
 ﻿"use strict";
 //the method get called after the user input the token
-function Authenticate() {
+function Start() {
     //close existing connection
     if (connection != null) {
         connection.stop();
@@ -22,12 +22,13 @@ function Authenticate() {
 
     //connect and listen to the methods
     for (let i = 0; i < MethodResponseList.length; i++) {
-
         connection.on(MethodResponseList[i], function (message) {
             var li = document.createElement("li");
             li.textContent = "Response from " + MethodResponseList[i] + " : " + message;
             document.getElementById("messagesList").appendChild(li);
         });
+
+        document.getElementById("listeningMethodList").innerHTML += MethodResponseList[i] + " ";
     }
     //list of methods
     const MethodList = ["SendTest", "RegisterSession","SendMessage"];
@@ -46,29 +47,36 @@ function Authenticate() {
 
     //generate html for the list of method names
     //get tamplate html
-    const tamplateForm = document.getElementById("tamplateForm");
+    if (document.getElementById(MethodList[0] + "Form")==null) {
 
-    //cloning tamplate to create from for each action
-    for (let i = 0; i < MethodList.length; i++) {
-        //processing the form
-        let newForm = tamplateForm.cloneNode(true);
-        newForm.id = MethodList[i] + "Form";
-        newForm.removeAttribute("hidden");
-        let lable = newForm.childNodes[1];
-        lable.innerHTML = MethodDesciptionList[i];
-        let input = newForm.childNodes[3];
-        input.id = MethodList[i] + "Input";
-        let button = newForm.childNodes[5];
+        const tamplateForm = document.getElementById("tamplateForm");
+        //loop for each method
+        for (let i = 0; i < MethodList.length; i++) {
+            //cloning tamplate to create from for each action
+            let newForm = tamplateForm.cloneNode(true);
+            let title = newForm.childNodes[1];
+            let lable = newForm.childNodes[3];
+            let input = newForm.childNodes[5];
+            let button = newForm.childNodes[7];
 
-        //add event listener to the button
-        button.addEventListener("click", function (event) {
-            var message = input.value;
-            connection.invoke(MethodList[i], message).catch(function (err) {
-                return console.error(err.toString());
+            //set id
+            newForm.id = MethodList[i] + "Form";
+            input.id = MethodList[i] + "Input";
+            //make visible 
+            newForm.removeAttribute("hidden");
+            //set text
+            title.innerHTML = MethodList[i];
+            lable.innerHTML = MethodDesciptionList[i];
+
+            //add event listener to the button
+            button.addEventListener("click", function (event) {
+                var message = input.value;
+                connection.invoke(MethodList[i], message).catch(function (err) {
+                    return console.error(err.toString());
+                });
+                event.preventDefault();
             });
-            event.preventDefault();
-        });
-        document.getElementById("myTabContent").appendChild(newForm);
-
+            document.getElementById("myTabContent").appendChild(newForm);
+        }
     }
 }

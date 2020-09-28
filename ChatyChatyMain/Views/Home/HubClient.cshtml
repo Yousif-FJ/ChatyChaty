@@ -8,7 +8,7 @@
     <label>JWT Token (get the jwt token from authentication controller)</label>
     <input class="form-control" type="text" id="Token" />
 </div>
-<button class="btn btn-primary" type="button" onclick="Authenticate()" id="Token">Authenticate and connect</button>
+<button class="btn btn-primary" type="button" onclick="Start()">Authenticate and connect</button>
 
 
 <div id="main-controller-container" hidden="hidden">
@@ -18,8 +18,9 @@
 
     <div class="tab-content" id="myTabContent">
         <div hidden class="mb-4 mt-2" id="tamplateForm" role="tabpanel">
-            <labe></labe>
-            <textarea  class="form-control" type="text" id="tamplateInput" ></textarea>
+            <h4 id="titleTamplate"></h4>
+            <p id="descriptionTamplate"></p>
+            <textarea class="form-control" type="text" id="tamplateInput"></textarea>
             <button class="btn btn-primary mt-2" type="button" id="sendButtonTamplate">Send</button>
         </div>
     </div>
@@ -27,11 +28,10 @@
 
 
     <hr />
-    <h2>Output:</h2>
+    <h2>Response</h2>
     <div>
-        <div>
-            <ul id="messagesList"></ul>
-        </div>
+        <h6 id="listeningMethodList">List of methods listening to: </h6>
+        <ul id="messagesList"></ul>
     </div>
 </div>
 
