@@ -125,7 +125,7 @@ namespace ChatyChaty.Services.MessageServices
                 ReciverId = conversation.FirstUserId;
             }
 
-            await notificationHandler.UserGotNewMessageAsync(ReciverId);
+            await notificationHandler.UserGotNewMessageAsync((ReciverId, returnedMessage.Id));
 
             return new SendMessageModel { Message = returnedMessage };
         }
@@ -140,16 +140,16 @@ namespace ChatyChaty.Services.MessageServices
         [Obsolete("use new conversation in account manager instead")]
         public async Task<long> NewConversation(long senderId, long receiverId)
         {
-            var senderDB = await userRepository.GetUserAsync(senderId);
-            var reciverDB = await userRepository.GetUserAsync(receiverId);
-            if (senderDB == null || reciverDB == null)
+            var sender = await userRepository.GetUserAsync(senderId);
+            var reciver = await userRepository.GetUserAsync(receiverId);
+            if (sender == null || reciver == null)
             {
                 throw new ArgumentOutOfRangeException("Invalid IDs");
             }
 
-            var conversation = await chatRepository.GetConversationForUsersAsync(senderDB.Id, reciverDB.Id);
+            var conversation = await chatRepository.GetConversationForUsersAsync(sender.Id, reciver.Id);
 
-            await notificationHandler.UsersGotChatUpdateAsync(reciverDB.Id);
+            await notificationHandler.UsersGotChatUpdateAsync((sender.Id,reciver.Id));
 
             return conversation.Id;
         }
@@ -168,8 +168,8 @@ namespace ChatyChaty.Services.MessageServices
                 }
             }
             await messageRepository.MarkAsReadAsync(markMessages);
-            await notificationHandler.UsersGotMessageDeliveredAsync(markMessages.Select(m => m.SenderId).ToArray());
-            //error in get new message is redundant
+            await notificationHandler.UsersGotMessageDeliveredAsync(markMessages.Select(m => (m.SenderId, m.Id)).ToArray());
+            //error in get new message is redundant currently
             return new GetNewMessagesModel { Messages = newMessages };
         }
 
@@ -213,7 +213,6 @@ namespace ChatyChaty.Services.MessageServices
                     SecondUserId = SecondUser.Id,
                     SecondUserPhoto = await pictureProvider.GetPhotoURL(SecondUser.Id, SecondUser.UserName)
                 });
-
             }
             return response;
         }

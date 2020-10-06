@@ -12,8 +12,8 @@ namespace ChatyChaty.Services.NotificationServices
     public interface INotificationHandler
     {
         Task IntializeNotificationHandlerAsync(long userId);
-        Task UsersGotChatUpdateAsync(params long[] userIds);
-        Task UserGotNewMessageAsync(long userId);
-        Task UsersGotMessageDeliveredAsync(params long[] userIds);
+        Task UsersGotChatUpdateAsync(params (long InvokerId, long ReceiverId)[] invokerAndReceiverIds);
+        Task UserGotNewMessageAsync(params (long userId, long messageId)[] userAndMessageId);
+        Task UsersGotMessageDeliveredAsync(params (long userId, long messageId)[] userAndMessageIds);
     }
 }

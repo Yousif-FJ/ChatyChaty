@@ -72,14 +72,14 @@ namespace ChatyChaty.Services.AccountServices
         /// <exception cref="System.ArgumentOutOfRangeException">thrown when sender users don't exist</exception>
         public async Task<NewConversationModel> NewConversation(long senderId, string receiverUsername)
         {
-            var senderDB = await userRepository.GetUserAsync(senderId);
-            var reciverDB = await GetUser(receiverUsername);
-            if (senderDB == null)
+            var sender = await userRepository.GetUserAsync(senderId);
+            var receiver = await GetUser(receiverUsername);
+            if (sender == null)
             {
                 //throw exception because userId should come from trusted source (authentication header)
                 throw new ArgumentOutOfRangeException("Invalid sender IDs");
             }
-            if (reciverDB == null)
+            if (receiver == null)
             {
                 return new NewConversationModel
                 {
@@ -87,19 +87,19 @@ namespace ChatyChaty.Services.AccountServices
                 };
             }
             //get or create the conversation
-            var conversation = await chatRepository.GetConversationForUsersAsync(senderDB.Id, reciverDB.Id.Value);
+            var conversation = await chatRepository.GetConversationForUsersAsync(sender.Id, receiver.Id.Value);
 
-            await notificationHandler.UsersGotChatUpdateAsync(reciverDB.Id.Value);
+            await notificationHandler.UsersGotChatUpdateAsync((senderId,receiver.Id.Value));
 
             return new NewConversationModel
             {
                 Conversation = new ConversationInfo
                 {
                     ConversationId = conversation.Id,
-                    SecondUserId = reciverDB.Id.Value,
-                    SecondUserDisplayName = reciverDB.DisplayName,
-                    SecondUserUsername = reciverDB.Username,
-                    SecondUserPhoto = await pictureProvider.GetPhotoURL(reciverDB.Id.Value, reciverDB.Username)
+                    SecondUserId = receiver.Id.Value,
+                    SecondUserDisplayName = receiver.DisplayName,
+                    SecondUserUsername = receiver.Username,
+                    SecondUserPhoto = await pictureProvider.GetPhotoURL(receiver.Id.Value, receiver.Username)
                 }
             };
         }
@@ -113,7 +113,9 @@ namespace ChatyChaty.Services.AccountServices
             }
             var setPhotoResult = await pictureProvider.ChangePhoto(user.Id, user.UserName, formFile);
             var userIdsGotUpdate = await chatRepository.GetUserContactIdsAsync(user.Id);
-            await notificationHandler.UsersGotChatUpdateAsync(userIdsGotUpdate.ToArray());
+            await notificationHandler.UsersGotChatUpdateAsync(
+                userIdsGotUpdate
+                .Select(u => (userId, u)).ToArray());
             return setPhotoResult;
         }
 
@@ -126,7 +128,9 @@ namespace ChatyChaty.Services.AccountServices
             }
             var newName = await userRepository.UpdateDisplayNameAsync(userId, newDisplayName);
             var userIdsGotUpdate = await chatRepository.GetUserContactIdsAsync(user.Id);
-            await notificationHandler.UsersGotChatUpdateAsync(userIdsGotUpdate.ToArray());
+            await notificationHandler.UsersGotChatUpdateAsync(
+                userIdsGotUpdate
+                .Select(u => (userId, u)).ToArray());
             return newName;
         }
 

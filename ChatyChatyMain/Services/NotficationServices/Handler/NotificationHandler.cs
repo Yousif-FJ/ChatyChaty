@@ -30,24 +30,29 @@ namespace ChatyChaty.Services.NotificationServices
             await notificationRepository.IntializeNotificationHandlerAsync(userId);
         }
 
-        public async Task UserGotNewMessageAsync(long userId)
+        public async Task UserGotNewMessageAsync(params (long userId, long messageId)[] userAndMessageId)
         {
             var hubHelper = serviceProvider.GetService<HubHelper>();
-            bool successful = await hubHelper.SendUpdate(userId);
-            if (successful == false)
+            foreach (var item in userAndMessageId)
             {
-                await notificationRepository.UserGotNewMessageAsync(userId);
+                bool successful = await hubHelper.SendUpdateAsync(item.userId);
+                if (successful == false)
+                {
+                    await notificationRepository.UserGotNewMessageAsync(item.userId);
+                }
             }
         }
 
-        public async Task UsersGotChatUpdateAsync(params long[] userIds)
+        public async Task UsersGotChatUpdateAsync(params (long InvokerId, long ReceiverId)[] invokerAndReceiverIds)
         {
-            await notificationRepository.UsersGotChatUpdateAsync(userIds);
+            await notificationRepository.UsersGotChatUpdateAsync(
+                invokerAndReceiverIds.Select(m => m.ReceiverId).ToArray());
         }
 
-        public async Task UsersGotMessageDeliveredAsync(params long[] userIds)
+        public async Task UsersGotMessageDeliveredAsync(params (long userId, long messageId)[] userAndMessageIds)
         {
-            await notificationRepository.UsersGotMessageDeliveredAsync(userIds);
+            await notificationRepository.UsersGotMessageDeliveredAsync(
+                userAndMessageIds.Select(m => m.userId).ToArray());
         }
     }
 }

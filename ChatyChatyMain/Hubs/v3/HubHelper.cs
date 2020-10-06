@@ -33,7 +33,7 @@ namespace ChatyChaty.Hubs.v3
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public async Task<bool> SendUpdate(long userId)
+        public async Task<bool> SendUpdateAsync(long userId)
         {
             //check if client is connected, i.e. registered in client state
             var clientState = hubClients.GetClient(userId);
