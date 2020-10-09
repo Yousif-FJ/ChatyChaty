@@ -63,7 +63,7 @@ namespace ChatyChaty
 
             services.AddScoped<HubHelper>();
 
-            services.AddSingleton<HubClientsStateManager>();
+            services.AddSingleton<HubConnectedClients>();
 
             services.AddSingleton<Cloudinary>();
 

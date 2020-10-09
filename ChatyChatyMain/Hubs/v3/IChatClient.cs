@@ -11,7 +11,7 @@ namespace ChatyChaty.Hubs.v3
     public interface IChatClient
     {
         Task TestResponse(string message);
-        Task RegisterSessionErrorResponse(string jsonResponse);
+        Task SyncSessionErrorResponse(string jsonResponse);
         Task SendMessageErrorResponse(string jsonResponse);
         Task UpdateMessagesResponses(string jsonMessagesList);
         Task UpdateChatsResponses(string jsonChatList);

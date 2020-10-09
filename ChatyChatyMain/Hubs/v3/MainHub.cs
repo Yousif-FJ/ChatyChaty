@@ -18,7 +18,7 @@ namespace ChatyChaty.Hubs.v3
     public class MainHub : Hub<IChatClient>
     {
         public MainHub(IMessageService messageService,
-            HubClientsStateManager hubClients)
+            HubConnectedClients hubClients)
         {
             this.messageService = messageService;
             this.hubClients = hubClients;
@@ -29,7 +29,7 @@ namespace ChatyChaty.Hubs.v3
         }
         
         private readonly IMessageService messageService;
-        private readonly HubClientsStateManager hubClients;
+        private readonly HubConnectedClients hubClients;
         private readonly JsonSerializerOptions jsonSerializerOption;
 
         public override async Task OnConnectedAsync()
@@ -41,12 +41,12 @@ namespace ChatyChaty.Hubs.v3
         /// </summary>
         /// <param name="lastMessageIdJson"></param>
         /// <returns></returns>
-        public async Task RegisterSession(string lastMessageIdJson)
+        public async Task SyncSession(string lastMessageIdJson)
         {
             //check if we have valid json
             if (TryDeserialize<long>(lastMessageIdJson, out long lastMessageId) == false)
             {
-                _ = Clients.Caller.RegisterSessionErrorResponse(GetResponseJsonError().ToJson());
+                _ = Clients.Caller.SyncSessionErrorResponse(GetResponseJsonError().ToJson());
             }
             else
             {
@@ -54,12 +54,12 @@ namespace ChatyChaty.Hubs.v3
 
                 //get new messages form message service
                 var result = await messageService.GetNewMessages(userId, lastMessageId);
-
+                
                 //send update to client about new messages (using this extension method)
-                Clients.SendMessageUpdatesAsync(result, userId, ref lastMessageId);
+                Clients.SendMessageUpdates(result, userId);
 
                 //update client list
-                hubClients.AddUpdateClient(userId, lastMessageId);
+                hubClients.AddClient(userId);
             }
         }
         /// <summary>
@@ -87,8 +87,9 @@ namespace ChatyChaty.Hubs.v3
             else
             {
                 var userId = long.Parse(Context.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
-
+                //send message to message service
                 var result = await messageService.SendMessage(messageSchema.ChatId, userId, messageSchema.Body);
+                
                 if (result.Error != null)
                 {
                     _ = Clients.Caller.SendMessageErrorResponse(
@@ -99,6 +100,11 @@ namespace ChatyChaty.Hubs.v3
                             Errors = new List<string> { result.Error }
                         }.ToJson()
                         );
+                }
+                //response to the client 
+                else
+                {
+                    Clients.SendMessageUpdates(result, userId);
                 }
             }
         }

@@ -17,11 +17,11 @@ namespace ChatyChaty.Hubs.v3
     {
         private readonly IHubContext<MainHub, IChatClient> hubContext;
         private readonly IMessageService messageService;
-        private readonly HubClientsStateManager hubClients;
+        private readonly HubConnectedClients hubClients;
 
         public HubHelper(IHubContext<MainHub, IChatClient> hubContext,
             IMessageService messageService,
-            HubClientsStateManager hubClients
+            HubConnectedClients hubClients
             )
         {
             this.hubContext = hubContext;
@@ -32,25 +32,23 @@ namespace ChatyChaty.Hubs.v3
         /// Method called to send message updates to a connected client, return false if the client is not connected
         /// </summary>
         /// <param name="userId"></param>
+        /// <param name="lastMessageId"></param>
         /// <returns></returns>
-        public async Task<bool> SendUpdateAsync(long userId)
+        public async Task<bool> SendUpdateAsync(long userId, long lastMessageId)
         {
-            //check if client is connected, i.e. registered in client state
-            var clientState = hubClients.GetClient(userId);
-            if (clientState == null)
+            //check if client is connecte
+            var IsConnected = hubClients.IsClientConnected(userId);
+            if (IsConnected == false)
             {
                 return false;
             }
-            var lastMessageId = clientState.LastMessageId;
 
             //get new messages form message service
-            var result = await messageService.GetNewMessages(userId, lastMessageId);
+            var result = await messageService.GetNewMessages(userId, lastMessageId-1);
 
             //send update to client about new messages (using this extension method)
-            hubContext.Clients.SendMessageUpdatesAsync(result, userId, ref lastMessageId);
+            hubContext.Clients.SendMessageUpdates(result, userId);
 
-            //update client list
-            hubClients.AddUpdateClient(userId, lastMessageId);
             return true;
         }
     }

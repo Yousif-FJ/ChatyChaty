@@ -35,7 +35,7 @@ namespace ChatyChaty.Services.NotificationServices
             var hubHelper = serviceProvider.GetService<HubHelper>();
             foreach (var item in userAndMessageId)
             {
-                bool successful = await hubHelper.SendUpdateAsync(item.userId);
+                bool successful = await hubHelper.SendUpdateAsync(item.userId, item.messageId);
                 if (successful == false)
                 {
                     await notificationRepository.UserGotNewMessageAsync(item.userId);

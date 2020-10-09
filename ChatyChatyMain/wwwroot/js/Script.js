@@ -18,7 +18,7 @@ function Start() {
     });
 
     //list of response methods to listen to 
-    const MethodResponseList = ["TestResponse", "UpdateMessagesResponses", "RegisterSessionErrorResponse", "SendMessageErrorResponse"];
+    const MethodResponseList = ["TestResponse", "UpdateMessagesResponses", "SyncSessionErrorResponse", "SendMessageErrorResponse"];
 
     //connect and listen to the methods
     for (let i = 0; i < MethodResponseList.length; i++) {
@@ -31,7 +31,7 @@ function Start() {
         document.getElementById("listeningMethodList").innerHTML += MethodResponseList[i] + " ";
     }
     //list of methods
-    const MethodList = ["SendTest", "RegisterSession","SendMessage"];
+    const MethodList = ["SendTest", "SyncSession","SendMessage"];
     //list of method description
     const MethodDesciptionList = [
         `Send a test string which the server will echo back to caller`,
