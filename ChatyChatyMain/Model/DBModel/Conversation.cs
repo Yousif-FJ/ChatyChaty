@@ -8,6 +8,12 @@ namespace ChatyChaty.Model.DBModel
 {
     public class Conversation
     {
+        public Conversation(long firstUserId, long secondUserId)
+        {
+            FirstUserId = firstUserId;
+            SecondUserId = secondUserId;
+        }
+
         [Key]
         public long Id { get; set; }
         public AppUser FirstUser { get; set; }

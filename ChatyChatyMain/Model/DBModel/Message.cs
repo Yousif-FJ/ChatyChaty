@@ -8,6 +8,13 @@ namespace ChatyChaty.Model.DBModel
 {
     public class Message
     {
+        public Message(string body, long conversationId, long senderId)
+        {
+            Body = body;
+            ConversationId = conversationId;
+            SenderId = senderId;
+            Delivered = false;
+        }
         [Key]
         public long Id { get; set; }
         public string Body { get; set; }
@@ -16,5 +23,6 @@ namespace ChatyChaty.Model.DBModel
         public AppUser Sender { get; set; }
         public Conversation Conversation { get; set; }
         public bool Delivered { get; set; }
+
     }
 }

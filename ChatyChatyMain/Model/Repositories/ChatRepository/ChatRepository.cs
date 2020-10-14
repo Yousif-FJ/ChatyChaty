@@ -54,11 +54,7 @@ namespace ChatyChaty.Model.Repositories.ChatRepository
             //convestaion not found create new one
             if (conversation == null)
             {
-                var newConversation = new Conversation()
-                {
-                    FirstUserId = User1Id,
-                    SecondUserId = User2Id,
-                };
+                var newConversation = new Conversation( User1Id, User2Id);
                 var resultConv = await dBContext.Conversations.AddAsync(newConversation);
                 await dBContext.SaveChangesAsync();
                 return resultConv.Entity;

@@ -102,13 +102,7 @@ namespace ChatyChaty.Services.MessageServices
                 return new SendMessageModel { Error = "Invalid ChatId" };
             }
 
-            var message = new Message
-            {
-                Body = MessageBody,
-                SenderId = SenderId,
-                Delivered = false,
-                ConversationId = conversation.Id
-            };
+            var message = new Message(MessageBody, conversation.Id, SenderId);
 
             var returnedMessage = await messageRepository.AddMessageAsync(message);
 

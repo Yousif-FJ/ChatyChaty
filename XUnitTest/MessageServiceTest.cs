@@ -64,11 +64,7 @@ namespace XUnitTest
             //Arrange
             var sender = (await dbContext.Users.AddAsync(new AppUser("Test1"))).Entity;
             var reciver = (await dbContext.Users.AddAsync(new AppUser("Test2"))).Entity;
-            var conversation = (await dbContext.Conversations.AddAsync(new Conversation
-            {
-                FirstUserId = sender.Id,
-                SecondUserId = reciver.Id
-            })).Entity;
+            var conversation = (await dbContext.Conversations.AddAsync(new Conversation(sender.Id,reciver.Id))).Entity;
 
             await dbContext.SaveChangesAsync();
 
@@ -86,26 +82,12 @@ namespace XUnitTest
             //Arrange
             var u1 = (await dbContext.Users.AddAsync(new AppUser("Test1"))).Entity;
             var u2 = (await dbContext.Users.AddAsync(new AppUser("Test2"))).Entity;
-            var conversation1 = (await dbContext.Conversations.AddAsync(new Conversation
-            {
-                FirstUserId = u1.Id,
-                SecondUserId = u2.Id
-            })).Entity;
+            var conversation1 = (await dbContext.Conversations.AddAsync(new Conversation(u1.Id, u2.Id))).Entity;
 
             var Messages = new List<Message>
             {
-                new Message
-                {
-                    Body = "test1",
-                    ConversationId = conversation1.Id,
-                    SenderId = u1.Id
-                },
-                new Message
-                {
-                    Body = "test2",
-                    ConversationId = conversation1.Id,
-                    SenderId = u2.Id
-                }
+                new Message("test1",  conversation1.Id ,u1.Id),
+                new Message("test2", conversation1.Id, u2.Id)
             };
 
             await dbContext.AddRangeAsync(Messages);
@@ -128,37 +110,18 @@ namespace XUnitTest
             var u1 = (await dbContext.Users.AddAsync(new AppUser("Test1"))).Entity;
             var u2 = (await dbContext.Users.AddAsync(new AppUser("Test2"))).Entity;
             var u3 = (await dbContext.Users.AddAsync(new AppUser("Test3"))).Entity;
-            var conversation1 = (await dbContext.Conversations.AddAsync(new Conversation
-            {
-                FirstUserId = u1.Id,
-                SecondUserId = u2.Id
-            })).Entity;
+            var conversation1 = (await dbContext.Conversations.AddAsync(new Conversation(u1.Id,u2.Id))).Entity;
 
-            var conversation2 = (await dbContext.Conversations.AddAsync(new Conversation
-            {
-                FirstUserId = u1.Id,
-                SecondUserId = u3.Id
-            })).Entity;
+            var conversation2 = (await dbContext.Conversations.AddAsync(new Conversation(u1.Id, u3.Id))).Entity;
 
             var Messages = new List<Message>
             {
-                new Message
-                {
-                    Body = "test1",
-                    ConversationId = conversation1.Id,
-                    SenderId = u1.Id
-                },
-                new Message
-                {
-                    Body = "test3",
-                    ConversationId = conversation2.Id,
-                    SenderId = u1.Id
-                }
+                new Message( "test1", conversation1.Id, u1.Id),
+                new Message( "test3", conversation2.Id, u1.Id)
             };
 
             await dbContext.AddRangeAsync(Messages);
             await dbContext.SaveChangesAsync();
-
 
             //Act
             var MessagesResult = await messageService.GetNewMessages(u2.Id, 0);
@@ -175,11 +138,7 @@ namespace XUnitTest
             //Arrange
             var u1 = (await dbContext.Users.AddAsync(new AppUser("Test1"))).Entity;
             var u2 = (await dbContext.Users.AddAsync(new AppUser("Test2"))).Entity;
-            var conversation2 = (await dbContext.Conversations.AddAsync(new Conversation
-            {
-                FirstUserId = u1.Id,
-                SecondUserId = u2.Id
-            })).Entity;
+            var conversation2 = (await dbContext.Conversations.AddAsync(new Conversation( u1.Id, u2.Id))).Entity;
             await dbContext.SaveChangesAsync();
             var messageResult = await messageService.SendMessage(conversation2.Id, u1.Id, "Test Message");
             //Act
@@ -194,11 +153,7 @@ namespace XUnitTest
             //Arrange
             var u1 = (await dbContext.Users.AddAsync(new AppUser("Test1"))).Entity;
             var u2 = (await dbContext.Users.AddAsync(new AppUser("Test2"))).Entity;
-            var conversation2 = (await dbContext.Conversations.AddAsync(new Conversation
-            {
-                FirstUserId = u1.Id,
-                SecondUserId = u2.Id
-            })).Entity;
+            var conversation2 = (await dbContext.Conversations.AddAsync(new Conversation( u1.Id,u2.Id))).Entity;
             await dbContext.SaveChangesAsync();
             var messageResult = await messageService.SendMessage(conversation2.Id, u1.Id, "Test Message");
             await messageService.GetNewMessages(u2.Id, 0);
