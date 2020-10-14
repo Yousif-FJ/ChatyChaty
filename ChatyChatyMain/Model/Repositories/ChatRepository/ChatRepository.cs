@@ -38,12 +38,6 @@ namespace ChatyChaty.Model.Repositories.ChatRepository
                 .ToListAsync();
         }
 
-        public async Task<bool> IsConversationForUserAsync(long ConversationId, long UserId)
-        {
-            return await dBContext.Conversations
-                .Include(c => c.Messages)
-                .AnyAsync(c => c.Id == ConversationId);
-        }
 
         public async Task<Conversation> GetConversationForUsersAsync(long User1Id, long User2Id)
         {

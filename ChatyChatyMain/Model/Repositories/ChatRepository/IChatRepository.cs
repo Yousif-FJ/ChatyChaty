@@ -8,7 +8,6 @@ namespace ChatyChaty.Model.Repositories.ChatRepository
 {
     public interface IChatRepository
     {
-        Task<bool> IsConversationForUserAsync(long conversationId, long userId);
         Task<Conversation> GetConversationForUsersAsync(long user1Id, long user2Id);
         Task<IEnumerable<long>> GetUserContactIdsAsync(long userId);
         Task<IEnumerable<long>> GetUserConversationIdsAsync(long userId);

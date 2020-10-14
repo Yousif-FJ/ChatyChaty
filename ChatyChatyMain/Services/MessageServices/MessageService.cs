@@ -41,17 +41,9 @@ namespace ChatyChaty.Services.MessageServices
         /// </summary>
         /// <param name="userId">The Id of the user who own the message</param>
         /// <param name="messageId">The Id of the message to be checked</param>
-        /// <remarks>Return null if the the message doesn't exist or The User doesn't own the message</remarks>
-        /// <returns>A bool if the message is delivered or not</returns>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the UserId doesn't exist</exception>
         public async Task<IsDeliveredModel> IsDelivered(long userId, long messageId)
         {
-            var user = await userRepository.GetUserAsync(userId);
-            if (user == null)
-            {
-                throw new ArgumentOutOfRangeException("Invalid Id");
-            }
-
             var message = await messageRepository.GetMessageAsync(messageId);
             if (message == null)
             {
@@ -60,7 +52,7 @@ namespace ChatyChaty.Services.MessageServices
                     Error = "No such a message Id"
                 };
             }
-            if (message.SenderId != user.Id)
+            if (message.SenderId != userId)
             {
                 return new IsDeliveredModel
                 {
@@ -86,21 +78,26 @@ namespace ChatyChaty.Services.MessageServices
         /// <param name="SenderId">The sender Id</param>
         /// <param name="MessageBody">The message</param>
         /// <returns>Return the sent message back</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the UserId doesn't exist</exception>
         public async Task<SendMessageModel> SendMessage(long ConversationId, long SenderId, string MessageBody)
         {
+            //check if the conversation exist
             var conversation = await chatRepository.GetConversationAsync(ConversationId);
             if (conversation == null)
             {
                 return new SendMessageModel { Error = "Invalid ChatId" };
             }
-            var Sender = await userRepository.GetUserAsync(SenderId);
-            if (Sender == null)
-            {
-                throw new ArgumentOutOfRangeException("Invalid Ids");
-            }
 
-            if (!await chatRepository.IsConversationForUserAsync(conversation.Id, SenderId))
+            //check if the user is part of a conversation and find the receiver
+            long ReceiverId;
+            if (conversation.FirstUserId == SenderId)
+            {
+                ReceiverId = conversation.SecondUserId;
+            }
+            else if (conversation.SecondUserId == SenderId)
+            {
+                ReceiverId = conversation.FirstUserId;
+            }
+            else
             {
                 return new SendMessageModel { Error = "Invalid ChatId" };
             }
@@ -108,24 +105,14 @@ namespace ChatyChaty.Services.MessageServices
             var message = new Message
             {
                 Body = MessageBody,
-                SenderId = Sender.Id,
+                SenderId = SenderId,
                 Delivered = false,
                 ConversationId = conversation.Id
             };
 
             var returnedMessage = await messageRepository.AddMessageAsync(message);
 
-            long ReciverId;
-            if (conversation.FirstUserId == Sender.Id)
-            {
-                ReciverId = conversation.SecondUserId;
-            }
-            else
-            {
-                ReciverId = conversation.FirstUserId;
-            }
-
-            await notificationHandler.UserGotNewMessageAsync((ReciverId, returnedMessage.Id));
+            await notificationHandler.UserGotNewMessageAsync((ReceiverId, returnedMessage.Id));
 
             return new SendMessageModel { Message = returnedMessage };
         }
