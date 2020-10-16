@@ -1,5 +1,4 @@
-﻿using ChatyChaty.Model;
-using ChatyChaty.Model.AccountModel;
+﻿using ChatyChaty.Model.AccountModel;
 using ChatyChaty.Model.DBModel;
 using ChatyChaty.Model.MessagingModel;
 using Microsoft.AspNetCore.Http;
@@ -16,9 +15,8 @@ namespace ChatyChaty.Services.AccountServices
     /// </summary>
     public interface IAccountManager
     {
-        Task<ProfileAccountModel> GetUser(string UserName);
-        Task<NewConversationModel> NewConversation(long senderId, string receiverUsername);
-        Task<string> UpdateDisplayName(long UserId, string NewDisplayName);
-        Task<PhotoUrlModel> SetPhoto(long UserId, IFormFile formFile);
+        Task<NewConversationModel> NewConversationAsync(long senderId, string receiverUsername);
+        Task<string> UpdateDisplayNameAsync(long UserId, string NewDisplayName);
+        Task<PhotoUrlModel> SetPhotoAsync(long UserId, IFormFile formFile);
     }
 }

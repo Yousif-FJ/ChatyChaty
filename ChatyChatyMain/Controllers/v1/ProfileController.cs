@@ -48,7 +48,7 @@ namespace ChatyChaty.Controllers.v1
         public async Task<IActionResult> SetPhotoForSelf([FromForm]UploadFileSchema uploadFile)
         {
             var UserId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
-            var URL = await accountManager.SetPhoto(long.Parse(UserId), uploadFile.PhotoFile);
+            var URL = await accountManager.SetPhotoAsync(long.Parse(UserId), uploadFile.PhotoFile);
 
                 return Ok(URL);
         }
@@ -73,7 +73,7 @@ namespace ChatyChaty.Controllers.v1
         /// }
         /// </br>
         /// </remarks>
-        /// <param name="UserName"></param>
+        /// <param name="userName"></param>
         /// <returns></returns>
         /// <response code="200">When user was found or not</response>
         /// <response code="401">Unaithenticated</response>
@@ -81,29 +81,28 @@ namespace ChatyChaty.Controllers.v1
         [Authorize]
         [HttpGet("GetUser")]
         [Obsolete]
-        public async Task<IActionResult> GetUser([FromHeader]string UserName)
+        public async Task<IActionResult> GetUser([FromHeader]string userName)
         {
-            var UserId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
-            var user = await accountManager.GetUser(UserName);
-            if (user == null)
+            var userId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
+            var result = await accountManager.NewConversationAsync(long.Parse(userId), userName);
+            if (result.Error != null)
             {
                 return Ok(
                     new GetUserProfileResponse
                     {
                         Success = false,
-                        Error = "No such a Username"
+                        Error = result.Error
                     });
             }
-            var conversationId = await messageService.NewConversation(long.Parse(UserId), user.Id.Value);
             var response = new GetUserProfileResponse
             {
                 Success = true,
-                ChatId = conversationId,
+                ChatId = result.Conversation.ConversationId,
                 Profile = new ProfileResponse
                 {
-                    DisplayName = user.DisplayName,
-                    Username = user.Username,
-                    PhotoURL = await pictureProvider.GetPhotoURL(user.Id.Value, user.Username)
+                    DisplayName = result.Conversation.SecondUserDisplayName,
+                    Username = result.Conversation.SecondUserUsername,
+                    PhotoURL = result.Conversation.SecondUserPhoto
                 }
             };
             return Ok(response);
@@ -164,7 +163,7 @@ namespace ChatyChaty.Controllers.v1
         public async Task<IActionResult> UpdateDisplayName([FromBody]string NewDisplayName)
         {
             var UserId = long.Parse(HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
-            var result = await accountManager.UpdateDisplayName(UserId, NewDisplayName);
+            var result = await accountManager.UpdateDisplayNameAsync(UserId, NewDisplayName);
             return Ok(result);
         }
     }

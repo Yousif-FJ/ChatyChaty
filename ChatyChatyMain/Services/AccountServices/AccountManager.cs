@@ -1,5 +1,4 @@
-﻿using ChatyChaty.Model;
-using ChatyChaty.Model.AccountModel;
+﻿using ChatyChaty.Model.AccountModel;
 using ChatyChaty.Model.DBModel;
 using ChatyChaty.Model.MessagingModel;
 using ChatyChaty.Model.Repositories.ChatRepository;
@@ -13,10 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ChatyChaty.Services.AccountServices
@@ -50,9 +46,13 @@ namespace ChatyChaty.Services.AccountServices
             this.logger = logger;
         }
 
-        public async Task<ProfileAccountModel> GetUser(string username)
+        private async Task<ProfileAccountModel> GetUserAsync(string username)
         {
             var user = await userManager.FindByNameAsync(username);
+            if (user == null)
+            {
+                return null;
+            }
             var PhotoUrl = await pictureProvider.GetPhotoURL(user.Id, user.UserName);
             return new ProfileAccountModel
             {
@@ -68,17 +68,9 @@ namespace ChatyChaty.Services.AccountServices
         /// </summary>
         /// <param name="senderId">First user Id</param>
         /// <param name="receiverUsername">Second user Id</param>
-        /// <returns>A long that represent the created conversation Id</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">thrown when sender users don't exist</exception>
-        public async Task<NewConversationModel> NewConversation(long senderId, string receiverUsername)
+        public async Task<NewConversationModel> NewConversationAsync(long senderId, string receiverUsername)
         {
-            var sender = await userRepository.GetUserAsync(senderId);
-            var receiver = await GetUser(receiverUsername);
-            if (sender == null)
-            {
-                //throw exception because userId should come from trusted source (authentication header)
-                throw new ArgumentOutOfRangeException("Invalid sender IDs");
-            }
+            var receiver = await GetUserAsync(receiverUsername);
             if (receiver == null)
             {
                 return new NewConversationModel
@@ -87,7 +79,7 @@ namespace ChatyChaty.Services.AccountServices
                 };
             }
             //get or create the conversation
-            var conversation = await chatRepository.GetConversationForUsersAsync(sender.Id, receiver.Id.Value);
+            var conversation = await chatRepository.GetConversationForUsersAsync(senderId, receiver.Id.Value);
 
             await notificationHandler.UsersGotChatUpdateAsync((senderId,receiver.Id.Value));
 
@@ -104,7 +96,7 @@ namespace ChatyChaty.Services.AccountServices
             };
         }
 
-        public async Task<PhotoUrlModel> SetPhoto(long userId, IFormFile formFile)
+        public async Task<PhotoUrlModel> SetPhotoAsync(long userId, IFormFile formFile)
         {
             var user = await userRepository.GetUserAsync(userId);
             if (user == null)
@@ -119,7 +111,7 @@ namespace ChatyChaty.Services.AccountServices
             return setPhotoResult;
         }
 
-        public async Task<string> UpdateDisplayName(long userId, string newDisplayName)
+        public async Task<string> UpdateDisplayNameAsync(long userId, string newDisplayName)
         {
             var user = await userRepository.GetUserAsync(userId);
             if (user is null)
@@ -134,7 +126,7 @@ namespace ChatyChaty.Services.AccountServices
             return newName;
         }
 
-        public async Task<bool> DeleteAccount(long userId) 
+        public async Task<bool> DeleteAccountAsync(long userId) 
         {
             var user = await userRepository.GetUserAsync(userId);
             var result = await userManager.DeleteAsync(user);
