@@ -23,7 +23,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using ChatyChaty.Services.GoogleFirebase;
 using ChatyChaty.Services.PictureServices;
 using ChatyChaty.Services.NotificationServices;
 using ChatyChaty.Services.MessageServices;
