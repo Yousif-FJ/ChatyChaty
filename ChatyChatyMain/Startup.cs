@@ -23,20 +23,23 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using ChatyChaty.Services.PictureServices;
-using ChatyChaty.Services.NotificationServices;
-using ChatyChaty.Services.MessageServices;
-using ChatyChaty.Services.AccountServices;
-using ChatyChaty.Services.AuthenticationManager;
-using ChatyChaty.Model.Repositories.MessageRepository;
-using ChatyChaty.Model.DBModel;
-using ChatyChaty.Model.NotificationRepository;
+using Npgsql;
+using CloudinaryDotNet;
 using ChatyChaty.Hubs.v3;
 using ChatyChaty.ControllerHubSchema.v3;
-using CloudinaryDotNet;
-using Npgsql;
-using ChatyChaty.Model.Repositories.ChatRepository;
-using ChatyChaty.Model.Repositories.UserRepository;
+using ChatyChaty.Domain.Services.AccountServices;
+using ChatyChaty.Domain.Services.AuthenticationManager;
+using ChatyChaty.Domain.Services.MessageServices;
+using ChatyChaty.Domain.Services.NotficationServices.Getter;
+using ChatyChaty.Domain.Services.NotficationServices.Handler;
+using ChatyChaty.Infrastructure.PictureServices;
+using ChatyChaty.Domain.InfastructureInterfaces;
+using ChatyChaty.Infrastructure.Database;
+using ChatyChaty.Domain.Model.Entity;
+using ChatyChaty.Infrastructure.Repositories.UserRepository;
+using ChatyChaty.Infrastructure.Repositories.ChatRepository;
+using ChatyChaty.Infrastructure.Repositories.MessageRepository;
+using ChatyChaty.Infrastructure.Repositories.NotificationRepository;
 
 namespace ChatyChaty
 {

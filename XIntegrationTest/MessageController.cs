@@ -7,7 +7,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Mvc.Testing;
 using ChatyChaty.ControllerHubSchema.v2;
-using ChatyChaty.Model.AccountModel;
 using ChatyChaty.ControllerHubSchema.v1;
 
 namespace XIntegrationTest

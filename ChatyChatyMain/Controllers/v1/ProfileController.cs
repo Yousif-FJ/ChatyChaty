@@ -4,9 +4,9 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using ChatyChaty.ControllerHubSchema.v1;
-using ChatyChaty.Services.AccountServices;
-using ChatyChaty.Services.MessageServices;
-using ChatyChaty.Services.PictureServices;
+using ChatyChaty.Domain.InfastructureInterfaces;
+using ChatyChaty.Domain.Services.AccountServices;
+using ChatyChaty.Domain.Services.MessageServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -48,7 +48,7 @@ namespace ChatyChaty.Controllers.v1
         public async Task<IActionResult> SetPhotoForSelf([FromForm]UploadFileSchema uploadFile)
         {
             var UserId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
-            var URL = await accountManager.SetPhotoAsync(long.Parse(UserId), uploadFile.PhotoFile);
+            var URL = await accountManager.SetPhotoAsync(long.Parse(UserId),uploadFile.PhotoFile.FileName ,uploadFile.PhotoFile.OpenReadStream());
 
                 return Ok(URL);
         }

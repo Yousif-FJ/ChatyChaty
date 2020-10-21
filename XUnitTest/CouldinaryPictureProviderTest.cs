@@ -1,4 +1,4 @@
-using ChatyChaty.Services.PictureServices;
+using ChatyChaty.Infrastructure.PictureServices;
 using CloudinaryDotNet;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -33,7 +33,7 @@ namespace XUnitTest
             var FF = new FormFile(Fs, 0, Fs.Length, "SomeFile", "SomeUnknowFileName");
 
             //Act
-            await pictureProvider.ChangePhoto(UserID:UserID , UserName:UserName, FF);
+            await pictureProvider.ChangePhoto(UserID:UserID , UserName:UserName,FF.FileName, FF.OpenReadStream());
 
             //Assert
             var PhotoUrl = await pictureProvider.GetPhotoURL(UserID, UserName);

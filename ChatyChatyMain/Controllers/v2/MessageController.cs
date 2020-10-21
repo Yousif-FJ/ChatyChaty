@@ -4,7 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using ChatyChaty.ControllerHubSchema.v2;
-using ChatyChaty.Services.MessageServices;
+using ChatyChaty.Domain.Services.MessageServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

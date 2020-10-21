@@ -10,33 +10,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Migrations\20200306193238_NewM.cs" />
-    <Compile Remove="Migrations\20200306193238_NewM.Designer.cs" />
-    <Compile Remove="Migrations\20200306193328_NewMigration.cs" />
-    <Compile Remove="Migrations\20200306193328_NewMigration.Designer.cs" />
-    <Compile Remove="Migrations\20200311205843_AddUserApp.cs" />
-    <Compile Remove="Migrations\20200311205843_AddUserApp.Designer.cs" />
-    <Compile Remove="Migrations\20200311210229_UseApUSe.cs" />
-    <Compile Remove="Migrations\20200311210229_UseApUSe.Designer.cs" />
-    <Compile Remove="Migrations\20200311210306_AddAppUser.cs" />
-    <Compile Remove="Migrations\20200311210306_AddAppUser.Designer.cs" />
-    <Compile Remove="Migrations\20200313202826_UpdateUserApp.cs" />
-    <Compile Remove="Migrations\20200313202826_UpdateUserApp.Designer.cs" />
-    <Compile Remove="Migrations\20200315184726_RemoveUnusedTabes.cs" />
-    <Compile Remove="Migrations\20200315184726_RemoveUnusedTabes.Designer.cs" />
-    <Compile Remove="Migrations\20200315234858_ChangeIDToLong.cs" />
-    <Compile Remove="Migrations\20200315234858_ChangeIDToLong.Designer.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.1.6" />
-    <PackageReference Include="CloudinaryDotNet" Version="1.11.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.6" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.6" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.6">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.6">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -45,6 +20,11 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.3" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.1.4" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.5.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ChatyChaty.Domain\ChatyChaty.Domain.csproj" />
+    <ProjectReference Include="..\ChatyChaty.Infrastructure\ChatyChaty.Infrastructure.csproj" />
   </ItemGroup>
 
 

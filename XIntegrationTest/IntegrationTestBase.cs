@@ -6,13 +6,12 @@ using Xunit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using ChatyChaty.Model.DBModel;
 using System.Threading.Tasks;
 using ChatyChaty.ControllerHubSchema.v2;
 using System.Net.Http.Headers;
-using ChatyChaty.Model.AccountModel;
 using System.Linq;
 using Microsoft.EntityFrameworkCore.Internal;
+using ChatyChaty.Infrastructure.Database;
 
 namespace XIntegrationTest
 {

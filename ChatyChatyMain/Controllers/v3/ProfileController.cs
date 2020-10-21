@@ -5,8 +5,8 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using ChatyChaty.ControllerHubSchema.v3;
-using ChatyChaty.Services.AccountServices;
-using ChatyChaty.Services.MessageServices;
+using ChatyChaty.Domain.Services.AccountServices;
+using ChatyChaty.Domain.Services.MessageServices;
 using ChatyChaty.ValidationAttribute;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -52,7 +52,8 @@ namespace ChatyChaty.Controllers.v3
         public async Task<IActionResult> SetPhotoForSelf([FromForm]UploadFileSchema uploadFile)
         {
             var userId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
-            var setPhotoResult = await accountManager.SetPhotoAsync(long.Parse(userId), uploadFile.PhotoFile);
+            var setPhotoResult = await accountManager.SetPhotoAsync(long.Parse(userId),
+                uploadFile.PhotoFile.FileName, uploadFile.PhotoFile.OpenReadStream());
             if (setPhotoResult.Success == true)
             {
                 return Ok(new ResponseBase<string>

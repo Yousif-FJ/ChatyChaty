@@ -1,4 +1,4 @@
-﻿using ChatyChaty.Model.DBModel;
+﻿using ChatyChaty.Domain.Model.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;

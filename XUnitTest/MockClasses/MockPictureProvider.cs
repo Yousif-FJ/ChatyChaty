@@ -1,8 +1,9 @@
-﻿using ChatyChaty.Model.AccountModel;
-using ChatyChaty.Services.PictureServices;
+﻿using ChatyChaty.Domain.InfastructureInterfaces;
+using ChatyChaty.Domain.Model.AccountModel;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,7 +11,7 @@ namespace XUnitTest.MockClasses
 {
     class MockPictureProvider : IPictureProvider
     {
-        public Task<PhotoUrlModel> ChangePhoto(long UserID, string UserName, IFormFile formFile)
+        public Task<PhotoUrlModel> ChangePhoto(long userID, string userName, string fileName, Stream file)
         {
             var tcs = new TaskCompletionSource<PhotoUrlModel>();
             try

@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using ChatyChaty.ControllerHubSchema.v2;
 using System.Security.Claims;
-using ChatyChaty.Services.AuthenticationManager;
+using ChatyChaty.Domain.Services.AuthenticationManager;
 
 namespace ChatyChaty.Controllers.v2
 {

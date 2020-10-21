@@ -1,10 +1,10 @@
-﻿using ChatyChaty.Model.DBModel;
-using ChatyChaty.Model.NotificationRepository;
-using ChatyChaty.Model.Repositories.ChatRepository;
-using ChatyChaty.Model.Repositories.MessageRepository;
-using ChatyChaty.Model.Repositories.UserRepository;
-using ChatyChaty.Services.MessageServices;
-using ChatyChaty.Services.NotificationServices;
+﻿using ChatyChaty.Domain.Model.Entity;
+using ChatyChaty.Domain.Services.MessageServices;
+using ChatyChaty.Domain.Services.NotficationServices.Handler;
+using ChatyChaty.Infrastructure.Database;
+using ChatyChaty.Infrastructure.Repositories.ChatRepository;
+using ChatyChaty.Infrastructure.Repositories.MessageRepository;
+using ChatyChaty.Infrastructure.Repositories.UserRepository;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;

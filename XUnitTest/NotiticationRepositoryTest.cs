@@ -1,6 +1,6 @@
-﻿using ChatyChaty.Model.DBModel;
-using ChatyChaty.Model.NotificationRepository;
-using ChatyChaty.Services;
+﻿using ChatyChaty.Domain.Model.Entity;
+using ChatyChaty.Infrastructure.Database;
+using ChatyChaty.Infrastructure.Repositories.NotificationRepository;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using System;

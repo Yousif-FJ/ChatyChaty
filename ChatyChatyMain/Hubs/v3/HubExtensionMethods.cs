@@ -1,6 +1,5 @@
 ﻿using ChatyChaty.ControllerHubSchema.v3;
-using ChatyChaty.Model.MessagingModel;
-using ChatyChaty.Services.MessageServices;
+using ChatyChaty.Domain.Model.MessagingModel;
 using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
