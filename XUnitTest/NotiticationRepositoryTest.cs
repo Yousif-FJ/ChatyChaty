@@ -35,9 +35,8 @@ namespace XUnitTest
             var user2 = (await dbContext.Users.AddAsync(new AppUser("Test2"))).Entity;
             dbContext.SaveChanges();
             //Act
-            await notificationRepository.IntializeNotificationHandlerAsync(user2.Id);
+            var notification = await notificationRepository.GetNotificationAsync(user2.Id);
             //Assert
-            var notification = await notificationRepository.CheckForUpdatesAsync(user2.Id);
             Assert.True(notification.MessageUpdate == false);
         }
 
@@ -48,28 +47,38 @@ namespace XUnitTest
             var user1 = (await dbContext.Users.AddAsync(new AppUser("Test1"))).Entity;
             dbContext.SaveChanges();
             //Act
-            await notificationRepository.IntializeNotificationHandlerAsync(user1.Id);
-            await notificationRepository.IntializeNotificationHandlerAsync(user1.Id);
+            var notification = await notificationRepository.GetNotificationAsync(user1.Id);
             //Assert
-            var notification = await notificationRepository.CheckForUpdatesAsync(user1.Id);
             Assert.True(notification.MessageUpdate == false);
         }
 
 
         [Fact]
-        public async Task UsersGotChatUpdateAsync_No_update()
+        public async Task UsersGotMessageUpdateAsync_No_update()
         {
             //Arrange
             var user1 = (await dbContext.Users.AddAsync(new AppUser("Test1"))).Entity;
-            var user2 = (await dbContext.Users.AddAsync(new AppUser("Test2"))).Entity;
+            //var user2 = (await dbContext.Users.AddAsync(new AppUser("Test2"))).Entity;
             dbContext.SaveChanges();
-            await notificationRepository.IntializeNotificationHandlerAsync(user1.Id);
-            await notificationRepository.IntializeNotificationHandlerAsync(user2.Id);
             //Act
-            await notificationRepository.UsersGotChatUpdateAsync(user1.Id);
+            var notification = await notificationRepository.GetNotificationAsync(user1.Id);
             //Assert
-            var notification = await notificationRepository.CheckForUpdatesAsync(user1.Id);
             Assert.False(notification.MessageUpdate);
+            Assert.False(notification.ChatUpdate);
+        }
+
+        [Fact]
+        public async Task UsersGotMessageUpdateAsync_Got_update()
+        {
+            //Arrange
+            var user1 = (await dbContext.Users.AddAsync(new AppUser("Test1"))).Entity;
+            //var user2 = (await dbContext.Users.AddAsync(new AppUser("Test2"))).Entity;
+            dbContext.SaveChanges();
+            //Act
+            await notificationRepository.UserGotNewMessageAsync(user1.Id);
+            var notification = await notificationRepository.GetNotificationAsync(user1.Id);
+            //Assert
+            Assert.True(notification.MessageUpdate);
             Assert.False(notification.ChatUpdate);
         }
     }

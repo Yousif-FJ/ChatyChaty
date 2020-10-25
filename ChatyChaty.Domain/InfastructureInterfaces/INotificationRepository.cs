@@ -11,8 +11,8 @@ namespace ChatyChaty.Domain.InfastructureInterfaces
     /// </summary>
     public interface INotificationRepository
     {
-        Task<Notification> CheckForUpdatesAsync(long userId);
-        Task<Notification> IntializeNotificationHandlerAsync(long userId);
+        Task<Notification> GetNotificationAsync(long userId);
+        Task<Notification> ResetUpdatesAsync(long userId);
         Task UsersGotChatUpdateAsync(params long[] userIds);
         Task UserGotNewMessageAsync(long userId);
         Task UsersGotMessageDeliveredAsync(params long[] userIds);

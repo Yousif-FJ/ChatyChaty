@@ -19,84 +19,69 @@ namespace ChatyChaty.Infrastructure.Repositories.NotificationRepository
             this.dbContext = dbContext;
         }
 
-        public async Task<Notification> CheckForUpdatesAsync(long userId)
-        {
-            var Notification = await dbContext.Notifications.FirstOrDefaultAsync(n => n.UserId == userId);
-            if (Notification == null)
-            {
-                Notification = await IntializeNotificationHandlerAsync(userId);
-            }
-            var NotificationResponsee = new Notification
-            {
-                ChatUpdate = Notification.ChatUpdate,
-                MessageUpdate = Notification.MessageUpdate,
-                Id = Notification.Id
-            };
-
-            Notification.ChatUpdate = false;
-            Notification.MessageUpdate = false;
-            Notification.DeliveredUpdate = false;
-            dbContext.Notifications.Update(Notification);
-            await dbContext.SaveChangesAsync();
-            return NotificationResponsee;
-        }
-
-        public async Task<Notification> IntializeNotificationHandlerAsync(long userId)
+        public async Task<Notification> GetNotificationAsync(long userId)
         {
             var notification = await dbContext.Notifications.FirstOrDefaultAsync(n => n.UserId == userId);
             if (notification == null)
             {
-                notification = new Notification
-                {
-                    UserId = userId,
-                    ChatUpdate = false,
-                    MessageUpdate = false,
-                    DeliveredUpdate = false
-                };
-                notification = (await dbContext.Notifications.AddAsync(notification)).Entity;
+                notification = (await dbContext.Notifications.AddAsync(new Notification(userId))).Entity;
             }
-            else
+            await dbContext.SaveChangesAsync();
+            return notification;
+        }
+
+        public async Task<Notification> ResetUpdatesAsync(long userId)
+        {
+            var notification = await dbContext.Notifications.FirstOrDefaultAsync(n => n.UserId == userId);
+            if (notification == null)
             {
-                notification.MessageUpdate = false;
-                notification.ChatUpdate = false;
-                notification.DeliveredUpdate = false;
-                notification = dbContext.Notifications.Update(notification).Entity;
+                notification = (await dbContext.Notifications.AddAsync(new Notification(userId))).Entity;
             }
+            notification.Reset();
             await dbContext.SaveChangesAsync();
             return notification;
         }
 
         public async Task UsersGotChatUpdateAsync(params long[] userIds)
         {
-            var notifications = await dbContext.Notifications.Where(u => userIds.Contains(u.Id)).ToListAsync();
-            foreach (var notification in notifications)
-            {
-                notification.ChatUpdate = true;
-            }
-            dbContext.Notifications.UpdateRange(notifications);
-            await dbContext.SaveChangesAsync();
+            await UserGotUpdateCommon(notification => { notification.GotChatUpdate(); }, userIds);
         }
 
         public async Task UsersGotMessageDeliveredAsync(params long[] userIds)
         {
-            var notifications = await dbContext.Notifications.Where(u => userIds.Contains(u.Id)).ToListAsync();
-            foreach (var notification in notifications)
-            {
-                notification.DeliveredUpdate = true;
-            }
-            dbContext.Notifications.UpdateRange(notifications);
-            await dbContext.SaveChangesAsync();
+            await UserGotUpdateCommon(notification => { notification.GotDeliveredUpdate(); }, userIds);
         }
 
         public async Task UserGotNewMessageAsync(long userId)
         {
-            var notification = await dbContext.Notifications.FirstOrDefaultAsync(n => n.UserId == userId);
-            if (notification != null)
+            await UserGotUpdateCommon(notification => { notification.GotMessageUpdate(); }, userId);
+        }
+
+        private async Task UserGotUpdateCommon(Action<Notification> updateMethod, params long[] userIds)
+        {
+            var usersAndNotification = await dbContext.Users
+             .Include(user => user.Notification)
+             .Where(user => userIds.Contains(user.Id))
+             .Select(user => new { user.Id, user.Notification })
+             .ToListAsync();
+
+            var notifications = new List<Notification>();
+            foreach (var item in usersAndNotification)
             {
-                notification.MessageUpdate = true;
-                dbContext.Notifications.Update(notification);
-                await dbContext.SaveChangesAsync();
+                if (item.Notification == null)
+                {
+                    var notification = new Notification(item.Id);
+                    updateMethod(notification);
+                    notifications.Add(notification);
+                }
+                else
+                {
+                    updateMethod(item.Notification);
+                    notifications.Add(item.Notification);
+                }
             }
+            dbContext.Notifications.UpdateRange(notifications);
+            await dbContext.SaveChangesAsync();
         }
     }
 }

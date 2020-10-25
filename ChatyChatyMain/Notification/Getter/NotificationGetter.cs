@@ -17,7 +17,7 @@ namespace ChatyChaty.Domain.Services.NotficationServices.Getter
         }
         public async Task<Notification> CheckForUpdatesAsync(long userId)
         {
-            return await notificationRepository.CheckForUpdatesAsync(userId);
+            return await notificationRepository.GetNotificationAsync(userId);
         }
     }
 }

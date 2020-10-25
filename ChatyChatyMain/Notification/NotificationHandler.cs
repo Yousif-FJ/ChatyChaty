@@ -24,11 +24,6 @@ namespace ChatyChaty.Domain.Services.NotficationServices.Handler
             this.serviceProvider = serviceProvider;
         }
 
-        public async Task IntializeNotificationHandlerAsync(long userId)
-        {
-            await notificationRepository.IntializeNotificationHandlerAsync(userId);
-        }
-
         public async Task UserGotNewMessageAsync(params (long userId, long messageId)[] userAndMessageId)
         {
             var hubHelper = serviceProvider.GetService<HubHelper>();

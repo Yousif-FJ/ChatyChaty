@@ -63,7 +63,6 @@ namespace ChatyChaty.Domain.Services.AuthenticationManager
                 };
             }
             var user = await userManager.FindByNameAsync(username);
-            await notificationHandler.IntializeNotificationHandlerAsync(user.Id);
             var profile = new ProfileAccountModel
             {
                 DisplayName = user.DisplayName,
@@ -91,7 +90,6 @@ namespace ChatyChaty.Domain.Services.AuthenticationManager
                     Errors = new List<string> { new string("Invalid Login cridentials") }
                 };
             }
-            await notificationHandler.IntializeNotificationHandlerAsync(user.Id);
             var profile = new ProfileAccountModel
             {
                 DisplayName = user.DisplayName,
