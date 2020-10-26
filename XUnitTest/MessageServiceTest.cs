@@ -5,6 +5,7 @@ using ChatyChaty.Infrastructure.Database;
 using ChatyChaty.Infrastructure.Repositories.ChatRepository;
 using ChatyChaty.Infrastructure.Repositories.MessageRepository;
 using ChatyChaty.Infrastructure.Repositories.UserRepository;
+using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
@@ -37,8 +38,8 @@ namespace XUnitTest
             var chatRepository = new ChatRepository(context);
             var userRepository = new UserRepository(context);
 
-            var notificationHandlerMock = new Mock<INotificationHandler>() ;
-            messageService = new MessageService(messageRepository, userRepository, chatRepository, notificationHandlerMock.Object, new MockPictureProvider());
+            var notificationHandlerMock = new Mock<IMediator>() ;
+            messageService = new MessageService(messageRepository, userRepository, chatRepository, new MockPictureProvider(), notificationHandlerMock.Object);
         }
 
 

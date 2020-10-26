@@ -2,6 +2,7 @@
 using ChatyChaty.Domain.Model.Entity;
 using ChatyChaty.Domain.Model.MessagingModel;
 using ChatyChaty.Domain.Services.NotficationServices.Handler;
+using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,19 +18,20 @@ namespace ChatyChaty.Domain.Services.MessageServices
         private readonly IMessageRepository messageRepository;
         private readonly IUserRepository userRepository;
         private readonly IChatRepository chatRepository;
-        private readonly INotificationHandler notificationHandler;
         private readonly IPictureProvider pictureProvider;
+        private readonly IMediator mediator;
 
         public MessageService(IMessageRepository messageRepository,
             IUserRepository userRepository,
             IChatRepository chatRepository,
-            INotificationHandler notificationHandler,
-            IPictureProvider pictureProvider)
+            IPictureProvider pictureProvider,
+            IMediator mediator
+            )
         {
             this.messageRepository = messageRepository;
             this.userRepository = userRepository;
-            this.notificationHandler = notificationHandler;
             this.pictureProvider = pictureProvider;
+            this.mediator = mediator;
             this.chatRepository = chatRepository;
         }
 
@@ -103,7 +105,7 @@ namespace ChatyChaty.Domain.Services.MessageServices
 
             var returnedMessage = await messageRepository.AddMessageAsync(message);
 
-            await notificationHandler.UserGotNewMessageAsync((ReceiverId, returnedMessage.Id));
+            await mediator.Send(new UserGotNewMessageAsync((ReceiverId, returnedMessage.Id)));
 
             return new SendMessageModel { Message = returnedMessage };
         }
@@ -127,7 +129,7 @@ namespace ChatyChaty.Domain.Services.MessageServices
 
             var conversation = await chatRepository.GetConversationForUsersAsync(sender.Id, reciver.Id);
 
-            await notificationHandler.UsersGotChatUpdateAsync((sender.Id, reciver.Id));
+            await mediator.Send(new UsersGotChatUpdateAsync((sender.Id, reciver.Id)));
 
             return conversation.Id;
         }
@@ -146,7 +148,7 @@ namespace ChatyChaty.Domain.Services.MessageServices
                 }
             }
             await messageRepository.MarkAsReadAsync(markMessages);
-            await notificationHandler.UsersGotMessageDeliveredAsync(markMessages.Select(m => (m.SenderId, m.Id)).ToArray());
+            await mediator.Send(new UsersGotMessageDeliveredAsync(markMessages.Select(m => (m.SenderId, m.Id)).ToArray()));
             //error in get new message is redundant currently
             return new GetNewMessagesModel { Messages = newMessages };
         }

@@ -3,6 +3,7 @@ using ChatyChaty.Domain.Model.AccountModel;
 using ChatyChaty.Domain.Model.Entity;
 using ChatyChaty.Domain.Model.MessagingModel;
 using ChatyChaty.Domain.Services.NotficationServices.Handler;
+using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using System;
@@ -21,25 +22,25 @@ namespace ChatyChaty.Domain.Services.AccountServices
         private readonly UserManager<AppUser> userManager;
         private readonly IUserRepository userRepository;
         private readonly IChatRepository chatRepository;
-        private readonly INotificationHandler notificationHandler;
         private readonly IPictureProvider pictureProvider;
         private readonly ILogger<AccountManager> logger;
+        private readonly IMediator mediator;
 
         public AccountManager(
             UserManager<AppUser> userManager,
             IUserRepository userRepository,
             IChatRepository chatRepository,
-            INotificationHandler notificationHandler,
             IPictureProvider pictureProvider,
-            ILogger<AccountManager> logger
+            ILogger<AccountManager> logger,
+            IMediator mediator
             )
         {
             this.userManager = userManager;
             this.userRepository = userRepository;
             this.chatRepository = chatRepository;
-            this.notificationHandler = notificationHandler;
             this.pictureProvider = pictureProvider;
             this.logger = logger;
+            this.mediator = mediator;
         }
 
         private async Task<ProfileAccountModel> GetUserAsync(string username)
@@ -77,7 +78,7 @@ namespace ChatyChaty.Domain.Services.AccountServices
             //get or create the conversation
             var conversation = await chatRepository.GetConversationForUsersAsync(senderId, receiver.Id.Value);
 
-            await notificationHandler.UsersGotChatUpdateAsync((senderId, receiver.Id.Value));
+            await mediator.Send(new UsersGotChatUpdateAsync((senderId, receiver.Id.Value)));
 
             return new NewConversationModel
             {
@@ -101,9 +102,9 @@ namespace ChatyChaty.Domain.Services.AccountServices
             }
             var setPhotoResult = await pictureProvider.ChangePhoto(user.Id, user.UserName, fileName, file);
             var userIdsGotUpdate = await chatRepository.GetUserContactIdsAsync(user.Id);
-            await notificationHandler.UsersGotChatUpdateAsync(
+            await mediator.Send(new UsersGotChatUpdateAsync(
                 userIdsGotUpdate
-                .Select(u => (userId, u)).ToArray());
+                .Select(u => (userId, u)).ToArray()));
             return setPhotoResult;
         }
 
@@ -116,9 +117,9 @@ namespace ChatyChaty.Domain.Services.AccountServices
             }
             var newName = await userRepository.UpdateDisplayNameAsync(userId, newDisplayName);
             var userIdsGotUpdate = await chatRepository.GetUserContactIdsAsync(user.Id);
-            await notificationHandler.UsersGotChatUpdateAsync(
+            await mediator.Send(new UsersGotChatUpdateAsync(
                 userIdsGotUpdate
-                .Select(u => (userId, u)).ToArray());
+                .Select(u => (userId, u)).ToArray()));
             return newName;
         }
 

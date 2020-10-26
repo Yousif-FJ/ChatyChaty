@@ -24,19 +24,16 @@ namespace ChatyChaty.Domain.Services.AuthenticationManager
         private readonly UserManager<AppUser> userManager;
         private readonly IConfiguration configuration;
         private readonly IPictureProvider pictureProvider;
-        private readonly INotificationHandler notificationHandler;
 
         public AuthenticationManager(
             UserManager<AppUser> userManager,
             IConfiguration configuration,
-            IPictureProvider pictureProvider,
-            INotificationHandler notificationHandler
+            IPictureProvider pictureProvider
             )
         {
             this.userManager = userManager;
             this.configuration = configuration;
             this.pictureProvider = pictureProvider;
-            this.notificationHandler = notificationHandler;
         }
 
         public async Task<AuthenticationResult> CreateAccount(string username, string password, string displayName)

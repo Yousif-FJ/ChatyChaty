@@ -40,6 +40,7 @@ using ChatyChaty.Infrastructure.Repositories.UserRepository;
 using ChatyChaty.Infrastructure.Repositories.ChatRepository;
 using ChatyChaty.Infrastructure.Repositories.MessageRepository;
 using ChatyChaty.Infrastructure.Repositories.NotificationRepository;
+using MediatR;
 
 namespace ChatyChaty
 {
@@ -78,12 +79,14 @@ namespace ChatyChaty
 
             services.AddScoped<IAuthenticationManager, AuthenticationManager>();
 
-            services.AddScoped<INotificationHandler, NotificationHandler>();
             services.AddScoped<INotificationGetter, NotificationGetter>();
 
             services.AddScoped<IMessageService, MessageService>();
 
             services.AddSignalR();
+
+            //add MediatR ---------------------------------------------------------------
+            services.AddMediatR(Assembly.GetExecutingAssembly(), typeof(UsersGotChatUpdateAsync).Assembly);
 
             //configure MVC ---------------------------------------------------------------
             services.AddMvc(option =>
