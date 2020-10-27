@@ -13,7 +13,7 @@ namespace ChatyChaty.Hubs.v3
     /// <summary>
     /// This class is used when the hub is called outside of the MainHub classes
     /// </summary>
-    public class HubHelper
+    public class HubHelper : IHubHelper
     {
         private readonly IHubContext<MainHub, IChatClient> hubContext;
         private readonly IMessageService messageService;

@@ -11,6 +11,7 @@ using Xunit;
 
 namespace XUnitTest
 {
+    //to do - this should be a health check not a unit test
     public class CouldinaryPictureProviderTest
     {
         //This assume we have a CLOUDINARY_URL Environment variable

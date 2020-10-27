@@ -17,30 +17,28 @@ namespace ChatyChaty.Domain.Services.NotficationServices.Handler
     public abstract class NotificationHandlerCommon<T> : AsyncRequestHandler<T> where T : IRequest
     {
         protected readonly INotificationRepository notificationRepository;
-        protected readonly IServiceProvider serviceProvider;
-        public NotificationHandlerCommon(INotificationRepository notificationRepository,
-            IServiceProvider serviceProvider)
+        protected readonly IHubHelper hubHelper;
+
+        public NotificationHandlerCommon(INotificationRepository notificationRepository, IHubHelper hubHelper)
         {
             this.notificationRepository = notificationRepository;
-            this.serviceProvider = serviceProvider;
+            this.hubHelper = hubHelper;
         }
     }
     public class NewMessageHandler : NotificationHandlerCommon<UserGotNewMessageAsync>
     {
-        public NewMessageHandler(INotificationRepository notificationRepository, IServiceProvider serviceProvider)
-            : base(notificationRepository, serviceProvider)
+        public NewMessageHandler(INotificationRepository notificationRepository, IHubHelper hubHelper) : base(notificationRepository, hubHelper)
         {
         }
 
         protected override async Task Handle(UserGotNewMessageAsync request, CancellationToken cancellationToken)
         {
-            var hubHelper = serviceProvider.GetService<HubHelper>();
-            foreach (var item in request.userAndMessageId)
+            foreach (var (userId, messageId) in request.userAndMessageId)
             {
-                bool successful = await hubHelper.SendUpdateAsync(item.userId, item.messageId);
+                bool successful = await hubHelper.SendUpdateAsync(userId, messageId);
                 if (successful == false)
                 {
-                    await notificationRepository.UserGotNewMessageAsync(item.userId);
+                    await notificationRepository.UserGotNewMessageAsync(userId);
                 }
             }
         }
@@ -48,8 +46,7 @@ namespace ChatyChaty.Domain.Services.NotficationServices.Handler
 
     public class ChatUpdateHandler : NotificationHandlerCommon<UsersGotChatUpdateAsync>
     {
-        public ChatUpdateHandler(INotificationRepository notificationRepository, IServiceProvider serviceProvider)
-            : base(notificationRepository, serviceProvider)
+        public ChatUpdateHandler(INotificationRepository notificationRepository, IHubHelper hubHelper) : base(notificationRepository, hubHelper)
         {
         }
 
@@ -62,8 +59,7 @@ namespace ChatyChaty.Domain.Services.NotficationServices.Handler
 
     public class MessageDeliveredHandler : NotificationHandlerCommon<UsersGotMessageDeliveredAsync>
     {
-        public MessageDeliveredHandler(INotificationRepository notificationRepository, IServiceProvider serviceProvider)
-            : base(notificationRepository, serviceProvider)
+        public MessageDeliveredHandler(INotificationRepository notificationRepository, IHubHelper hubHelper) : base(notificationRepository, hubHelper)
         {
         }
 
