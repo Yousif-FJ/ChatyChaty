@@ -19,6 +19,7 @@ using ChatyChaty.Infrastructure.Database;
 using ChatyChaty.Infrastructure.StartupConfiguration;
 using ChatyChaty.StartupConfiguration;
 using MediatR;
+using Microsoft.AspNetCore.Routing.Patterns;
 
 namespace ChatyChaty
 {
@@ -115,6 +116,8 @@ namespace ChatyChaty
 
             app.UseAuthorization();
 
+            app.UseBlazorFrameworkFiles();
+
             app.UseStaticFiles();
 
             app.UseEndpoints(endpoints =>
@@ -123,6 +126,7 @@ namespace ChatyChaty
                     ResponseWriter = HealthCheckConfigurationExtension.CustomHealthCheckResponseWriter, AllowCachingResponses = true });
                 endpoints.MapHub<MainHub>("/v1/chathub");
                 endpoints.MapControllers();
+                endpoints.MapFallbackToFile("client", "index.html");
             });
         }
     }
