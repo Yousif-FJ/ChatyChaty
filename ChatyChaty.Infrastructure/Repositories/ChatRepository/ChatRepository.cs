@@ -69,27 +69,10 @@ namespace ChatyChaty.Infrastructure.Repositories.ChatRepository
 
         public async Task<IEnumerable<long>> GetUserContactIdsAsync(long userId)
         {
-            var conversations = await dBContext.Conversations
+            return await dBContext.Conversations
                .Where(c => c.FirstUserId == userId || c.SecondUserId == userId)
+               .Select(c => c.Id)
                .ToListAsync();
-
-            List<long> userIdsList = new List<long>();
-            foreach (var conversation in conversations)
-            {
-                if (conversation.FirstUserId == userId)
-                {
-                    userIdsList.Add(conversation.SecondUserId);
-                }
-                else if (conversation.SecondUserId == userId)
-                {
-                    userIdsList.Add(conversation.FirstUserId);
-                }
-                else
-                {
-                    throw new ArgumentOutOfRangeException("Conversatoin is not for the user");
-                }
-            }
-            return userIdsList;
         }
     }
 }

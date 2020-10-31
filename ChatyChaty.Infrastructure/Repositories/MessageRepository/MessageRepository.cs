@@ -28,6 +28,25 @@ namespace ChatyChaty.Infrastructure.Repositories.MessageRepository
             return DBMessage.Entity;
         }
 
+        public async Task<IEnumerable<Message>> GetLastDeliveredMessageForEachChat(long userId)
+        {
+            /*
+            SELECT MAX(Id), SenderId FROM Messages WHERE {0} = SenderId AND Delivered = 1 GROUP BY SenderId;
+            */
+            var MessageIds = await dBContext.Messages
+                .Where(m => m.SenderId == userId && m.Delivered)
+                .GroupBy(m => m.ConversationId)
+                .Select(mg => mg.Max(m => m.Id))
+                .ToListAsync();
+
+            if (MessageIds == null)
+            {
+                return null;
+            }
+
+            return dBContext.Messages.Where(m => MessageIds.Contains(m.Id));
+        }
+
         public async Task<Message> GetMessageAsync(long Id)
         {
             return await dBContext.Messages.FindAsync(Id);
@@ -45,7 +64,7 @@ namespace ChatyChaty.Infrastructure.Repositories.MessageRepository
         {
             foreach (var Message in Messages)
             {
-                Message.Delivered = true;
+                Message.MarkAsDelivered();
             }
             dBContext.Messages.UpdateRange(Messages);
             await dBContext.SaveChangesAsync();

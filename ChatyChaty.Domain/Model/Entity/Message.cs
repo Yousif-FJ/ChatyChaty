@@ -10,6 +10,10 @@ namespace ChatyChaty.Domain.Model.Entity
     {
         public Message(string body, long conversationId, long senderId)
         {
+            if (string.IsNullOrEmpty(body))
+            {
+                throw new ArgumentNullException("Message body shouldn't be empty");
+            }
             Body = body;
             ConversationId = conversationId;
             SenderId = senderId;
@@ -22,7 +26,13 @@ namespace ChatyChaty.Domain.Model.Entity
         public long SenderId { get; set; }
         public AppUser Sender { get; set; }
         public Conversation Conversation { get; set; }
-        public bool Delivered { get; set; }
+        public bool Delivered { get; private set; }
+
+        public Message MarkAsDelivered()
+        {
+            Delivered = true;
+            return this;
+        }
 
     }
 }
