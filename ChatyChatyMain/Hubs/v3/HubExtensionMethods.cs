@@ -39,25 +39,5 @@ namespace ChatyChaty.Hubs.v3
                 _ = hubClients.User(userId.ToString()).UpdateMessagesResponses(response);
             }
         }
-
-        static public void SendMessageUpdates(this IHubClients<IChatClient> hubClients, SendMessageModel MessagesModel,
-            long userId)
-        {
-            if (MessagesModel != null)
-            {
-                //convert from model to response class
-                var message = new MessageInfoBase(MessagesModel.Message, userId);
-
-                //create response
-                var response = new ResponseBase<IEnumerable<MessageInfoBase>>
-                {
-                    Success = true,
-                    Data = new List<MessageInfoBase> { message }
-                }.ToJson();
-
-                //send response to clients
-                _ = hubClients.User(userId.ToString()).UpdateMessagesResponses(response);
-            }
-        }
     }
 }

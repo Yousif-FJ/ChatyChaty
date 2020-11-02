@@ -4,28 +4,15 @@
 }
 
 <h2>Authentication</h2>
+<p>This client is just to test SignalR actions</p>
 <div class="form-group mt-3">
     <label>JWT Token (get the jwt token from authentication controller)</label>
     <input class="form-control" type="text" id="Token" />
 </div>
-<button class="btn btn-primary" type="button" onclick="Start()">Authenticate and connect</button>
+<button id="authenticate-and-connect-button" class="btn btn-primary" type="button" onclick="Start()">Authenticate and connect</button>
 
 
 <div id="main-controller-container" hidden="hidden">
-    <hr />
-    <h2>Actions menu</h2>
-
-
-    <div class="tab-content" id="myTabContent">
-        <div hidden class="mb-4 mt-2" id="tamplateForm" role="tabpanel">
-            <h4 id="titleTamplate"></h4>
-            <p id="descriptionTamplate"></p>
-            <textarea class="form-control" type="text" id="tamplateInput"></textarea>
-            <button class="btn btn-primary mt-2" type="button" id="sendButtonTamplate">Send</button>
-        </div>
-    </div>
-
-
 
     <hr />
     <h2>Response</h2>

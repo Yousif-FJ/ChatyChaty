@@ -19,9 +19,9 @@ namespace ChatyChaty.Controllers
             return View();
         }
 
-        [Route("/HubClient")]
+        [Route("/HubTestClient")]
         [HttpGet]
-        public IActionResult HubClient()
+        public IActionResult HubTestClient()
         {
             return View();
         }
