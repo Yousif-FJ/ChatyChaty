@@ -205,7 +205,6 @@ namespace ChatyChaty
             services.AddSwaggerGen(c =>
             {
                 c.CustomSchemaIds(x => x.FullName);
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "ChatyChatyAPI - V1", Version = "v1" });
                 c.SwaggerDoc("v2", new OpenApiInfo { Title = "ChatyChatyAPI - V2", Version = "v2" });
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);

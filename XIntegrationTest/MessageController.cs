@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using ChatyChaty.ControllerHubSchema.v2;
 using ChatyChaty.ControllerHubSchema.v1;
 
+//to do -- fix this to work with the new version
 namespace XIntegrationTest
 {
     public class MessageController : IntegrationTestBase
