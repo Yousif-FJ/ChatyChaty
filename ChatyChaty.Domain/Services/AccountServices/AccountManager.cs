@@ -1,7 +1,6 @@
 ﻿using ChatyChaty.Domain.InfastructureInterfaces;
 using ChatyChaty.Domain.Model.AccountModel;
 using ChatyChaty.Domain.Model.Entity;
-using ChatyChaty.Domain.Model.MessagingModel;
 using ChatyChaty.Domain.Services.NotficationServices.Handler;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -50,11 +49,11 @@ namespace ChatyChaty.Domain.Services.AccountServices
             {
                 return null;
             }
-            var PhotoUrl = await pictureProvider.GetPhotoURL(user.Id, user.UserName);
+            var PhotoUrl = pictureProvider.GetPhotoURL(user.Id, user.UserName);
             return new ProfileAccountModel
             {
                 Username = user.UserName,
-                Id = user.Id,
+                ChatId = user.Id,
                 DisplayName = user.DisplayName,
                 PhotoURL = PhotoUrl
             };
@@ -76,19 +75,18 @@ namespace ChatyChaty.Domain.Services.AccountServices
                 };
             }
             //get or create the conversation
-            var conversation = await chatRepository.GetConversationForUsersAsync(senderId, receiver.Id.Value);
+            var conversation = await chatRepository.GetConversationForUsersAsync(senderId, receiver.ChatId.Value);
 
-            await mediator.Send(new UsersGotChatUpdateAsync((senderId, receiver.Id.Value)));
+            await mediator.Send(new UsersGotChatUpdateAsync((senderId, conversation.Id)));
 
             return new NewConversationModel
             {
-                Conversation = new ConversationInfo
+                Conversation = new ProfileAccountModel
                 {
-                    ConversationId = conversation.Id,
-                    SecondUserId = receiver.Id.Value,
-                    SecondUserDisplayName = receiver.DisplayName,
-                    SecondUserUsername = receiver.Username,
-                    SecondUserPhoto = await pictureProvider.GetPhotoURL(receiver.Id.Value, receiver.Username)
+                    ChatId = conversation.Id,
+                    DisplayName = receiver.DisplayName,
+                    Username = receiver.Username,
+                    PhotoURL = pictureProvider.GetPhotoURL(receiver.ChatId.Value, receiver.Username)
                 }
             };
         }

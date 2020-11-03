@@ -35,7 +35,7 @@ namespace ChatyChaty.Domain.Services.NotficationServices.Handler
         {
             foreach (var (userId, messageId) in request.userAndMessageId)
             {
-                bool successful = await hubHelper.SendUpdateAsync(userId, messageId);
+                bool successful = await hubHelper.SendMessageUpdateAsync(userId, messageId);
                 if (successful == false)
                 {
                     await notificationRepository.UserGotNewMessageAsync(userId);
@@ -53,17 +53,17 @@ namespace ChatyChaty.Domain.Services.NotficationServices.Handler
         protected override async Task Handle(UsersGotChatUpdateAsync request, CancellationToken cancellationToken)
         {
             await notificationRepository.UsersGotChatUpdateAsync(
-                  request.invokerAndReceiverIds.Select(m => m.ReceiverId).ToArray());
+                  request.invokerAndReceiverIds.Select(m => m.receiverId).ToArray());
         }
     }
 
-    public class MessageDeliveredHandler : NotificationHandlerCommon<UsersGotMessageDeliveredAsync>
+    public class MessageStatusHandler : NotificationHandlerCommon<UsersGotMessageStatusUpdateAsync>
     {
-        public MessageDeliveredHandler(INotificationRepository notificationRepository, IHubHelper hubHelper) : base(notificationRepository, hubHelper)
+        public MessageStatusHandler(INotificationRepository notificationRepository, IHubHelper hubHelper) : base(notificationRepository, hubHelper)
         {
         }
 
-        protected override async Task Handle(UsersGotMessageDeliveredAsync request, CancellationToken cancellationToken)
+        protected override async Task Handle(UsersGotMessageStatusUpdateAsync request, CancellationToken cancellationToken)
         {
             await notificationRepository.UsersGotMessageDeliveredAsync(
                   request.userAndMessageIds.Select(m => m.userId).ToArray());

@@ -28,13 +28,24 @@ namespace ChatyChaty.Hubs.v3
             this.messageService = messageService;
             this.hubClients = hubClients;
         }
+
+        public Task<bool> SendChatUpdateAsync(long receiverId, long chatId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> SendMessageStatusUpdateAsync(long userId, long messageId)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Method called to send message updates to a connected client, return false if the client is not connected
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="lastMessageId"></param>
         /// <returns></returns>
-        public async Task<bool> SendUpdateAsync(long userId, long lastMessageId)
+        public async Task<bool> SendMessageUpdateAsync(long userId, long lastMessageId)
         {
             //check if client is connecte
             var IsConnected = hubClients.IsClientConnected(userId);
@@ -43,7 +54,7 @@ namespace ChatyChaty.Hubs.v3
                 return false;
             }
 
-            //get new messages form message service
+            //get new messages from message service
             var result = await messageService.GetNewMessages(userId, lastMessageId-1);
 
             //send update to client about new messages (using this extension method)

@@ -12,9 +12,8 @@ namespace ChatyChaty.Domain.InfastructureInterfaces
     /// </summary>
     public interface IPictureProvider
     {
-        public string GetPlaceHolderURL();
         public Task<PhotoUrlModel> ChangePhoto(long userID, string userName,string fileName, Stream file);
-        public Task<string> GetPhotoURL(long userID, string userName);
+        public string GetPhotoURL(long userID, string userName);
         public Task DeletePhoto(long userID, string userName);
     }
 }

@@ -1,4 +1,5 @@
-﻿using ChatyChaty.Domain.Model.MessagingModel;
+﻿using ChatyChaty.Domain.Model.AccountModel;
+using ChatyChaty.Domain.Model.MessagingModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,6 @@ namespace ChatyChaty.Domain.Services.MessageServices
         Task<SendMessageModel> SendMessage(long conversationId, long senderId, string messageBody);
         Task<GetNewMessagesModel> GetNewMessages(long userId, long lastMessageId);
         Task<IsDeliveredModel> IsDelivered(long userId, long messageId);
-        Task<IEnumerable<ConversationInfo>> GetConversations(long userId);
+        Task<IEnumerable<ProfileAccountModel>> GetConversations(long userId);
     }
 }
