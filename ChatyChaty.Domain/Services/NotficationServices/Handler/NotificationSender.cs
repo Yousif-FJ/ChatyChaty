@@ -12,9 +12,9 @@ namespace ChatyChaty.Domain.Services.NotficationServices.Handler
 
     public class UsersGotChatUpdateAsync : IRequest
     {
-        public readonly (long InvokerId, long ReceiverId)[] invokerAndReceiverIds;
+        public readonly (long receiverId, long chatId)[] invokerAndReceiverIds;
 
-        public UsersGotChatUpdateAsync(params (long InvokerId, long ReceiverId)[] invokerAndReceiverIds)
+        public UsersGotChatUpdateAsync(params (long receiverId, long chatId)[] invokerAndReceiverIds)
         {
             this.invokerAndReceiverIds = invokerAndReceiverIds;
         }
@@ -30,11 +30,11 @@ namespace ChatyChaty.Domain.Services.NotficationServices.Handler
         }
     }
 
-    public class UsersGotMessageDeliveredAsync : IRequest
+    public class UsersGotMessageStatusUpdateAsync : IRequest
     {
         public readonly (long userId, long messageId)[] userAndMessageIds;
 
-        public UsersGotMessageDeliveredAsync(params (long userId, long messageId)[] userAndMessageIds)
+        public UsersGotMessageStatusUpdateAsync(params (long userId, long messageId)[] userAndMessageIds)
         {
             this.userAndMessageIds = userAndMessageIds;
         }

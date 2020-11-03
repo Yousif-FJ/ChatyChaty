@@ -120,12 +120,12 @@ namespace ChatyChaty.Controllers.v3
                 Success = true,
                 Data = new GetUserProfileResponseBase
                 { 
-                    ChatId = result.Conversation.ConversationId,
+                    ChatId = result.Conversation.ChatId,
                     Profile = new ProfileSchema
                     {
-                        DisplayName = result.Conversation.SecondUserDisplayName,
-                        Username = result.Conversation.SecondUserUsername,
-                        PhotoURL = result.Conversation.SecondUserPhoto
+                        DisplayName = result.Conversation.DisplayName,
+                        Username = result.Conversation.Username,
+                        PhotoURL = result.Conversation.PhotoURL
                     }
                 }
             };
@@ -172,12 +172,12 @@ namespace ChatyChaty.Controllers.v3
                 chatList.Add(
                 new GetUserProfileResponseBase
                 {
-                    ChatId = chat.ConversationId,
+                    ChatId = chat.ChatId,
                     Profile = new ProfileSchema
                     {
-                        DisplayName = chat.SecondUserDisplayName,
-                        Username = chat.SecondUserUsername,
-                        PhotoURL = chat.SecondUserPhoto
+                        DisplayName = chat.DisplayName,
+                        Username = chat.Username,
+                        PhotoURL = chat.PhotoURL
                     }
                 }
                     );

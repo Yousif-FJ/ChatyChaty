@@ -1,4 +1,5 @@
 ﻿using ChatyChaty.Domain.InfastructureInterfaces;
+using ChatyChaty.Domain.Model.AccountModel;
 using ChatyChaty.Domain.Model.Entity;
 using ChatyChaty.Domain.Model.MessagingModel;
 using ChatyChaty.Domain.Services.NotficationServices.Handler;
@@ -102,7 +103,6 @@ namespace ChatyChaty.Domain.Services.MessageServices
             }
 
             var message = new Message(MessageBody, conversation.Id, SenderId);
-
             var returnedMessage = await messageRepository.AddMessageAsync(message);
 
             await mediator.Send(new UserGotNewMessageAsync((ReceiverId, returnedMessage.Id)));
@@ -117,6 +117,7 @@ namespace ChatyChaty.Domain.Services.MessageServices
         /// <param name="receiverId">Second user Id</param>
         /// <returns>A long that represent the created conversation Id</returns>
         /// <exception cref="ArgumentOutOfRangeException">thrown when one or both users don't exist</exception>
+//to refactor --
         [Obsolete("use new conversation in account manager instead")]
         public async Task<long> NewConversation(long senderId, long receiverId)
         {
@@ -129,13 +130,15 @@ namespace ChatyChaty.Domain.Services.MessageServices
 
             var conversation = await chatRepository.GetConversationForUsersAsync(sender.Id, reciver.Id);
 
-            await mediator.Send(new UsersGotChatUpdateAsync((sender.Id, reciver.Id)));
+            await mediator.Send(new UsersGotChatUpdateAsync((reciver.Id, conversation.Id)));
 
             return conversation.Id;
         }
 
+
         public async Task<GetNewMessagesModel> GetNewMessages(long userId, long lastMessageId)
         {
+//to refactor -- unnecessary repository calls
             var userConversationsId = await chatRepository.GetUserConversationIdsAsync(userId);
             var newMessages = await messageRepository.GetMessagesFromConversationIdsAsync(lastMessageId, userConversationsId);
             //Mark messages as read
@@ -147,9 +150,10 @@ namespace ChatyChaty.Domain.Services.MessageServices
                     markMessages.Add(message);
                 }
             }
+//to refactor -- messages should be marked here, and sent to update by the repository
             await messageRepository.MarkAsReadAsync(markMessages);
-            await mediator.Send(new UsersGotMessageDeliveredAsync(markMessages.Select(m => (m.SenderId, m.Id)).ToArray()));
-            //error in get new message is redundant currently
+            await mediator.Send(new UsersGotMessageStatusUpdateAsync(markMessages.Select(m => (m.SenderId, m.Id)).ToArray()));
+ //error in get new message is redundant currently
             return new GetNewMessagesModel { Messages = newMessages };
         }
 
@@ -160,7 +164,8 @@ namespace ChatyChaty.Domain.Services.MessageServices
         /// <remarks>throws exception if the user doesn't exist</remarks>
         /// <param name="userId">The userId who have the conversations</param>
         /// <returns>a list of conversations</returns>
-        public async Task<IEnumerable<ConversationInfo>> GetConversations(long userId)
+//to refactor -- move to account manager
+        public async Task<IEnumerable<ProfileAccountModel>> GetConversations(long userId)
         {
             var user = await userRepository.GetUserAsync(userId);
             if (user == null)
@@ -170,7 +175,7 @@ namespace ChatyChaty.Domain.Services.MessageServices
 
             var conversations = await chatRepository.GetUserConversationsWithUsersAsync(userId);
 
-            var response = new List<ConversationInfo>();
+            var response = new List<ProfileAccountModel>();
 
             foreach (var conversation in conversations)
             {
@@ -185,13 +190,12 @@ namespace ChatyChaty.Domain.Services.MessageServices
                 }
                 else throw new Exception("Invalid Conversation");
 
-                response.Add(new ConversationInfo
+                response.Add(new ProfileAccountModel
                 {
-                    ConversationId = conversation.Id,
-                    SecondUserDisplayName = SecondUser.DisplayName,
-                    SecondUserUsername = SecondUser.UserName,
-                    SecondUserId = SecondUser.Id,
-                    SecondUserPhoto = await pictureProvider.GetPhotoURL(SecondUser.Id, SecondUser.UserName)
+                    ChatId = conversation.Id,
+                    DisplayName = SecondUser.DisplayName,
+                    Username = SecondUser.UserName,
+                    PhotoURL = pictureProvider.GetPhotoURL(SecondUser.Id, SecondUser.UserName)
                 });
             }
             return response;

@@ -1,5 +1,4 @@
 ﻿using ChatyChaty.Domain.Model.AccountModel;
-using ChatyChaty.Domain.Model.MessagingModel;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;

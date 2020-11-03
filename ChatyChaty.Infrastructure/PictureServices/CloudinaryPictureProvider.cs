@@ -21,8 +21,7 @@ namespace ChatyChaty.Infrastructure.PictureServices
     {
         private readonly Cloudinary cloudinary;
         private readonly ILogger<CloudinaryPictureProvider> logger;
-        private const string PlaceHolderURL
-            = "https://res.cloudinary.com/da5y8c0lx/image/upload/ChatyChaty/Placeholder_h5xlzr.jpg";
+        private const string baseUrl = "https://res.cloudinary.com/da5y8c0lx/image/upload/";
         private const string FileConatiner = "ChatyChaty";
 
         public CloudinaryPictureProvider(Cloudinary cloudinary, ILogger<CloudinaryPictureProvider> logger)
@@ -67,27 +66,14 @@ namespace ChatyChaty.Infrastructure.PictureServices
         /// <summary>
         /// Retrieve the user's PhotoURL using UserId and UserName
         /// </summary>
-        /// <param name="UserID">User's ID which is part of the stored Photo idetitifier</param>
-        /// <param name="UserName">UserName which is part of the stored Photo idetitifier</param>
+        /// <param name="userID">User's ID which is part of the stored Photo idetitifier</param>
+        /// <param name="userName">UserName which is part of the stored Photo idetitifier</param>
         /// <returns>user's PhotoURL</returns>
-        public async Task<string> GetPhotoURL(long UserID, string UserName)
+        public string GetPhotoURL(long userID, string userName)
         {
-            var resourceResult = await cloudinary.GetResourceAsync(GetPublicId(UserID, UserName));
-            if (resourceResult.StatusCode == System.Net.HttpStatusCode.OK)
-            {
-                return resourceResult.SecureUrl;
-            }
-            return null;
+            return baseUrl+GetPublicId(userID, userName);
         }
 
-        /// <summary>
-        /// Return the URL for Photo place holder
-        /// </summary>
-        /// <returns>URL for Photo place holder</returns>
-        public string GetPlaceHolderURL()
-        {
-            return PlaceHolderURL;
-        }
 
         /// <summary>
         /// Delete user's photo using UserId and UserName
