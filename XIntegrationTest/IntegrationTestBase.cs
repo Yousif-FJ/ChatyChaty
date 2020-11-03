@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Threading.Tasks;
-using ChatyChaty.ControllerHubSchema.v2;
 using System.Net.Http.Headers;
 using System.Linq;
 using Microsoft.EntityFrameworkCore.Internal;
@@ -15,7 +14,7 @@ using ChatyChaty.Infrastructure.Database;
 
 namespace XIntegrationTest
 {
-    public class IntegrationTestBase
+    public abstract class IntegrationTestBase
     {
         protected readonly HttpClient client;
         public IntegrationTestBase()
@@ -39,26 +38,6 @@ namespace XIntegrationTest
             });
             //create a special client that work the In-Memory app
             client = Factory.CreateClient();
-        }
-
-
-
-        protected void Authenticate(string token)
-        {
-            client.DefaultRequestHeaders.Authorization =  new AuthenticationHeaderValue("bearer",token);
-        }
-
-        protected async Task<string> CreateAccount(string userName, string displayName, string password)
-        {
-
-            var response = await client.PostAsJsonAsync("/api/v2/Authentication/CreateAccount", new CreateAccountSchema 
-            {
-                UserName = userName,
-                Password = password,
-                DisplayName = displayName
-            });
-            var textResponse = await response.Content.ReadAsStringAsync();
-            return (await response.Content.ReadAsAsync<AuthenticationResponse>()).Token;
         }
     }
 }
