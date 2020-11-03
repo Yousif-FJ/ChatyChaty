@@ -37,7 +37,7 @@ namespace XUnitTest
             await pictureProvider.ChangePhoto(UserID:UserID , UserName:UserName,FF.FileName, FF.OpenReadStream());
 
             //Assert
-            var PhotoUrl = await pictureProvider.GetPhotoURL(UserID, UserName);
+            var PhotoUrl = pictureProvider.GetPhotoURL(UserID, UserName);
             HttpClient httpClient = new HttpClient();
             var result = await httpClient.GetAsync(PhotoUrl);
             Assert.True(HttpStatusCode.OK == result.StatusCode);

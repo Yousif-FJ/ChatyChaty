@@ -32,19 +32,9 @@ namespace XUnitTest.MockClasses
             return Task.CompletedTask;
         }
 
-        public Task<string> GetPhotoURL(long UserID, string UserName)
+        public string GetPhotoURL(long UserID, string UserName)
         {
-            var tcs = new TaskCompletionSource<string>();
-            try
-            {
-                tcs.SetResult(null);
-                return tcs.Task;
-            }
-            catch (Exception e)
-            {
-                tcs.SetException(e);
-                return tcs.Task;
-            }
+            return null;
         }
 
         public string GetPlaceHolderURL()
