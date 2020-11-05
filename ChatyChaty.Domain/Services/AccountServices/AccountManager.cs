@@ -49,7 +49,7 @@ namespace ChatyChaty.Domain.Services.AccountServices
             {
                 return null;
             }
-            var PhotoUrl = pictureProvider.GetPhotoURL(user.Id, user.UserName);
+            var PhotoUrl = await pictureProvider.GetPhotoURL(user.Id, user.UserName);
             return new ProfileAccountModel
             {
                 Username = user.UserName,
@@ -86,7 +86,7 @@ namespace ChatyChaty.Domain.Services.AccountServices
                     ChatId = conversation.Id,
                     DisplayName = receiver.DisplayName,
                     Username = receiver.Username,
-                    PhotoURL = pictureProvider.GetPhotoURL(receiver.ChatId.Value, receiver.Username)
+                    PhotoURL = await pictureProvider.GetPhotoURL(receiver.ChatId.Value, receiver.Username)
                 }
             };
         }

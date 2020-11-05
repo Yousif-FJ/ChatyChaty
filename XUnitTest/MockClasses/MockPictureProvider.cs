@@ -32,7 +32,7 @@ namespace XUnitTest.MockClasses
             return Task.CompletedTask;
         }
 
-        public string GetPhotoURL(long UserID, string UserName)
+        public Task<string> GetPhotoURL(long UserID, string UserName)
         {
             return null;
         }

@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace XUnitTest
+namespace XUnitTest.RepositoryTest
 {
     public class NotiticationRepositoryTest
     {

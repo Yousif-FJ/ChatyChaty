@@ -69,9 +69,14 @@ namespace ChatyChaty.Infrastructure.PictureServices
         /// <param name="userID">User's ID which is part of the stored Photo idetitifier</param>
         /// <param name="userName">UserName which is part of the stored Photo idetitifier</param>
         /// <returns>user's PhotoURL</returns>
-        public string GetPhotoURL(long userID, string userName)
+        public async Task<string> GetPhotoURL(long userID, string userName)
         {
-            return baseUrl+GetPublicId(userID, userName);
+            var resourceResult = await cloudinary.GetResourceAsync(GetPublicId(userID, userName));
+            if (resourceResult.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                return resourceResult.SecureUrl;
+            }
+            return null;
         }
 
 

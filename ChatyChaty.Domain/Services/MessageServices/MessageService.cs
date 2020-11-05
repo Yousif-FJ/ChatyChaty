@@ -195,7 +195,7 @@ namespace ChatyChaty.Domain.Services.MessageServices
                     ChatId = conversation.Id,
                     DisplayName = SecondUser.DisplayName,
                     Username = SecondUser.UserName,
-                    PhotoURL = pictureProvider.GetPhotoURL(SecondUser.Id, SecondUser.UserName)
+                    PhotoURL = await pictureProvider.GetPhotoURL(SecondUser.Id, SecondUser.UserName)
                 });
             }
             return response;

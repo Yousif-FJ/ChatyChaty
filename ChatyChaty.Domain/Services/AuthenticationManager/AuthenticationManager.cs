@@ -91,7 +91,7 @@ namespace ChatyChaty.Domain.Services.AuthenticationManager
             {
                 DisplayName = user.DisplayName,
                 Username = user.UserName,
-                PhotoURL = pictureProvider.GetPhotoURL(user.Id, user.UserName)
+                PhotoURL = await pictureProvider.GetPhotoURL(user.Id, user.UserName)
             };
             return new AuthenticationResult
             {
