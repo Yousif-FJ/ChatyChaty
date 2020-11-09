@@ -36,28 +36,11 @@ namespace XUnitTest
             //construct a message repositor and notfication handler then a message service
             var messageRepository = new MessageRepository(context);
             var chatRepository = new ChatRepository(context);
-            var userRepository = new UserRepository(context);
 
             var notificationHandlerMock = new Mock<IMediator>() ;
-            messageService = new MessageService(messageRepository, userRepository, chatRepository, new MockPictureProvider(), notificationHandlerMock.Object);
+            messageService = new MessageService(messageRepository, chatRepository, notificationHandlerMock.Object);
         }
 
-
-        [Fact]
-        public async Task NewConversation_success()
-        {
-            //Arrange
-            var sender = (await dbContext.Users.AddAsync(new AppUser("Test1"))).Entity;
-            var reciver = (await dbContext.Users.AddAsync(new AppUser("Test2"))).Entity;
-            dbContext.SaveChanges();
-            //Act
-            var ConversationId = await messageService.NewConversation(sender.Id, reciver.Id);
-            //Assert
-            var conversation = await dbContext.Conversations.FindAsync(ConversationId);
-            Assert.True(conversation != null && 
-                conversation.FirstUserId == sender.Id && 
-                conversation.SecondUserId == reciver.Id);
-        }
 
         [Fact]
         public async Task SendMessage_success()

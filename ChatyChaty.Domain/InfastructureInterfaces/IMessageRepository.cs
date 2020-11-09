@@ -13,8 +13,8 @@ namespace ChatyChaty.Domain.InfastructureInterfaces
     {
         Task<Message> GetMessageAsync(long Id);
         Task<IEnumerable<Message>> GetLastDeliveredMessageForEachChat(long userId);
-        Task<IEnumerable<Message>> GetMessagesFromConversationIdsAsync(long messageId, IEnumerable<long> conversationsIds);
-        Task MarkAsReadAsync(IEnumerable<Message> messages);
+        Task<IEnumerable<Message>> GetMessagesForUser(long messageId, long userId);
+        Task UpdateMessagesAsync(IEnumerable<Message> messages);
         Task<Message> AddMessageAsync(Message message);
     }
 }

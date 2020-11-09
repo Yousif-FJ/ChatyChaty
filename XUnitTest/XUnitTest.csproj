@@ -27,14 +27,4 @@
     <ProjectReference Include="..\ChatyChatyMain\ChatyChaty.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="PhotoUploadTestSamples\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="PhotoUploadTestSamples\Untitled.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>

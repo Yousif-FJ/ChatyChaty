@@ -17,21 +17,15 @@ namespace ChatyChaty.Domain.Services.MessageServices
     public class MessageService : IMessageService
     {
         private readonly IMessageRepository messageRepository;
-        private readonly IUserRepository userRepository;
         private readonly IChatRepository chatRepository;
-        private readonly IPictureProvider pictureProvider;
         private readonly IMediator mediator;
 
         public MessageService(IMessageRepository messageRepository,
-            IUserRepository userRepository,
             IChatRepository chatRepository,
-            IPictureProvider pictureProvider,
             IMediator mediator
             )
         {
             this.messageRepository = messageRepository;
-            this.userRepository = userRepository;
-            this.pictureProvider = pictureProvider;
             this.mediator = mediator;
             this.chatRepository = chatRepository;
         }
@@ -110,95 +104,24 @@ namespace ChatyChaty.Domain.Services.MessageServices
             return new SendMessageModel { Message = returnedMessage };
         }
 
-        /// <summary>
-        /// create or get a conversation between 2 users
-        /// </summary>
-        /// <param name="senderId">First user Id</param>
-        /// <param name="receiverId">Second user Id</param>
-        /// <returns>A long that represent the created conversation Id</returns>
-        /// <exception cref="ArgumentOutOfRangeException">thrown when one or both users don't exist</exception>
-//to refactor --
-        [Obsolete("use new conversation in account manager instead")]
-        public async Task<long> NewConversation(long senderId, long receiverId)
-        {
-            var sender = await userRepository.GetUserAsync(senderId);
-            var reciver = await userRepository.GetUserAsync(receiverId);
-            if (sender == null || reciver == null)
-            {
-                throw new ArgumentOutOfRangeException("Invalid IDs");
-            }
-
-            var conversation = await chatRepository.GetConversationForUsersAsync(sender.Id, reciver.Id);
-
-            await mediator.Send(new UsersGotChatUpdateAsync((reciver.Id, conversation.Id)));
-
-            return conversation.Id;
-        }
-
 
         public async Task<GetNewMessagesModel> GetNewMessages(long userId, long lastMessageId)
         {
-//to refactor -- unnecessary repository calls
-            var userConversationsId = await chatRepository.GetUserConversationIdsAsync(userId);
-            var newMessages = await messageRepository.GetMessagesFromConversationIdsAsync(lastMessageId, userConversationsId);
+            var newMessages = await messageRepository.GetMessagesForUser(lastMessageId, userId);
             //Mark messages as read
             var markMessages = new List<Message>();
             foreach (var message in newMessages)
             {
                 if (message.SenderId != userId && !message.Delivered)
                 {
+                    message.MarkAsDelivered();
                     markMessages.Add(message);
                 }
             }
-//to refactor -- messages should be marked here, and sent to update by the repository
-            await messageRepository.MarkAsReadAsync(markMessages);
+            await messageRepository.UpdateMessagesAsync(markMessages);
             await mediator.Send(new UsersGotMessageStatusUpdateAsync(markMessages.Select(m => (m.SenderId, m.Id)).ToArray()));
  //error in get new message is redundant currently
             return new GetNewMessagesModel { Messages = newMessages };
-        }
-
-
-        /// <summary>
-        /// Get a list of conversations for a user
-        /// </summary>
-        /// <remarks>throws exception if the user doesn't exist</remarks>
-        /// <param name="userId">The userId who have the conversations</param>
-        /// <returns>a list of conversations</returns>
-//to refactor -- move to account manager
-        public async Task<IEnumerable<ProfileAccountModel>> GetConversations(long userId)
-        {
-            var user = await userRepository.GetUserAsync(userId);
-            if (user == null)
-            {
-                throw new ArgumentOutOfRangeException("Invalid Ids");
-            };
-
-            var conversations = await chatRepository.GetUserConversationsWithUsersAsync(userId);
-
-            var response = new List<ProfileAccountModel>();
-
-            foreach (var conversation in conversations)
-            {
-                AppUser SecondUser;
-                if (user.Id == conversation.FirstUserId)
-                {
-                    SecondUser = conversation.SecondUser;
-                }
-                else if (user.Id == conversation.SecondUserId)
-                {
-                    SecondUser = conversation.FirstUser;
-                }
-                else throw new Exception("Invalid Conversation");
-
-                response.Add(new ProfileAccountModel
-                {
-                    ChatId = conversation.Id,
-                    DisplayName = SecondUser.DisplayName,
-                    Username = SecondUser.UserName,
-                    PhotoURL = await pictureProvider.GetPhotoURL(SecondUser.Id, SecondUser.UserName)
-                });
-            }
-            return response;
         }
     }
 }

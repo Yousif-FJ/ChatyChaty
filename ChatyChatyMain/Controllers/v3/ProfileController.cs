@@ -163,7 +163,7 @@ namespace ChatyChaty.Controllers.v3
         public async Task<IActionResult> GetChats()
         {
             var userId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
-            var chats = await messageService.GetConversations(long.Parse(userId));
+            var chats = await accountManager.GetConversations(long.Parse(userId));
 
             var chatList = new List<GetUserProfileResponseBase>();
 

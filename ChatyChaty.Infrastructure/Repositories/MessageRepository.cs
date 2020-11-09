@@ -52,20 +52,21 @@ namespace ChatyChaty.Infrastructure.Repositories.MessageRepository
             return await dBContext.Messages.FindAsync(Id);
         }
 
-        public async Task<IEnumerable<Message>> GetMessagesFromConversationIdsAsync(long MessageId, IEnumerable<long> ConversationsIds)
+        public async Task<IEnumerable<Message>> GetMessagesForUser(long messageId, long userId)
         {
+            var ConversationsIds = await dBContext.Conversations
+                .Where(c => c.FirstUserId == userId || c.SecondUserId == userId)
+                .Select(c => c.Id)
+                .ToListAsync();
+
             return await dBContext.Messages.Where(
-                m => m.Id > MessageId &&
+                m => m.Id > messageId &&
                 ConversationsIds.Any(id => id == m.ConversationId)
                 ).Include(c => c.Sender).ToListAsync();
         }
 
-        public async Task MarkAsReadAsync(IEnumerable<Message> Messages)
+        public async Task UpdateMessagesAsync(IEnumerable<Message> Messages)
         {
-            foreach (var Message in Messages)
-            {
-                Message.MarkAsDelivered();
-            }
             dBContext.Messages.UpdateRange(Messages);
             await dBContext.SaveChangesAsync();
         }

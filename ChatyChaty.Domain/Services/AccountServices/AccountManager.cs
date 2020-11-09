@@ -91,6 +91,47 @@ namespace ChatyChaty.Domain.Services.AccountServices
             };
         }
 
+        /// <summary>
+        /// Get a list of conversations for a user
+        /// </summary>
+        /// <remarks>throws exception if the user doesn't exist</remarks>
+        /// <param name="userId">The userId who have the conversations</param>
+        /// <returns>a list of conversations</returns>
+        public async Task<IEnumerable<ProfileAccountModel>> GetConversations(long userId)
+        {
+            var user = await userRepository.GetUserAsync(userId);
+            if (user == null)
+            {
+                throw new ArgumentOutOfRangeException("Invalid Ids");
+            };
+
+            var conversations = await chatRepository.GetUserConversationsWithUsersAsync(userId);
+
+            var response = new List<ProfileAccountModel>();
+
+            foreach (var conversation in conversations)
+            {
+                AppUser SecondUser;
+                if (user.Id == conversation.FirstUserId)
+                {
+                    SecondUser = conversation.SecondUser;
+                }
+                else
+                {
+                    SecondUser = conversation.FirstUser;
+                }
+
+                response.Add(new ProfileAccountModel
+                {
+                    ChatId = conversation.Id,
+                    DisplayName = SecondUser.DisplayName,
+                    Username = SecondUser.UserName,
+                    PhotoURL = await pictureProvider.GetPhotoURL(SecondUser.Id, SecondUser.UserName)
+                });
+            }
+            return response;
+        }
+
         public async Task<PhotoUrlModel> SetPhotoAsync(long userId, string fileName, Stream file)
         {
             var user = await userRepository.GetUserAsync(userId);

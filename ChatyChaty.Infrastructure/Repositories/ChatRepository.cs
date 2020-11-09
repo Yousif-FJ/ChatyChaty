@@ -24,14 +24,6 @@ namespace ChatyChaty.Infrastructure.Repositories.ChatRepository
                 .FirstOrDefaultAsync(c => c.Id == ConversationId);
         }
 
-        public async Task<IEnumerable<long>> GetUserConversationIdsAsync(long UserId)
-        {
-            return await dBContext.Conversations
-                .Where(c => c.FirstUserId == UserId || c.SecondUserId == UserId)
-                .Select(c => c.Id)
-                .ToListAsync();
-        }
-
         public async Task<IEnumerable<Conversation>> GetUserConversationsWithUsersAsync(long UserId)
         {
             return await dBContext.Conversations
@@ -39,7 +31,6 @@ namespace ChatyChaty.Infrastructure.Repositories.ChatRepository
                 .Include(c => c.FirstUser).Include(c => c.SecondUser)
                 .ToListAsync();
         }
-
 
         public async Task<Conversation> GetConversationForUsersAsync(long User1Id, long User2Id)
         {
