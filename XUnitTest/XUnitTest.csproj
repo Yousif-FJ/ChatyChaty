@@ -28,11 +28,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="TestSamples\" />
+    <Folder Include="PhotoUploadTestSamples\" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="TestSamples\Untitled.png">
+    <None Update="PhotoUploadTestSamples\Untitled.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

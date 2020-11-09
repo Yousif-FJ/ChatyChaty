@@ -4,6 +4,7 @@ using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,7 +36,7 @@ namespace ChatyChaty
         public void ConfigureServices(IServiceCollection services)
         {
 
-            //register classes in DI -----------------------------------------------------
+            //register classes in DI 
 
             services.AddIdentity<AppUser, Role>()
                .AddEntityFrameworkStores<ChatyChatyContext>();
@@ -56,21 +57,21 @@ namespace ChatyChaty
 
             services.AddInfrastructureClasses();
 
-            //add MediatR ---------------------------------------------------------------
+            //add MediatR 
             services.AddMediatR(Assembly.GetExecutingAssembly(), typeof(UsersGotChatUpdateAsync).Assembly);
 
-            //configure MVC ---------------------------------------------------------------
+            //configure MVC 
             services.AddMvc(option =>
             {
                 option.Filters.Add(new ProducesAttribute("application/json"));
                 option.Filters.Add(new ConsumesAttribute("application/json"));
             });
 
-            //configure DBcontext ----------------------------------------------------------
+            //configure DBcontext 
 
             services.CustomConfigureDbContext(Configuration);
 
-            //configure identity -----------------------------------------------------------
+            //configure identity 
 
             services.Configure<IdentityOptions>(options =>
             {
@@ -87,12 +88,15 @@ namespace ChatyChaty
                 "abcdefghijklmnopqrstuvwxyz0123456789_";
             });
 
-            //configure BearerJWT using extension method -----------------------------------------------------------
+            //configure BearerJWT using extension method 
             services.CustomConfigureJwtAuthentication(Configuration);
 
 
-            //configure swagger using extension method -------------------------------------
+            //configure swagger using extension method 
             services.CustomConfigureSwagger();
+
+            //configure custom health check
+            services.CustomConfigureHealthCheck();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -118,6 +122,8 @@ namespace ChatyChaty
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapHealthChecks("/health", new HealthCheckOptions {
+                    ResponseWriter = HealthCheckConfigurationExtension.CustomHealthCheckResponseWriter, AllowCachingResponses = true });
                 endpoints.MapHub<MainHub>("/v1/chathub");
                 endpoints.MapControllers();
             });
