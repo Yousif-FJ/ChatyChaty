@@ -126,7 +126,7 @@ namespace ChatyChaty
                     ResponseWriter = HealthCheckConfigurationExtension.CustomHealthCheckResponseWriter, AllowCachingResponses = true });
                 endpoints.MapHub<MainHub>("/v1/chathub");
                 endpoints.MapControllers();
-                endpoints.MapFallbackToFile("client", "index.html");
+                endpoints.MapFallbackToFile("/client/{param?}", "index.html");
             });
         }
     }
