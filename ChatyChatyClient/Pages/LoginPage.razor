@@ -1,0 +1,15 @@
+﻿@page "/client/login"
+<h3>Login</h3>
+<form>
+    <div class="mb-3">
+        <label for="exampleInputEmail1" class="form-label">Username</label>
+        <input @bind="Username" type="text">
+    </div>
+    <div class="mb-3">
+        <label for="exampleInputPassword1" class="form-label">Password</label>
+        <input @bind="Password" type="password">
+    </div>
+
+    <button @onsubmit="Login" type="submit" class="btn btn-primary">Submit</button>
+</form>
+
