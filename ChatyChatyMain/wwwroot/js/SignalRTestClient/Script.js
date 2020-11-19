@@ -22,7 +22,7 @@ function Start() {
     for (let i = 0; i < MethodResponseList.length; i++) {
         connection.on(MethodResponseList[i], function (message) {
             var li = document.createElement("li");
-            li.textContent = "Response from " + MethodResponseList[i] + " : " + message;
+            li.textContent = "Response from " + MethodResponseList[i] + " : " + JSON.stringify(message);
             document.getElementById("messagesList").appendChild(li);
         });
 

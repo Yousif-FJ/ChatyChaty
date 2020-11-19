@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ChatyChaty.ControllerHubSchema.v3;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,6 +11,6 @@ namespace ChatyChaty.Hubs.v3
     /// </summary>
     public interface IChatClient
     {
-        Task UpdateMessagesResponses(string jsonMessagesList);
+        Task UpdateMessagesResponses(ResponseBase<IEnumerable<MessageInfoBase>> MessagesList);
     }
 }

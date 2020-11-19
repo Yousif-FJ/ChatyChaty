@@ -57,8 +57,24 @@ namespace ChatyChaty.Hubs.v3
             //get new messages from message service
             var result = await messageService.GetNewMessages(userId, lastMessageId-1);
 
-            //send update to client about new messages (using this extension method)
-            hubContext.Clients.SendMessageUpdates(result, userId);
+            //hubContext.Clients.SendMessageUpdates(result, userId);
+
+            //if there are new messages
+            if (result.Messages.Count() > 0)
+            {
+                //convert from model to response class
+                var messages = result.Messages.ToMessageInfoResponse(userId);
+
+                //create response
+                var response = new ResponseBase<IEnumerable<MessageInfoBase>>
+                {
+                    Success = true,
+                    Data = messages
+                };
+
+                //send response to clients
+                _ = hubContext.Clients.User(userId.ToString()).UpdateMessagesResponses(response);
+            }
 
             return true;
         }

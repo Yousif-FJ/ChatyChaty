@@ -31,7 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="PhotoUploadTestSamples\Untitled.png">
+    <None Update="HealthChecks\PhotoUploadTestSamples\Untitled.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
