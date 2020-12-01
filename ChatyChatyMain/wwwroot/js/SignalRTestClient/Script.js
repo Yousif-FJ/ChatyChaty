@@ -16,7 +16,7 @@ function Start() {
     });
 
     //list of response methods to listen to 
-    const MethodResponseList = ["UpdateMessagesResponses"];
+    const MethodResponseList = ["UpdateMessagesResponse","UpdateChatResponse"];
 
     //connect and listen to the methods
     for (let i = 0; i < MethodResponseList.length; i++) {

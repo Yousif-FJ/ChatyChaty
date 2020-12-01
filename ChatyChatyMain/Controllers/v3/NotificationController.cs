@@ -59,7 +59,7 @@ namespace ChatyChaty.Controllers.v3
                 MessageUpdate = result.MessageUpdate,
                 DeliveredUpdate = result.DeliveredUpdate
             };
-            return Ok(new ResponseBase<CheckForUpdatesResponseBase>
+            return Ok(new Response<CheckForUpdatesResponseBase>
             {
                 Success = true,
                 Data = responseBase

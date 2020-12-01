@@ -22,12 +22,10 @@ namespace ChatyChaty.Controllers.v3
     public class ProfileController : ControllerBase
     {
         private readonly IAccountManager accountManager;
-        private readonly IMessageService messageService;
 
-        public ProfileController(IAccountManager accountManager, IMessageService messageService)
+        public ProfileController(IAccountManager accountManager)
         {
             this.accountManager = accountManager;
-            this.messageService = messageService;
         }
 
 
@@ -56,7 +54,7 @@ namespace ChatyChaty.Controllers.v3
                 uploadFile.PhotoFile.FileName, uploadFile.PhotoFile.OpenReadStream());
             if (setPhotoResult.Success == true)
             {
-                return Ok(new ResponseBase<string>
+                return Ok(new Response<string>
                 {
                     Success = true,
                     Data = setPhotoResult.URL
@@ -64,7 +62,7 @@ namespace ChatyChaty.Controllers.v3
             }
             else
             {
-                return BadRequest(new ResponseBase<string>
+                return BadRequest(new Response<string>
                 {
                     Success = false,
                     Errors = setPhotoResult.Errors
@@ -109,16 +107,16 @@ namespace ChatyChaty.Controllers.v3
             var result = await accountManager.NewConversationAsync(long.Parse(userId), userName);
             if (result.Error != null)
             {
-                return NotFound(new ResponseBase<GetUserProfileResponseBase>
+                return NotFound(new Response<UserProfileResponseBase>
                 {
                     Success = false,
                     Errors = new Collection<string> { result.Error }
                 });
             }
-            var response = new ResponseBase<GetUserProfileResponseBase>
+            var response = new Response<UserProfileResponseBase>
             {
                 Success = true,
-                Data = new GetUserProfileResponseBase
+                Data = new UserProfileResponseBase
                 { 
                     ChatId = result.Conversation.ChatId,
                     Profile = new ProfileSchema
@@ -165,12 +163,12 @@ namespace ChatyChaty.Controllers.v3
             var userId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
             var chats = await accountManager.GetConversations(long.Parse(userId));
 
-            var chatList = new List<GetUserProfileResponseBase>();
+            var chatList = new List<UserProfileResponseBase>();
 
             foreach (var chat in chats)
             {
                 chatList.Add(
-                new GetUserProfileResponseBase
+                new UserProfileResponseBase
                 {
                     ChatId = chat.ChatId,
                     Profile = new ProfileSchema
@@ -182,7 +180,7 @@ namespace ChatyChaty.Controllers.v3
                 }
                     );
             };
-            var response = new ResponseBase<IEnumerable<GetUserProfileResponseBase>>()
+            var response = new Response<IEnumerable<UserProfileResponseBase>>()
             {
                 Success = true,
                 Data = chatList
@@ -216,7 +214,7 @@ namespace ChatyChaty.Controllers.v3
         {
             var UserId = long.Parse(HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
             var newName = await accountManager.UpdateDisplayNameAsync(UserId, newDisplayName);
-            return Ok(new ResponseBase<string>
+            return Ok(new Response<string>
             {
                 Success = true,
                 Data = newName

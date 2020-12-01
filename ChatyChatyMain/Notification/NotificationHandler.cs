@@ -52,8 +52,14 @@ namespace ChatyChaty.Domain.Services.NotficationServices.Handler
 
         protected override async Task Handle(UsersGotChatUpdateAsync request, CancellationToken cancellationToken)
         {
-            await notificationRepository.UsersGotChatUpdateAsync(
-                  request.invokerAndReceiverIds.Select(m => m.receiverId).ToArray());
+            foreach (var (reciverId, chatId) in request.invokerAndReceiverIds)
+            {
+                bool successful = await hubHelper.SendChatUpdateAsync(reciverId, chatId);
+                if (successful == false)
+                {
+                    await notificationRepository.UsersGotChatUpdateAsync(reciverId);
+                }
+            }
         }
     }
 

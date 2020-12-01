@@ -24,7 +24,7 @@ namespace XIntegrationTest
             requestMessage.Headers.Add("UserName", user2CreationResponse.Data.Profile.Username);
             var response = await client.SendAsync(requestMessage);
             //Assert
-            var result = await response.Content.ReadAsAsync<ResponseBase<GetUserProfileResponseBase>>();
+            var result = await response.Content.ReadAsAsync<Response<UserProfileResponseBase>>();
             Assert.True(result.Success, $"response as string : { await response.Content.ReadAsStringAsync()}");
             Assert.NotNull(result.Data.ChatId);
             Assert.False(result.Data.ChatId == default(long));
@@ -40,14 +40,14 @@ namespace XIntegrationTest
             client.Authenticate(user1CreationResponse.Data.Token);
             using HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Get, "api/v3/Profile/User");
             requestMessage.Headers.Add("UserName", user2CreationResponse.Data.Profile.Username);
-            var chatResposne = await (await client.SendAsync(requestMessage)).Content.ReadAsAsync<ResponseBase<GetUserProfileResponseBase>>();
+            var chatResposne = await (await client.SendAsync(requestMessage)).Content.ReadAsAsync<Response<UserProfileResponseBase>>();
             var chatId = chatResposne.Data.ChatId.Value;
             var messageBody = "hi";
             //Act
             var response = await client.PostAsJsonAsync("api/v3/Message/Message",
                 new SendMessageSchema { Body = messageBody, ChatId = chatId });
             //Assert
-            var result = await response.Content.ReadAsAsync<ResponseBase<MessageInfoBase>>();
+            var result = await response.Content.ReadAsAsync<Response<MessageInfoBase>>();
             Assert.True(result.Success, $"response as string : { await response.Content.ReadAsStringAsync()}");
             Assert.False(result.Data.Delivered);
             Assert.Equal(messageBody, result.Data.Body);

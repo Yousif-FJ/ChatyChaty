@@ -8,15 +8,15 @@ using System.Threading.Tasks;
 
 namespace ChatyChaty.ControllerHubSchema.v3
 {
-    public class ResponseBase<T>
+    public class Response<T>
     {
         public bool Success { get; set; }
         public IEnumerable<string> Errors { get; set; }
         public T Data { get; set; }
 
-        public ResponseBase(){}
+        public Response(){}
 
-        public ResponseBase(ModelStateDictionary modelState)
+        public Response(ModelStateDictionary modelState)
         {
             if (modelState.IsValid)
             {

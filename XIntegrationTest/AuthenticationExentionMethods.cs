@@ -21,15 +21,15 @@ namespace XIntegrationTest
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token);
         }
 
-        public async static Task<ResponseBase<AuthenticationResponseBase>> CreateAccount(this HttpClient httpClient,string userName, string displayName, string password)
+        public async static Task<Response<AuthenticationResponseBase>> CreateAccount(this HttpClient httpClient,string userName, string displayName, string password)
         {
 
             var response = await httpClient.PostAsJsonAsync("/api/v3/Authentication/NewAccount", new CreateAccountSchema
             {
                 DisplayName = displayName, Password = password, Username = userName
             });
-            ResponseBase<AuthenticationResponseBase> responseAsClass;
-            responseAsClass = await response.Content.ReadAsAsync<ResponseBase<AuthenticationResponseBase>>();
+            Response<AuthenticationResponseBase> responseAsClass;
+            responseAsClass = await response.Content.ReadAsAsync<Response<AuthenticationResponseBase>>();
 
             if (responseAsClass.Success == false)
             {

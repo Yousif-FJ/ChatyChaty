@@ -68,14 +68,14 @@ namespace ChatyChaty.Controllers.v3
             //the error never a value
             if (result.Error != null)
             {
-                return BadRequest(new ResponseBase<IEnumerable<MessageInfoBase>>
+                return BadRequest(new Response<IEnumerable<MessageInfoBase>>
                 {
                     Success = false,
                     Errors = new Collection<string>() { result.Error }
                 });
             }
             var messages = result.Messages.ToMessageInfoResponse(userId);
-            return Ok(new ResponseBase<IEnumerable<MessageInfoBase>>
+            return Ok(new Response<IEnumerable<MessageInfoBase>>
             {
                 Success = true,
                 Data = messages
@@ -111,13 +111,13 @@ namespace ChatyChaty.Controllers.v3
             var result = await messageService.IsDelivered(long.Parse(userIdClaim.Value), messageId);
             if (result.Error != null)
             {
-                return BadRequest(new ResponseBase<bool?>
+                return BadRequest(new Response<bool?>
                 {
                     Success = false,
                     Errors = new Collection<string> { result.Error }
                 });
             }
-            return Ok(new ResponseBase<bool?>
+            return Ok(new Response<bool?>
             {
                 Success = true,
                 Data = result.IsDelivered
@@ -162,7 +162,7 @@ namespace ChatyChaty.Controllers.v3
 
             if (result.Error != null)
             {
-                return BadRequest(new ResponseBase<MessageInfoBase>
+                return BadRequest(new Response<MessageInfoBase>
                 {
                     Success = false,
                     Errors = new Collection<string> { result.Error}
@@ -178,7 +178,7 @@ namespace ChatyChaty.Controllers.v3
                 Sender = userNameClaim.Value,
                 Delivered = false
             };
-            return Ok(new ResponseBase<MessageInfoBase>
+            return Ok(new Response<MessageInfoBase>
             {
                 Success = true,
                 Data = responseBase

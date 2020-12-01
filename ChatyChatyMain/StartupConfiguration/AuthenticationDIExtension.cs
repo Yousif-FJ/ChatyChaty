@@ -57,7 +57,7 @@ namespace ChatyChaty.StartupConfiguration
             context.HandleResponse();
             context.Response.StatusCode = 401;
             await context.Response.WriteAsync(
-                new ResponseBase<object>
+                new Response<object>
                 {
                     Success = false,
                     Errors = new List<string> { "The user is not authenticated" }

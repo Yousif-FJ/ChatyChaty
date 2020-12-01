@@ -1,9 +1,9 @@
 ﻿using ChatyChaty.ControllerHubSchema.v3;
+using ChatyChaty.Domain.Services.AccountServices;
 using ChatyChaty.Domain.Services.MessageServices;
 using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -17,21 +17,49 @@ namespace ChatyChaty.Hubs.v3
     {
         private readonly IHubContext<MainHub, IChatClient> hubContext;
         private readonly IMessageService messageService;
+        private readonly IAccountManager accountManager;
         private readonly HubConnectedClients hubClients;
 
         public HubHelper(IHubContext<MainHub, IChatClient> hubContext,
             IMessageService messageService,
+            IAccountManager accountManager,
             HubConnectedClients hubClients
             )
         {
             this.hubContext = hubContext;
             this.messageService = messageService;
+            this.accountManager = accountManager;
             this.hubClients = hubClients;
         }
 
-        public Task<bool> SendChatUpdateAsync(long receiverId, long chatId)
+        public async Task<bool> SendChatUpdateAsync(long receiverId, long chatId)
         {
-            throw new NotImplementedException();
+            var IsConnected = hubClients.IsClientConnected(receiverId);
+            if (IsConnected == false)
+            {
+                return false;
+            }
+
+            var result = await accountManager.GetConversation(chatId, receiverId);
+
+
+            Response<UserProfileResponseBase> response = new()
+            {
+                Success = true,
+                Data = new UserProfileResponseBase
+                {
+                    Profile = new ProfileSchema
+                    {
+                        DisplayName = result.DisplayName,
+                        PhotoURL = result.PhotoURL,
+                        Username = result.Username
+                    },
+                    ChatId = chatId
+                }
+            };
+
+            _ = hubContext.Clients.User(receiverId.ToString()).UpdateChatResponse(response);
+            return true;
         }
 
         public Task<bool> SendMessageStatusUpdateAsync(long userId, long messageId)
@@ -60,20 +88,20 @@ namespace ChatyChaty.Hubs.v3
             //hubContext.Clients.SendMessageUpdates(result, userId);
 
             //if there are new messages
-            if (result.Messages.Count() > 0)
+            if (result.Messages.Any())
             {
                 //convert from model to response class
                 var messages = result.Messages.ToMessageInfoResponse(userId);
 
                 //create response
-                var response = new ResponseBase<IEnumerable<MessageInfoBase>>
+                var response = new Response<IEnumerable<MessageInfoBase>>
                 {
                     Success = true,
                     Data = messages
                 };
 
                 //send response to clients
-                _ = hubContext.Clients.User(userId.ToString()).UpdateMessagesResponses(response);
+                _ = hubContext.Clients.User(userId.ToString()).UpdateMessagesResponse(response);
             }
 
             return true;

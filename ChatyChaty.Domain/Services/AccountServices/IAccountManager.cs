@@ -15,6 +15,7 @@ namespace ChatyChaty.Domain.Services.AccountServices
     {
         Task<NewConversationModel> NewConversationAsync(long senderId, string receiverUsername);
         Task<IEnumerable<ProfileAccountModel>> GetConversations(long userId);
+        Task<ProfileAccountModel> GetConversation(long chatId, long userId);
         Task<string> UpdateDisplayNameAsync(long UserId, string NewDisplayName);
         Task<PhotoUrlModel> SetPhotoAsync(long UserId, string fileName ,Stream file);
     }

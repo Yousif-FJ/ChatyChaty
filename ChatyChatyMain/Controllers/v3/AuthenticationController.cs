@@ -58,7 +58,7 @@ namespace ChatyChaty.Controllers.v3
 
             if (!authenticationResult.Success)
             {
-                ResponseBase<AuthenticationResponseBase> authenticationSchemaF = new ResponseBase<AuthenticationResponseBase>()
+                Response<AuthenticationResponseBase> authenticationSchemaF = new Response<AuthenticationResponseBase>()
                 {
                     Errors = authenticationResult.Errors,
                     Success = authenticationResult.Success,
@@ -73,7 +73,7 @@ namespace ChatyChaty.Controllers.v3
                 PhotoURL = authenticationResult.Profile.PhotoURL
             };
 
-            ResponseBase<AuthenticationResponseBase> authenticationSchema = new ResponseBase<AuthenticationResponseBase>()
+            Response<AuthenticationResponseBase> authenticationSchema = new Response<AuthenticationResponseBase>()
             {
                 Success = authenticationResult.Success,
                 Data = new AuthenticationResponseBase
@@ -117,7 +117,7 @@ namespace ChatyChaty.Controllers.v3
 
             if (!authenticationResult.Success)
             {
-                ResponseBase<AuthenticationResponseBase> authenticationSchemaF = new ResponseBase<AuthenticationResponseBase>()
+                Response<AuthenticationResponseBase> authenticationSchemaF = new Response<AuthenticationResponseBase>()
                 {
                     Errors = authenticationResult.Errors,
                     Success = authenticationResult.Success,
@@ -132,7 +132,7 @@ namespace ChatyChaty.Controllers.v3
                 PhotoURL = authenticationResult.Profile.PhotoURL
             };
 
-            ResponseBase<AuthenticationResponseBase> authenticationSchema = new ResponseBase<AuthenticationResponseBase>()
+            Response<AuthenticationResponseBase> authenticationSchema = new Response<AuthenticationResponseBase>()
             {
                 Errors = authenticationResult.Errors,
                 Success = authenticationResult.Success,
@@ -171,7 +171,7 @@ namespace ChatyChaty.Controllers.v3
         {
             var userId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
             var result = await authenticationManager.ChangePassword(userId, passwordSchema.CurrentPassword, passwordSchema.NewPassword);
-            var changePasswordResponse = new ResponseBase<object>
+            var changePasswordResponse = new Response<object>
             {
                 Success = result.Success,
                 Errors = result.Errors,

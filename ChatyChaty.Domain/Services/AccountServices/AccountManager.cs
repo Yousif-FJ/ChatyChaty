@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+//TODO - Fix the notification logic
 
 namespace ChatyChaty.Domain.Services.AccountServices
 {
@@ -102,7 +103,7 @@ namespace ChatyChaty.Domain.Services.AccountServices
             var user = await userRepository.GetUserAsync(userId);
             if (user == null)
             {
-                throw new ArgumentOutOfRangeException("Invalid Ids");
+                throw new ArgumentOutOfRangeException(nameof(userId),"Invalid Id");
             };
 
             var conversations = await chatRepository.GetUserConversationsWithUsersAsync(userId);
@@ -111,15 +112,7 @@ namespace ChatyChaty.Domain.Services.AccountServices
 
             foreach (var conversation in conversations)
             {
-                AppUser SecondUser;
-                if (user.Id == conversation.FirstUserId)
-                {
-                    SecondUser = conversation.SecondUser;
-                }
-                else
-                {
-                    SecondUser = conversation.FirstUser;
-                }
+                AppUser SecondUser = ExtractSecondUser(user, conversation);
 
                 response.Add(new ProfileAccountModel
                 {
@@ -132,12 +125,45 @@ namespace ChatyChaty.Domain.Services.AccountServices
             return response;
         }
 
+        private static AppUser ExtractSecondUser(AppUser user, Conversation conversation)
+        {
+            AppUser SecondUser;
+            if (user.Id == conversation.FirstUserId)
+            {
+                SecondUser = conversation.SecondUser;
+            }
+            else
+            {
+                SecondUser = conversation.FirstUser;
+            }
+
+            return SecondUser;
+        }
+
+        public async Task<ProfileAccountModel> GetConversation(long chatId, long userId)
+        {
+            var user = await userRepository.GetUserAsync(userId);
+
+            var conversation = await chatRepository.GetConversationAsync(chatId);
+
+            AppUser SecondUser = ExtractSecondUser(user, conversation);
+
+            var response = new ProfileAccountModel
+            {
+                ChatId = conversation.Id,
+                DisplayName = SecondUser.DisplayName,
+                Username = SecondUser.UserName,
+                PhotoURL = await pictureProvider.GetPhotoURL(SecondUser.Id, SecondUser.UserName)
+            };
+            return response;
+        }
+
         public async Task<PhotoUrlModel> SetPhotoAsync(long userId, string fileName, Stream file)
         {
             var user = await userRepository.GetUserAsync(userId);
             if (user == null)
             {
-                throw new ArgumentOutOfRangeException("Invalid userId");
+                throw new ArgumentOutOfRangeException(nameof(userId),"Invalid userId");
             }
             var setPhotoResult = await pictureProvider.ChangePhoto(user.Id, user.UserName, fileName, file);
             var userIdsGotUpdate = await chatRepository.GetUserContactIdsAsync(user.Id);
@@ -152,7 +178,7 @@ namespace ChatyChaty.Domain.Services.AccountServices
             var user = await userRepository.GetUserAsync(userId);
             if (user is null)
             {
-                throw new ArgumentOutOfRangeException("Invalid UserId");
+                throw new ArgumentOutOfRangeException(nameof(userId), "Invalid UserId");
             }
             var newName = await userRepository.UpdateDisplayNameAsync(userId, newDisplayName);
             var userIdsGotUpdate = await chatRepository.GetUserContactIdsAsync(user.Id);
