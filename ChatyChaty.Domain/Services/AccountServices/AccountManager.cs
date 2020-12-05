@@ -43,23 +43,6 @@ namespace ChatyChaty.Domain.Services.AccountServices
             this.mediator = mediator;
         }
 
-        private async Task<ProfileAccountModel> GetUserAsync(string username)
-        {
-            var user = await userManager.FindByNameAsync(username);
-            if (user == null)
-            {
-                return null;
-            }
-            var PhotoUrl = await pictureProvider.GetPhotoURL(user.Id, user.UserName);
-            return new ProfileAccountModel
-            {
-                Username = user.UserName,
-                ChatId = user.Id,
-                DisplayName = user.DisplayName,
-                PhotoURL = PhotoUrl
-            };
-        }
-
         /// <summary>
         /// create or get a conversation between 2 users
         /// </summary>
@@ -67,7 +50,7 @@ namespace ChatyChaty.Domain.Services.AccountServices
         /// <param name="receiverUsername">Second user Id</param>
         public async Task<NewConversationModel> NewConversationAsync(long senderId, string receiverUsername)
         {
-            var receiver = await GetUserAsync(receiverUsername);
+            var receiver = await userManager.FindByNameAsync(receiverUsername); ;
             if (receiver == null)
             {
                 return new NewConversationModel
@@ -75,10 +58,10 @@ namespace ChatyChaty.Domain.Services.AccountServices
                     Error = "Requested user doesn't exist"
                 };
             }
-            //get or create the conversation
-            var conversation = await chatRepository.GetConversationForUsersAsync(senderId, receiver.ChatId.Value);
 
-            await mediator.Send(new UsersGotChatUpdateAsync((senderId, conversation.Id)));
+            var conversation = await chatRepository.GetConversationForUsersAsync(senderId, receiver.Id);
+
+            await mediator.Send(new UsersGotChatUpdateAsync((receiver.Id, conversation.Id)));
 
             return new NewConversationModel
             {
@@ -86,8 +69,8 @@ namespace ChatyChaty.Domain.Services.AccountServices
                 {
                     ChatId = conversation.Id,
                     DisplayName = receiver.DisplayName,
-                    Username = receiver.Username,
-                    PhotoURL = await pictureProvider.GetPhotoURL(receiver.ChatId.Value, receiver.Username)
+                    Username = receiver.UserName,
+                    PhotoURL = await pictureProvider.GetPhotoURL(receiver.Id, receiver.UserName)
                 }
             };
         }
@@ -112,7 +95,8 @@ namespace ChatyChaty.Domain.Services.AccountServices
 
             foreach (var conversation in conversations)
             {
-                AppUser SecondUser = ExtractSecondUser(user, conversation);
+
+                AppUser SecondUser = conversation.FindReceiver(user.Id);
 
                 response.Add(new ProfileAccountModel
                 {
@@ -125,20 +109,6 @@ namespace ChatyChaty.Domain.Services.AccountServices
             return response;
         }
 
-        private static AppUser ExtractSecondUser(AppUser user, Conversation conversation)
-        {
-            AppUser SecondUser;
-            if (user.Id == conversation.FirstUserId)
-            {
-                SecondUser = conversation.SecondUser;
-            }
-            else
-            {
-                SecondUser = conversation.FirstUser;
-            }
-
-            return SecondUser;
-        }
 
         public async Task<ProfileAccountModel> GetConversation(long chatId, long userId)
         {
@@ -146,7 +116,7 @@ namespace ChatyChaty.Domain.Services.AccountServices
 
             var conversation = await chatRepository.GetConversationAsync(chatId);
 
-            AppUser SecondUser = ExtractSecondUser(user, conversation);
+            AppUser SecondUser = conversation.FindReceiver(user.Id);
 
             var response = new ProfileAccountModel
             {
@@ -166,10 +136,7 @@ namespace ChatyChaty.Domain.Services.AccountServices
                 throw new ArgumentOutOfRangeException(nameof(userId),"Invalid userId");
             }
             var setPhotoResult = await pictureProvider.ChangePhoto(user.Id, user.UserName, fileName, file);
-            var userIdsGotUpdate = await chatRepository.GetUserContactIdsAsync(user.Id);
-            await mediator.Send(new UsersGotChatUpdateAsync(
-                userIdsGotUpdate
-                .Select(u => (userId, u)).ToArray()));
+            await mediator.Send(new UsersUpdatedTheirProfileAsync(userId));
             return setPhotoResult;
         }
 
@@ -181,13 +148,11 @@ namespace ChatyChaty.Domain.Services.AccountServices
                 throw new ArgumentOutOfRangeException(nameof(userId), "Invalid UserId");
             }
             var newName = await userRepository.UpdateDisplayNameAsync(userId, newDisplayName);
-            var userIdsGotUpdate = await chatRepository.GetUserContactIdsAsync(user.Id);
-            await mediator.Send(new UsersGotChatUpdateAsync(
-                userIdsGotUpdate
-                .Select(u => (userId, u)).ToArray()));
+            await mediator.Send(new UsersUpdatedTheirProfileAsync(userId));
             return newName;
         }
 
+        //To-Do: finish implementation
         public async Task<bool> DeleteAccountAsync(long userId)
         {
             var user = await userRepository.GetUserAsync(userId);

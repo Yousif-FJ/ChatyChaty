@@ -40,4 +40,13 @@ namespace ChatyChaty.Domain.Services.NotficationServices.Handler
         }
     }
 
+    public class UsersUpdatedTheirProfileAsync : IRequest
+    {
+        public readonly long UsersId;
+
+        public UsersUpdatedTheirProfileAsync(long usersId)
+        {
+            this.UsersId = usersId;
+        }
+    }
 }

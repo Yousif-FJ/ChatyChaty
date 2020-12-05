@@ -31,7 +31,7 @@ namespace ChatyChaty.Infrastructure.Repositories.ChatRepository
                 .Include(c => c.FirstUser).Include(c => c.SecondUser)
                 .ToListAsync();
         }
-
+//TO-DO refcator the method, Get method shouldn't create data
         public async Task<Conversation> GetConversationForUsersAsync(long User1Id, long User2Id)
         {
             var conversation = await dBContext.Conversations.FirstOrDefaultAsync(
@@ -58,11 +58,10 @@ namespace ChatyChaty.Infrastructure.Repositories.ChatRepository
             }
         }
 
-        public async Task<IEnumerable<long>> GetUserContactIdsAsync(long userId)
+        public async Task<IEnumerable<Conversation>> GetUserConversationsAsync(long userId)
         {
             return await dBContext.Conversations
                .Where(c => c.FirstUserId == userId || c.SecondUserId == userId)
-               .Select(c => c.Id)
                .ToListAsync();
         }
     }

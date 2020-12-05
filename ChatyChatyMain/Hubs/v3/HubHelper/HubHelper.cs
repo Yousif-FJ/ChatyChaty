@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace ChatyChaty.Hubs.v3
 {
+    //TO-Do: extract the check logic into separate method
     /// <summary>
     /// This class is used when the hub is called outside of the MainHub classes
     /// </summary>

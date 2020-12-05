@@ -22,5 +22,33 @@ namespace ChatyChaty.Domain.Model.Entity
         public long SecondUserId { get; set; }
         public ICollection<Message> Messages { get; set; }
 
+        public long FindReceiverId(long senderId)
+        {
+            long receiverId;
+            if (senderId == FirstUserId)
+            {
+                receiverId = SecondUserId;
+            }
+            else
+            {
+                receiverId = FirstUserId;
+            }
+            return receiverId;
+        }
+
+        public AppUser FindReceiver(long senderId)
+        {
+            AppUser receiver;
+            if (senderId == FirstUserId)
+            {
+                receiver = SecondUser;
+            }
+            else
+            {
+                receiver = FirstUser;
+            }
+            return receiver;
+        }
+
     }
 }
