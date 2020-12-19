@@ -1,16 +1,39 @@
 ﻿@page "/client"
 
-<div>
-    <div>back_button</div>
-    <div>menu button</div>
-    <h3>ChatyChaty</h3>
-</div>
-@for (int i = 0; i < 10; i++)
-{
-    <div>
-        <div>picture</div> 
-        <div>person name</div>
+<nav class="navbar navbar-dark bg-dark">
+    <div class="container-fluid">
+        <span class="navbar-brand">ChatyChaty</span>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDarkDropdown" aria-controls="navbarNavDarkDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDarkDropdown">
+            <ul class="navbar-nav">
+
+                <li><a class="nav-link" >Action</a></li>
+                <li><a class="nav-link" >Another action</a></li>
+                <li><a class="nav-link" >Something else here</a></li>
+            </ul>
+        </div>
     </div>
-}
+</nav>
+
+<div class="list-group">
+    @for (int i = 0; i < 10; i++)
+    {
+    <div>
+        <a class="list-group-item list-group-item-action">
+            <div class="d-flex justify-content-between align-items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="42" height="42" fill="currentColor" class="bi bi-person-circle m-1" viewBox="0 0 16 16">
+                    <path d="M13.468 12.37C12.758 11.226 11.195 10 8 10s-4.757 1.225-5.468 2.37A6.987 6.987 0 0 0 8 15a6.987 6.987 0 0 0 5.468-2.63z" />
+                    <path fill-rule="evenodd" d="M8 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
+                    <path fill-rule="evenodd" d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zM0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8z" />
+                </svg>
+                <p style="margin: auto 4px" >person name</p>
+                <span class="badge bg-primary rounded-pill ms-auto">14</span>
+            </div>
+        </a>
+    </div>
+    }
+</div>
 
 
