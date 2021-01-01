@@ -1,15 +1,38 @@
-﻿@page "/client/{PageRoute}"
+﻿@page "/client/{ChatId}"
+
+<nav class="navbar navbar-dark bg-dark">
+    <div class="container-fluid justify-content-start p-1">
+        <a href="client">
+            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" color="white" fill="currentColor" class="bi bi-arrow-left mr-2" viewBox="0 0 16 16">
+                <path fill-rule="evenodd"
+                      d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z" />
+            </svg>
+        </a>
+
+        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" color="white" fill="currentColor" class="bi bi-person-circle mx-2" viewBox="0 0 16 16">
+            <path d="M13.468 12.37C12.758 11.226 11.195 10 8 10s-4.757 1.225-5.468 2.37A6.987 6.987 0 0 0 8 15a6.987 6.987 0 0 0 5.468-2.63z" />
+            <path fill-rule="evenodd" d="M8 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
+            <path fill-rule="evenodd" d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zM0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8z" />
+        </svg>
+
+        <span class="navbar-brand mx-2">Person name</span>
+    </div>
+</nav>
 
 
+<div class="d-flex flex-column">
+    @for (int i = 0; i < 4; i++)
+    {
+        <div class="align-self-end rounded mt-1 mx-2 p-2" style="background-color:#0094ff">
+            <span class="text-white">
+                message
+            </span>
+        </div>
 
-<h3>Chat</h3>
-<div>
-    <div>back button</div>
-    <div>sender name</div>
+        <div class="align-self-start bg-light rounded mt-1 mx-2 p-2">
+            <span class="text-black">
+            message
+            </span>
+        </div>
+    }
 </div>
-@for (int i = 0; i < 10; i++)
-{
-<div>
-    message
-</div>
-}

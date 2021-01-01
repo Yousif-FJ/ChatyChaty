@@ -9,6 +9,6 @@ namespace ChatyChatyClient.Pages
     public partial class Chat
     {
         [Parameter]
-        public long ChatId { get; set; }
+        public string ChatId { get; set; }
     }
 }
