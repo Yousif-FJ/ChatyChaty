@@ -17,12 +17,12 @@ namespace ChatyChaty.Hubs.v3
     [Authorize]
     public class MainHub : Hub<IChatClient>
     {
-        public MainHub(HubConnectedClients hubClients)
+        public MainHub(IHubSessions hubClients)
         {
             this.hubClients = hubClients;
         }
         
-        private readonly HubConnectedClients hubClients;
+        private readonly IHubSessions hubClients;
 
         public override async Task OnConnectedAsync()
         {

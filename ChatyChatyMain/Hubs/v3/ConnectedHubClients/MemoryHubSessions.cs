@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 namespace ChatyChaty.Hubs.v3
 {
     /// <summary>
-    /// This class store the InMemory list of the connected clients
+    /// Store an InMemory list of the current active sessions
     /// </summary>
-    public class HubConnectedClients
+    public class MemoryHubSessions : IHubSessions
     {
-        public HubConnectedClients()
+        public MemoryHubSessions()
         {
-            ConnectedClientIds = new List<long>();
+            connectedClientIds = new List<long>();
         }
-        public IList<long> ConnectedClientIds { get; }
+        private readonly IList<long> connectedClientIds;
 
         public void AddClient(long userId)
         {
@@ -22,18 +22,18 @@ namespace ChatyChaty.Hubs.v3
             var IsConnected = IsClientConnected(userId);
             if (IsConnected == false)
             {
-                ConnectedClientIds.Add(userId);
+                connectedClientIds.Add(userId);
             }
         }
 
         public bool IsClientConnected(long userId)
         {
-            return ConnectedClientIds.Contains(userId);
+            return connectedClientIds.Contains(userId);
         }
 
         public bool RemoveClient(long userId)
         {
-            return ConnectedClientIds.Remove(userId);
+            return connectedClientIds.Remove(userId);
         }
     }
 }

@@ -45,7 +45,7 @@ namespace ChatyChaty
 
             services.AddScoped<IHubHelper,HubHelper>();
 
-            services.AddSingleton<HubConnectedClients>();
+            services.AddSingleton<IHubSessions,MemoryHubSessions>();
 
             services.AddScoped<IAuthenticationManager, AuthenticationManager>();
 

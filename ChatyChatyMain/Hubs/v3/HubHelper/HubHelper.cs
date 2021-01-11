@@ -19,12 +19,12 @@ namespace ChatyChaty.Hubs.v3
         private readonly IHubContext<MainHub, IChatClient> hubContext;
         private readonly IMessageService messageService;
         private readonly IAccountManager accountManager;
-        private readonly HubConnectedClients hubClients;
+        private readonly IHubSessions hubClients;
 
         public HubHelper(IHubContext<MainHub, IChatClient> hubContext,
             IMessageService messageService,
             IAccountManager accountManager,
-            HubConnectedClients hubClients
+            IHubSessions hubClients
             )
         {
             this.hubContext = hubContext;
