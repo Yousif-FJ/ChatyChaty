@@ -1,19 +1,28 @@
 ﻿@page "/client/signup"
-<h3>SignUp</h3>
-<form>
-    <div class="mb-3">
-        <label for="exampleInputEmail1" class="form-label">Username</label>
-        <input @bind="DisplayName" type="text">
-    </div>
 
-    <div class="mb-3">
-        <label for="exampleInputEmail1" class="form-label">Username</label>
-        <input @bind="Username" type="text">
+<nav class="navbar navbar-dark bg-dark">
+    <div class="container-fluid">
+        <span class="navbar-brand">ChatyChaty</span>
     </div>
-    <div class="mb-3">
-        <label for="exampleInputPassword1" class="form-label">Password</label>
-        <input @bind="Password" type="password">
-    </div>
+</nav>
 
-    <button @onsubmit="SignUp" type="submit" class="btn btn-primary">Submit</button>
-</form>
+<div class="m-1">
+    <h4 class="my-3 fw-bold">SignUp</h4>
+    <form>
+        <div class="mb-3">
+            <label for="exampleInputEmail1" class="form-label">Username</label>
+            <input @bind="DisplayName" class="form-control" type="text">
+        </div>
+
+        <div class="mb-3">
+            <label for="exampleInputEmail1" class="form-label">Username</label>
+            <input @bind="Username" class="form-control" type="text">
+        </div>
+        <div class="mb-3">
+            <label for="exampleInputPassword1" class="form-label">Password</label>
+            <input @bind="Password" class="form-control" type="password">
+        </div>
+
+        <button @onsubmit="SignUp" type="submit" class="btn btn-primary">SignUp</button>
+    </form>
+</div>
