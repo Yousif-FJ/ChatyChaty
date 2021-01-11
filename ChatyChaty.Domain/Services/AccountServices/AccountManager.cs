@@ -59,7 +59,7 @@ namespace ChatyChaty.Domain.Services.AccountServices
                 };
             }
 
-            var conversation = await chatRepository.GetConversationForUsersAsync(senderId, receiver.Id);
+            var conversation = await chatRepository.CreateConversationAsync(senderId, receiver.Id);
 
             await mediator.Send(new UsersGotChatUpdateAsync((receiver.Id, conversation.Id)));
 
@@ -89,7 +89,7 @@ namespace ChatyChaty.Domain.Services.AccountServices
                 throw new ArgumentOutOfRangeException(nameof(userId),"Invalid Id");
             };
 
-            var conversations = await chatRepository.GetUserConversationsWithUsersAsync(userId);
+            var conversations = await chatRepository.GetConversationsWithUsersAsync(userId);
 
             var response = new List<ProfileAccountModel>();
 

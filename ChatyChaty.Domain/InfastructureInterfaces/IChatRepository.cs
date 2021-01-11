@@ -8,9 +8,9 @@ namespace ChatyChaty.Domain.InfastructureInterfaces
 {
     public interface IChatRepository
     {
-        Task<Conversation> GetConversationForUsersAsync(long user1Id, long user2Id);
-        Task<IEnumerable<Conversation>> GetUserConversationsAsync(long userId);
-        Task<IEnumerable<Conversation>> GetUserConversationsWithUsersAsync(long userId);
+        Task<IEnumerable<Conversation>> GetConversationsAsync(long userId);
+        Task<IEnumerable<Conversation>> GetConversationsWithUsersAsync(long userId);
         Task<Conversation> GetConversationAsync(long Id);
+        Task<Conversation> CreateConversationAsync(long user1Id, long user2Id);
     }
 }

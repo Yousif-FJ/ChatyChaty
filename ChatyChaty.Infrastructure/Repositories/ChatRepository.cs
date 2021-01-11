@@ -24,27 +24,22 @@ namespace ChatyChaty.Infrastructure.Repositories.ChatRepository
                 .FirstOrDefaultAsync(c => c.Id == ConversationId);
         }
 
-        public async Task<IEnumerable<Conversation>> GetUserConversationsWithUsersAsync(long UserId)
+        public async Task<IEnumerable<Conversation>> GetConversationsWithUsersAsync(long UserId)
         {
             return await dBContext.Conversations
                 .Where(c => c.FirstUserId == UserId || c.SecondUserId == UserId)
                 .Include(c => c.FirstUser).Include(c => c.SecondUser)
                 .ToListAsync();
         }
-//TO-DO refcator the method, Get method shouldn't create data
-        public async Task<Conversation> GetConversationForUsersAsync(long User1Id, long User2Id)
+
+        public async Task<Conversation> CreateConversationAsync(long User1Id, long User2Id)
         {
             var conversation = await dBContext.Conversations.FirstOrDefaultAsync(
-                c => c.FirstUserId == User1Id && c.SecondUserId == User2Id
-            );
+                (c => (c.FirstUserId == User1Id && c.SecondUserId == User2Id) ||
+                      (c.FirstUserId == User2Id && c.SecondUserId == User1Id)
+            ));
 
-            if (conversation == null)
-            {
-                conversation = await dBContext.Conversations.FirstOrDefaultAsync(
-                    c => c.FirstUserId == User2Id && c.SecondUserId == User1Id
-                );
-            }
-            //convestaion not found create new one
+            //convestaion not found create one
             if (conversation == null)
             {
                 var newConversation = new Conversation(User1Id, User2Id);
@@ -58,7 +53,8 @@ namespace ChatyChaty.Infrastructure.Repositories.ChatRepository
             }
         }
 
-        public async Task<IEnumerable<Conversation>> GetUserConversationsAsync(long userId)
+
+        public async Task<IEnumerable<Conversation>> GetConversationsAsync(long userId)
         {
             return await dBContext.Conversations
                .Where(c => c.FirstUserId == userId || c.SecondUserId == userId)

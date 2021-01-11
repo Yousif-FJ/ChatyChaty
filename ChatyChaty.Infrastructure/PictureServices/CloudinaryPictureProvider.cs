@@ -40,7 +40,7 @@ namespace ChatyChaty.Infrastructure.PictureServices
             ImageUploadParams uploadParams = new ImageUploadParams()
             {
                 File = new FileDescription(name: fileName, stream: File),
-                PublicId = GetPublicId(UserID, UserName),
+                PublicId = ConstructPublicId(UserID, UserName),
                 Overwrite = true
             };
             var uploadResult = await cloudinary.UploadAsync(uploadParams);
@@ -71,7 +71,7 @@ namespace ChatyChaty.Infrastructure.PictureServices
         /// <returns>user's PhotoURL</returns>
         public async Task<string> GetPhotoURL(long userID, string userName)
         {
-            var resourceResult = await cloudinary.GetResourceAsync(GetPublicId(userID, userName));
+            var resourceResult = await cloudinary.GetResourceAsync(ConstructPublicId(userID, userName));
             if (resourceResult.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 return resourceResult.SecureUrl;
@@ -87,7 +87,7 @@ namespace ChatyChaty.Infrastructure.PictureServices
         /// <param name="UserName">UserName which is part of the stored Photo idetitifier</param>
         public async Task DeletePhoto(long UserID, string UserName)
         {
-            var Result = await cloudinary.DeleteResourcesAsync(publicIds: GetPublicId(UserID, UserName));
+            var Result = await cloudinary.DeleteResourcesAsync(publicIds: ConstructPublicId(UserID, UserName));
             if (Result.Error is null)
             {
                 return;
@@ -104,7 +104,7 @@ namespace ChatyChaty.Infrastructure.PictureServices
         /// <param name="UserID">User's ID which is part of the stored Photo idetitifier</param>
         /// <param name="UserName">UserName which is part of the stored Photo idetitifier</param>
         /// <returns>PublicId</returns>
-        private string GetPublicId(long UserID, string UserName)
+        private static string ConstructPublicId(long UserID, string UserName)
         {
             return $"{FileConatiner}/{UserName}{UserID}";
         }

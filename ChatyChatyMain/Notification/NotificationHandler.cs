@@ -88,7 +88,7 @@ namespace ChatyChaty.Domain.Services.NotficationServices.Handler
 
         protected async override Task Handle(UsersUpdatedTheirProfileAsync request, CancellationToken cancellationToken)
         {
-            IEnumerable<Conversation> chats = await chatRepository.GetUserConversationsAsync(request.UsersId);
+            IEnumerable<Conversation> chats = await chatRepository.GetConversationsAsync(request.UsersId);
             foreach (var chat in chats)
             {
                 var receiverId = chat.FindReceiverId(request.UsersId);
