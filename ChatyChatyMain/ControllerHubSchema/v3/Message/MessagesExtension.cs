@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace ChatyChaty.ControllerHubSchema.v3
 {
-    public static class MessagesExtensionMethods
+    public static class MessagesExtension
     {
-        public static IEnumerable<MessageInfoBase> ToMessageInfoResponse(this IEnumerable<Message> messages, long userId)
+        public static IEnumerable<MessageInfoReponseBase> ToMessageInfoResponse(this IEnumerable<Message> messages, long userId)
         {
-            return messages.Select(message => new MessageInfoBase
+            return messages.Select(message => new MessageInfoReponseBase
             {
                 Body = message.Body,
                 ChatId = message.ConversationId,

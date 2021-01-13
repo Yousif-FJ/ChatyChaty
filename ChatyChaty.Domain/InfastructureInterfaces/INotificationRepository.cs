@@ -13,8 +13,8 @@ namespace ChatyChaty.Domain.InfastructureInterfaces
     {
         Task<Notification> GetNotificationAsync(long userId);
         Task<Notification> ResetUpdatesAsync(long userId);
-        Task UsersGotChatUpdateAsync(params long[] userIds);
-        Task UserGotNewMessageAsync(long userId);
-        Task UsersGotMessageDeliveredAsync(params long[] userIds);
+        Task StoreUsersChatUpdateStatusAsync(params long[] userIds);
+        Task StoreUserNewMessageStatusAsync(long userId);
+        Task StoreUsersMessageStatusAsync(params long[] userIds);
     }
 }

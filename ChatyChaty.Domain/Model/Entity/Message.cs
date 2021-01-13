@@ -12,7 +12,7 @@ namespace ChatyChaty.Domain.Model.Entity
         {
             if (string.IsNullOrEmpty(body))
             {
-                throw new ArgumentNullException("Message body shouldn't be empty");
+                throw new ArgumentNullException(nameof(body),"Message body shouldn't be empty");
             }
             Body = body;
             ConversationId = conversationId;

@@ -68,14 +68,14 @@ namespace ChatyChaty.Controllers.v3
             //the error never a value
             if (result.Error != null)
             {
-                return BadRequest(new Response<IEnumerable<MessageInfoBase>>
+                return BadRequest(new Response<IEnumerable<MessageInfoReponseBase>>
                 {
                     Success = false,
                     Errors = new Collection<string>() { result.Error }
                 });
             }
             var messages = result.Messages.ToMessageInfoResponse(userId);
-            return Ok(new Response<IEnumerable<MessageInfoBase>>
+            return Ok(new Response<IEnumerable<MessageInfoReponseBase>>
             {
                 Success = true,
                 Data = messages
@@ -162,7 +162,7 @@ namespace ChatyChaty.Controllers.v3
 
             if (result.Error != null)
             {
-                return BadRequest(new Response<MessageInfoBase>
+                return BadRequest(new Response<MessageInfoReponseBase>
                 {
                     Success = false,
                     Errors = new Collection<string> { result.Error}
@@ -170,7 +170,7 @@ namespace ChatyChaty.Controllers.v3
             }
             var userNameClaim = HttpContext.User.Claims.FirstOrDefault(
                 claim => claim.Type == ClaimTypes.Name);
-            var responseBase = new MessageInfoBase
+            var responseBase = new MessageInfoReponseBase
             {
                 Body = result.Message.Body,
                 MessageId = result.Message.Id,
@@ -178,7 +178,7 @@ namespace ChatyChaty.Controllers.v3
                 Sender = userNameClaim.Value,
                 Delivered = false
             };
-            return Ok(new Response<MessageInfoBase>
+            return Ok(new Response<MessageInfoReponseBase>
             {
                 Success = true,
                 Data = responseBase

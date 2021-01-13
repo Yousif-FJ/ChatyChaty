@@ -58,7 +58,7 @@ namespace ChatyChaty.Controllers.v3
 
             if (!authenticationResult.Success)
             {
-                Response<AuthenticationResponseBase> authenticationSchemaF = new Response<AuthenticationResponseBase>()
+                Response<AuthResponseBase> authenticationSchemaF = new Response<AuthResponseBase>()
                 {
                     Errors = authenticationResult.Errors,
                     Success = authenticationResult.Success,
@@ -66,17 +66,17 @@ namespace ChatyChaty.Controllers.v3
                 return BadRequest(authenticationSchemaF);
             }
 
-            ProfileSchema profileSchema = new ProfileSchema
+            ProfileResponseBase profileSchema = new ProfileResponseBase
             {
                 DisplayName = authenticationResult.Profile.DisplayName,
                 Username = authenticationResult.Profile.Username,
                 PhotoURL = authenticationResult.Profile.PhotoURL
             };
 
-            Response<AuthenticationResponseBase> authenticationSchema = new Response<AuthenticationResponseBase>()
+            Response<AuthResponseBase> authenticationSchema = new Response<AuthResponseBase>()
             {
                 Success = authenticationResult.Success,
-                Data = new AuthenticationResponseBase
+                Data = new AuthResponseBase
                 {
                     Token = authenticationResult.Token,
                     Profile = profileSchema
@@ -117,7 +117,7 @@ namespace ChatyChaty.Controllers.v3
 
             if (!authenticationResult.Success)
             {
-                Response<AuthenticationResponseBase> authenticationSchemaF = new Response<AuthenticationResponseBase>()
+                Response<AuthResponseBase> authenticationSchemaF = new Response<AuthResponseBase>()
                 {
                     Errors = authenticationResult.Errors,
                     Success = authenticationResult.Success,
@@ -125,18 +125,18 @@ namespace ChatyChaty.Controllers.v3
                 return BadRequest(authenticationSchemaF);
             }
 
-            ProfileSchema profileSchema = new ProfileSchema
+            ProfileResponseBase profileSchema = new ProfileResponseBase
             {
                 DisplayName = authenticationResult.Profile.DisplayName,
                 Username = authenticationResult.Profile.Username,
                 PhotoURL = authenticationResult.Profile.PhotoURL
             };
 
-            Response<AuthenticationResponseBase> authenticationSchema = new Response<AuthenticationResponseBase>()
+            Response<AuthResponseBase> authenticationSchema = new Response<AuthResponseBase>()
             {
                 Errors = authenticationResult.Errors,
                 Success = authenticationResult.Success,
-                Data = new AuthenticationResponseBase
+                Data = new AuthResponseBase
                 {
                     Token = authenticationResult.Token,
                     Profile = profileSchema

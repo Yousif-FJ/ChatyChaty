@@ -75,7 +75,7 @@ namespace XUnitTest.RepositoryTest
             //var user2 = (await dbContext.Users.AddAsync(new AppUser("Test2"))).Entity;
             dbContext.SaveChanges();
             //Act
-            await notificationRepository.UserGotNewMessageAsync(user1.Id);
+            await notificationRepository.StoreUserNewMessageStatusAsync(user1.Id);
             var notification = await notificationRepository.GetNotificationAsync(user1.Id);
             //Assert
             Assert.True(notification.MessageUpdate);

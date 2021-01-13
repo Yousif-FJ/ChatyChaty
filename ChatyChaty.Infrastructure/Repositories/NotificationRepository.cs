@@ -42,17 +42,17 @@ namespace ChatyChaty.Infrastructure.Repositories.NotificationRepository
             return notification;
         }
 
-        public async Task UsersGotChatUpdateAsync(params long[] userIds)
+        public async Task StoreUsersChatUpdateStatusAsync(params long[] userIds)
         {
             await UserGotUpdateCommon(notification => { notification.GotChatUpdate(); }, userIds);
         }
 
-        public async Task UsersGotMessageDeliveredAsync(params long[] userIds)
+        public async Task StoreUsersMessageStatusAsync(params long[] userIds)
         {
             await UserGotUpdateCommon(notification => { notification.GotDeliveredUpdate(); }, userIds);
         }
 
-        public async Task UserGotNewMessageAsync(long userId)
+        public async Task StoreUserNewMessageStatusAsync(long userId)
         {
             await UserGotUpdateCommon(notification => { notification.GotMessageUpdate(); }, userId);
         }

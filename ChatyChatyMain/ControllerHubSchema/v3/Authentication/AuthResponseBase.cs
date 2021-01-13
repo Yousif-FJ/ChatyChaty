@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace ChatyChaty.ControllerHubSchema.v3
 {
-    public class AuthenticationResponseBase
+    public class AuthResponseBase
     {
         public string Token { get; set; }
-        public ProfileSchema Profile { get; set; }
+        public ProfileResponseBase Profile { get; set; }
     }
 }

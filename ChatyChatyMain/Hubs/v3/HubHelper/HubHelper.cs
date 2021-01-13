@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 
 namespace ChatyChaty.Hubs.v3
 {
-    //TO-Do: extract the check logic into separate method
     /// <summary>
     /// This class is used when the hub is called outside of the MainHub classes
     /// </summary>
@@ -33,23 +32,21 @@ namespace ChatyChaty.Hubs.v3
             this.hubClients = hubClients;
         }
 
-        public async Task<bool> SendChatUpdateAsync(long receiverId, long chatId)
+        public async Task<bool> TrySendChatUpdateAsync(long receiverId, long chatId)
         {
-            var IsConnected = hubClients.IsClientConnected(receiverId);
-            if (IsConnected == false)
+            if (hubClients.IsClientConnected(receiverId) == false)
             {
                 return false;
             }
 
             var result = await accountManager.GetConversation(chatId, receiverId);
 
-
             Response<UserProfileResponseBase> response = new()
             {
                 Success = true,
                 Data = new UserProfileResponseBase
                 {
-                    Profile = new ProfileSchema
+                    Profile = new ProfileResponseBase
                     {
                         DisplayName = result.DisplayName,
                         PhotoURL = result.PhotoURL,
@@ -63,8 +60,13 @@ namespace ChatyChaty.Hubs.v3
             return true;
         }
 
-        public Task<bool> SendMessageStatusUpdateAsync(long userId, long messageId)
+        public async Task<bool> TrySendMessageStatusUpdateAsync(long receiverId, long messageId)
         {
+            if (hubClients.IsClientConnected(receiverId) == false)
+            {
+                return false;
+            }
+
             throw new NotImplementedException();
         }
 
@@ -74,28 +76,22 @@ namespace ChatyChaty.Hubs.v3
         /// <param name="userId"></param>
         /// <param name="lastMessageId"></param>
         /// <returns></returns>
-        public async Task<bool> SendMessageUpdateAsync(long userId, long lastMessageId)
+        public async Task<bool> TrySendMessageUpdateAsync(long userId, long lastMessageId)
         {
-            //check if client is connecte
-            var IsConnected = hubClients.IsClientConnected(userId);
-            if (IsConnected == false)
+            if (hubClients.IsClientConnected(userId) == false)
             {
                 return false;
             }
 
-            //get new messages from message service
             var result = await messageService.GetNewMessages(userId, lastMessageId-1);
 
-            //hubContext.Clients.SendMessageUpdates(result, userId);
-
-            //if there are new messages
             if (result.Messages.Any())
             {
                 //convert from model to response class
                 var messages = result.Messages.ToMessageInfoResponse(userId);
 
                 //create response
-                var response = new Response<IEnumerable<MessageInfoBase>>
+                var response = new Response<IEnumerable<MessageInfoReponseBase>>
                 {
                     Success = true,
                     Data = messages

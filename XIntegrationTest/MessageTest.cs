@@ -47,7 +47,7 @@ namespace XIntegrationTest
             var response = await client.PostAsJsonAsync("api/v3/Message/Message",
                 new SendMessageSchema { Body = messageBody, ChatId = chatId });
             //Assert
-            var result = await response.Content.ReadAsAsync<Response<MessageInfoBase>>();
+            var result = await response.Content.ReadAsAsync<Response<MessageInfoReponseBase>>();
             Assert.True(result.Success, $"response as string : { await response.Content.ReadAsStringAsync()}");
             Assert.False(result.Data.Delivered);
             Assert.Equal(messageBody, result.Data.Body);

@@ -136,7 +136,7 @@ namespace ChatyChaty.Domain.Services.AccountServices
                 throw new ArgumentOutOfRangeException(nameof(userId),"Invalid userId");
             }
             var setPhotoResult = await pictureProvider.ChangePhoto(user.Id, user.UserName, fileName, file);
-            await mediator.Send(new UsersUpdatedTheirProfileAsync(userId));
+            await mediator.Send(new UserUpdatedTheirProfileAsync(userId));
             return setPhotoResult;
         }
 
@@ -148,7 +148,7 @@ namespace ChatyChaty.Domain.Services.AccountServices
                 throw new ArgumentOutOfRangeException(nameof(userId), "Invalid UserId");
             }
             var newName = await userRepository.UpdateDisplayNameAsync(userId, newDisplayName);
-            await mediator.Send(new UsersUpdatedTheirProfileAsync(userId));
+            await mediator.Send(new UserUpdatedTheirProfileAsync(userId));
             return newName;
         }
 

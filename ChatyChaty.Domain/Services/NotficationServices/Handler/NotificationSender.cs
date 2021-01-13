@@ -32,21 +32,21 @@ namespace ChatyChaty.Domain.Services.NotficationServices.Handler
 
     public class UsersGotMessageStatusUpdateAsync : IRequest
     {
-        public readonly (long userId, long messageId)[] userAndMessageIds;
+        public readonly (long receieverId, long messageId)[] userAndMessageIds;
 
-        public UsersGotMessageStatusUpdateAsync(params (long userId, long messageId)[] userAndMessageIds)
+        public UsersGotMessageStatusUpdateAsync(params (long receieverId, long messageId)[] userAndMessageIds)
         {
             this.userAndMessageIds = userAndMessageIds;
         }
     }
 
-    public class UsersUpdatedTheirProfileAsync : IRequest
+    public class UserUpdatedTheirProfileAsync : IRequest
     {
-        public readonly long UsersId;
+        public readonly long UserId;
 
-        public UsersUpdatedTheirProfileAsync(long usersId)
+        public UserUpdatedTheirProfileAsync(long usersId)
         {
-            this.UsersId = usersId;
+            this.UserId = usersId;
         }
     }
 }

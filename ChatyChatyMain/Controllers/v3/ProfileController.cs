@@ -119,7 +119,7 @@ namespace ChatyChaty.Controllers.v3
                 Data = new UserProfileResponseBase
                 { 
                     ChatId = result.Conversation.ChatId,
-                    Profile = new ProfileSchema
+                    Profile = new ProfileResponseBase
                     {
                         DisplayName = result.Conversation.DisplayName,
                         Username = result.Conversation.Username,
@@ -171,7 +171,7 @@ namespace ChatyChaty.Controllers.v3
                 new UserProfileResponseBase
                 {
                     ChatId = chat.ChatId,
-                    Profile = new ProfileSchema
+                    Profile = new ProfileResponseBase
                     {
                         DisplayName = chat.DisplayName,
                         Username = chat.Username,
