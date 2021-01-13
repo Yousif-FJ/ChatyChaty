@@ -28,7 +28,7 @@ namespace ChatyChaty.HealthChecks
         {
             string UserName = "SomeVeryUniqueName";
             long UserID = 4363293744729;
-            using var Fs = new FileStream(path: "PhotoUploadTestSamples/Untitled.png", FileMode.Open);
+            using var Fs = new FileStream(path: "HealthChecks/PhotoUploadTestSamples/Untitled.png", FileMode.Open);
             var FF = new FormFile(Fs, 0, Fs.Length, "SomeFile", "SomeUnknowFileName");
 
 
@@ -36,7 +36,7 @@ namespace ChatyChaty.HealthChecks
 
             var PhotoUrl = await pictureProvider.GetPhotoURL(UserID, UserName);
             HttpClient httpClient = new HttpClient();
-            var response = await httpClient.GetAsync(PhotoUrl);
+            var response = await httpClient.GetAsync(PhotoUrl, cancellationToken);
 
             HealthCheckResult result;
             if (HttpStatusCode.OK == response.StatusCode)
