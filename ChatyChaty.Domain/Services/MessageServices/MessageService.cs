@@ -58,12 +58,6 @@ namespace ChatyChaty.Domain.Services.MessageServices
                 IsDelivered = message.Delivered
             };
         }
-        /*
-        public async Task<IEnumerable<DeliveredMessageIdForChat>> GetDeliveredMessageIdForChats(long userId)
-        {
-            messageRepository
-        }
-        */
 
         /// <summary>
         /// Send message with the provided conversation Id 
@@ -119,7 +113,7 @@ namespace ChatyChaty.Domain.Services.MessageServices
                 }
             }
             await messageRepository.UpdateMessagesAsync(markMessages);
-            await mediator.Send(new UsersGotMessageStatusUpdateAsync(markMessages.Select(m => (m.SenderId, m.Id)).ToArray()));
+            await mediator.Send(new UsersGotMessageStatusUpdateAsync(markMessages.Select(m => (m.SenderId,m.ConversationId, m.Id)).ToArray()));
  //error in get new message is redundant currently
             return new GetNewMessagesModel { Messages = newMessages };
         }

@@ -97,12 +97,17 @@ namespace ChatyChaty.Domain.Services.AccountServices
             {
 
                 AppUser SecondUser = conversation.FindReceiver(user.Id);
+                if (SecondUser == null)
+                {
+                    throw new InvalidOperationException("Conversation is not for the given user");
+                }
 
                 response.Add(new ProfileAccountModel
                 {
                     ChatId = conversation.Id,
                     DisplayName = SecondUser.DisplayName,
                     Username = SecondUser.UserName,
+                    UserId = SecondUser.Id,
                     PhotoURL = await pictureProvider.GetPhotoURL(SecondUser.Id, SecondUser.UserName)
                 });
             }
@@ -112,18 +117,24 @@ namespace ChatyChaty.Domain.Services.AccountServices
 
         public async Task<ProfileAccountModel> GetConversation(long chatId, long userId)
         {
-            var user = await userRepository.GetUserAsync(userId);
-
             var conversation = await chatRepository.GetConversationAsync(chatId);
 
-            AppUser SecondUser = conversation.FindReceiver(user.Id);
+            var secondUserId = conversation.FindReceiverId(userId);
+
+            if (secondUserId == null)
+            {
+                throw new InvalidOperationException("Conversation is not for the given user");
+            }
+
+            var secondUser = await userRepository.GetUserAsync(secondUserId.Value);
+
 
             var response = new ProfileAccountModel
             {
                 ChatId = conversation.Id,
-                DisplayName = SecondUser.DisplayName,
-                Username = SecondUser.UserName,
-                PhotoURL = await pictureProvider.GetPhotoURL(SecondUser.Id, SecondUser.UserName)
+                DisplayName = secondUser.DisplayName,
+                Username = secondUser.UserName,
+                PhotoURL = await pictureProvider.GetPhotoURL(secondUser.Id, secondUser.UserName)
             };
             return response;
         }

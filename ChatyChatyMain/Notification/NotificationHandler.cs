@@ -1,9 +1,11 @@
 ﻿using ChatyChaty.Domain.InfastructureInterfaces;
+using ChatyChaty.Domain.Model.AccountModel;
 using ChatyChaty.Domain.Model.Entity;
+using ChatyChaty.Domain.Model.MessagingModel;
+using ChatyChaty.Domain.Services.AccountServices;
+using ChatyChaty.Domain.Services.MessageServices;
 using ChatyChaty.Hubs.v3;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,15 +30,21 @@ namespace ChatyChaty.Domain.Services.NotficationServices.Handler
     }
     public class NewMessageHandler : NotificationHandlerCommon<UserGotNewMessageAsync>
     {
-        public NewMessageHandler(INotificationRepository notificationRepository, IHubHelper hubHelper) : base(notificationRepository, hubHelper)
+        private readonly IMessageRepository messageRepository;
+
+        public NewMessageHandler(INotificationRepository notificationRepository, IHubHelper hubHelper, IMessageRepository messageRepository) : base(notificationRepository, hubHelper)
         {
+            this.messageRepository = messageRepository;
         }
 
         protected override async Task Handle(UserGotNewMessageAsync request, CancellationToken cancellationToken)
         {
-            foreach (var (userId, messageId) in request.userAndMessageId)
+            foreach (var (userId, messageId) in request.UserAndMessageId)
             {
-                bool successful = await hubHelper.TrySendMessageUpdateAsync(userId, messageId);
+
+                var message = await messageRepository.GetMessageAsync(messageId);
+
+                bool successful = hubHelper.TrySendMessageUpdate(userId, new List<Message> { message});
                 if (successful == false)
                 {
                     await notificationRepository.StoreUserNewMessageStatusAsync(userId);
@@ -47,15 +55,19 @@ namespace ChatyChaty.Domain.Services.NotficationServices.Handler
 
     public class ChatUpdateHandler : NotificationHandlerCommon<UsersGotChatUpdateAsync>
     {
-        public ChatUpdateHandler(INotificationRepository notificationRepository, IHubHelper hubHelper) : base(notificationRepository, hubHelper)
+        private readonly IAccountManager accountManager;
+
+        public ChatUpdateHandler(INotificationRepository notificationRepository, IHubHelper hubHelper, IAccountManager accountManager) : base(notificationRepository, hubHelper)
         {
+            this.accountManager = accountManager;
         }
 
         protected override async Task Handle(UsersGotChatUpdateAsync request, CancellationToken cancellationToken)
         {
-            foreach (var (receiverId, chatId) in request.invokerAndReceiverIds)
+            foreach (var (receiverId, chatId) in request.InvokerAndReceiverIds)
             {
-                bool successful = await hubHelper.TrySendChatUpdateAsync(receiverId,chatId);
+                var chat = await accountManager.GetConversation(chatId, receiverId);
+                bool successful = hubHelper.TrySendChatUpdate(receiverId,chat);
                 if (successful == false)
                 {
                     await notificationRepository.StoreUsersChatUpdateStatusAsync(receiverId);
@@ -72,37 +84,35 @@ namespace ChatyChaty.Domain.Services.NotficationServices.Handler
 
         protected override async Task Handle(UsersGotMessageStatusUpdateAsync request, CancellationToken cancellationToken)
         {
-            foreach (var (userId, messageId) in request.userAndMessageIds)
+            foreach (var (receieverId, chatId, messageId) in request.MessageInfo)
             {
-                var sentSuccessfully = await hubHelper.TrySendMessageStatusUpdateAsync(userId,messageId);
+                var sentSuccessfully = hubHelper.TrySendMessageStatusUpdate(receieverId, chatId, messageId);
                 if (sentSuccessfully == false)
                 {
-                    await notificationRepository.StoreUsersMessageStatusAsync(userId);
+                    await notificationRepository.StoreUsersMessageStatusAsync(receieverId);
                 }
             }
-
         }
     }
     
     public class ProfileUpdateHandler : NotificationHandlerCommon<UserUpdatedTheirProfileAsync>
     {
-        private readonly IChatRepository chatRepository;
+        private readonly IAccountManager accountManager;
 
-        public ProfileUpdateHandler(INotificationRepository notificationRepository, IHubHelper hubHelper, IChatRepository chatRepository) : base(notificationRepository, hubHelper)
+        public ProfileUpdateHandler(INotificationRepository notificationRepository, IHubHelper hubHelper, IAccountManager accountManager) : base(notificationRepository, hubHelper)
         {
-            this.chatRepository = chatRepository;
+            this.accountManager = accountManager;
         }
 
         protected async override Task Handle(UserUpdatedTheirProfileAsync request, CancellationToken cancellationToken)
         {
-            IEnumerable<Conversation> chats = await chatRepository.GetConversationsAsync(request.UserId);
+            IEnumerable<ProfileAccountModel> chats = await accountManager.GetConversations(request.UserId);
             foreach (var chat in chats)
             {
-                var receiverId = chat.FindReceiverId(request.UserId);
-                var successful = await hubHelper.TrySendChatUpdateAsync(receiverId, chat.Id);
+                var successful = hubHelper.TrySendChatUpdate(chat.UserId.Value,chat);
                 if (successful == false)
                 {
-                    await notificationRepository.StoreUsersChatUpdateStatusAsync(receiverId);
+                    await notificationRepository.StoreUsersChatUpdateStatusAsync(chat.UserId.Value);
                 }
             }
         }

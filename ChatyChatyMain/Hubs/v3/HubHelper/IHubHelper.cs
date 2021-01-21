@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ChatyChaty.Domain.Model.AccountModel;
+using ChatyChaty.Domain.Model.Entity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,8 +9,8 @@ namespace ChatyChaty.Hubs.v3
 {
     public interface IHubHelper
     {
-        public Task<bool> TrySendMessageUpdateAsync(long userId, long messageId);
-        public Task<bool> TrySendChatUpdateAsync(long receiverId, long chatId) ;
-        public Task<bool> TrySendMessageStatusUpdateAsync(long userId, long messageId);
+        public bool TrySendMessageUpdate(long receiverId, IEnumerable<Message> messages);
+        public bool TrySendChatUpdate(long receiverId, ProfileAccountModel chatInfo);
+        public bool TrySendMessageStatusUpdate(long userId, long chatId, long messageId);
     }
 }

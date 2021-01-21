@@ -12,13 +12,13 @@ namespace ChatyChaty.ControllerHubSchema.v3
         {
 
         }
-        public MessageInfoReponseBase(Message message, long userId)
+        public MessageInfoReponseBase(Message message, long messageReceiverId)
         {
             Body = message.Body;
             ChatId = message.ConversationId;
             MessageId = message.Id;
             Sender = message.Sender.UserName;
-            Delivered = message.SenderId == userId ? message.Delivered : (bool?)null;
+            Delivered = message.SenderId == messageReceiverId ? message.Delivered : (bool?)null;
         }
         public long ChatId { get; set; }
         public long MessageId { get; set; }

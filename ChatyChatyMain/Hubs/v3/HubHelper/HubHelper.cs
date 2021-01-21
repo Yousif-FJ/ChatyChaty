@@ -1,4 +1,6 @@
 ﻿using ChatyChaty.ControllerHubSchema.v3;
+using ChatyChaty.Domain.Model.AccountModel;
+using ChatyChaty.Domain.Model.Entity;
 using ChatyChaty.Domain.Services.AccountServices;
 using ChatyChaty.Domain.Services.MessageServices;
 using Microsoft.AspNetCore.SignalR;
@@ -11,35 +13,27 @@ using System.Threading.Tasks;
 namespace ChatyChaty.Hubs.v3
 {
     /// <summary>
-    /// This class is used when the hub is called outside of the MainHub classes
+    /// Used to send real time update using signalR
     /// </summary>
     public class HubHelper : IHubHelper
     {
         private readonly IHubContext<MainHub, IChatClient> hubContext;
-        private readonly IMessageService messageService;
-        private readonly IAccountManager accountManager;
         private readonly IHubSessions hubClients;
 
         public HubHelper(IHubContext<MainHub, IChatClient> hubContext,
-            IMessageService messageService,
-            IAccountManager accountManager,
             IHubSessions hubClients
             )
         {
             this.hubContext = hubContext;
-            this.messageService = messageService;
-            this.accountManager = accountManager;
             this.hubClients = hubClients;
         }
 
-        public async Task<bool> TrySendChatUpdateAsync(long receiverId, long chatId)
+        public bool TrySendChatUpdate(long receiverId, ProfileAccountModel chatInfo)
         {
             if (hubClients.IsClientConnected(receiverId) == false)
             {
                 return false;
             }
-
-            var result = await accountManager.GetConversation(chatId, receiverId);
 
             Response<UserProfileResponseBase> response = new()
             {
@@ -48,57 +42,62 @@ namespace ChatyChaty.Hubs.v3
                 {
                     Profile = new ProfileResponseBase
                     {
-                        DisplayName = result.DisplayName,
-                        PhotoURL = result.PhotoURL,
-                        Username = result.Username
+                        DisplayName = chatInfo.DisplayName,
+                        PhotoURL = chatInfo.PhotoURL,
+                        Username = chatInfo.Username
                     },
-                    ChatId = chatId
+                    ChatId = chatInfo.ChatId
                 }
             };
 
-            _ = hubContext.Clients.User(receiverId.ToString()).UpdateChatResponse(response);
+            _ = hubContext.Clients.User(receiverId.ToString()).UpdateChat(response);
             return true;
         }
 
-        public async Task<bool> TrySendMessageStatusUpdateAsync(long receiverId, long messageId)
+        public bool TrySendMessageStatusUpdate(long receiverId, long chatId, long messageId)
         {
             if (hubClients.IsClientConnected(receiverId) == false)
             {
                 return false;
             }
 
-            throw new NotImplementedException();
+            var response = new Response<MessageStatusResponseBase>()
+            {
+                Success = true,
+                Data = new MessageStatusResponseBase(messageId, chatId, true)
+            };
+
+            _ = hubContext.Clients.User(receiverId.ToString()).UpdateMessageStatus(response);
+
+            return true;
         }
 
         /// <summary>
         /// Method called to send message updates to a connected client, return false if the client is not connected
         /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="lastMessageId"></param>
+        /// <param name="receiverId"></param>
+        /// <param name="messages"></param>
         /// <returns></returns>
-        public async Task<bool> TrySendMessageUpdateAsync(long userId, long lastMessageId)
+        public bool TrySendMessageUpdate(long receiverId, IEnumerable<Message> messages)
         {
-            if (hubClients.IsClientConnected(userId) == false)
+            if (hubClients.IsClientConnected(receiverId) == false)
             {
                 return false;
             }
 
-            var result = await messageService.GetNewMessages(userId, lastMessageId-1);
-
-            if (result.Messages.Any())
+            if (messages.Any())
             {
-                //convert from model to response class
-                var messages = result.Messages.ToMessageInfoResponse(userId);
+                IEnumerable<MessageInfoReponseBase> messagesInfo = messages.ToMessageInfoResponse(receiverId);
 
-                //create response
+
                 var response = new Response<IEnumerable<MessageInfoReponseBase>>
                 {
                     Success = true,
-                    Data = messages
+                    Data = messagesInfo
                 };
 
                 //send response to clients
-                _ = hubContext.Clients.User(userId.ToString()).UpdateMessagesResponse(response);
+                _ = hubContext.Clients.User(receiverId.ToString()).UpdateMessages(response);
             }
 
             return true;

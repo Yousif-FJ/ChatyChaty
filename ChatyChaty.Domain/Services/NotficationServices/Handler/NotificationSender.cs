@@ -12,31 +12,31 @@ namespace ChatyChaty.Domain.Services.NotficationServices.Handler
 
     public class UsersGotChatUpdateAsync : IRequest
     {
-        public readonly (long receiverId, long chatId)[] invokerAndReceiverIds;
+        public readonly (long receiverId, long chatId)[] InvokerAndReceiverIds;
 
         public UsersGotChatUpdateAsync(params (long receiverId, long chatId)[] invokerAndReceiverIds)
         {
-            this.invokerAndReceiverIds = invokerAndReceiverIds;
+            this.InvokerAndReceiverIds = invokerAndReceiverIds;
         }
     }
 
     public class UserGotNewMessageAsync: IRequest
     {
-        public readonly (long userId, long messageId)[] userAndMessageId;
+        public readonly (long userId, long messageId)[] UserAndMessageId;
 
         public UserGotNewMessageAsync(params (long userId, long messageId)[] userAndMessageId)
         {
-            this.userAndMessageId = userAndMessageId;
+            this.UserAndMessageId = userAndMessageId;
         }
     }
 
     public class UsersGotMessageStatusUpdateAsync : IRequest
     {
-        public readonly (long receieverId, long messageId)[] userAndMessageIds;
+        public readonly (long receieverId, long chatId, long messageId)[] MessageInfo;
 
-        public UsersGotMessageStatusUpdateAsync(params (long receieverId, long messageId)[] userAndMessageIds)
+        public UsersGotMessageStatusUpdateAsync(params (long receieverId, long chatId, long messageId)[] messageInfo)
         {
-            this.userAndMessageIds = userAndMessageIds;
+            this.MessageInfo = messageInfo;
         }
     }
 

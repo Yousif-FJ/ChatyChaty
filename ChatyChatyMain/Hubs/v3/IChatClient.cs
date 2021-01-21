@@ -11,7 +11,8 @@ namespace ChatyChaty.Hubs.v3
     /// </summary>
     public interface IChatClient
     {
-        Task UpdateMessagesResponse(Response<IEnumerable<MessageInfoReponseBase>> messagesList);
-        Task UpdateChatResponse(Response<UserProfileResponseBase> chatInfo);
+        Task UpdateMessages(Response<IEnumerable<MessageInfoReponseBase>> messagesList);
+        Task UpdateChat(Response<UserProfileResponseBase> chatInfo);
+        Task UpdateMessageStatus(Response<MessageStatusResponseBase> messageStatusInfo);
     }
 }
