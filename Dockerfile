@@ -7,9 +7,9 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim AS build
 WORKDIR /src
-COPY ["ChatyChaty/ChatyChaty/ChatyChaty.csproj", "ChatyChaty/"]
-COPY ["ChatyChaty/ChatyChaty.Infrastructure/ChatyChaty.Infrastructure.csproj", "ChatyChaty.Infrastructure/"]
-COPY ["ChatyChaty/ChatyChaty.Domain/ChatyChaty.Domain.csproj", "ChatyChaty.Domain/"]
+COPY ["ChatyChaty/ChatyChaty.csproj", "ChatyChaty/"]
+COPY ["ChatyChaty.Infrastructure/ChatyChaty.Infrastructure.csproj", "ChatyChaty.Infrastructure/"]
+COPY ["ChatyChaty.Domain/ChatyChaty.Domain.csproj", "ChatyChaty.Domain/"]
 RUN dotnet restore "ChatyChaty/ChatyChaty.csproj"
 COPY . .
 WORKDIR "/src/ChatyChaty"
