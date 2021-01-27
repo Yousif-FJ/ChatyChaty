@@ -24,7 +24,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ChatyChaty.Domain\ChatyChaty.Domain.csproj" />
     <ProjectReference Include="..\ChatyChaty.Infrastructure\ChatyChaty.Infrastructure.csproj" />
-    <ProjectReference Include="..\ChatyChatyMain\ChatyChaty.csproj" />
+    <ProjectReference Include="..\ChatyChaty\ChatyChaty.csproj" />
   </ItemGroup>
 
 </Project>

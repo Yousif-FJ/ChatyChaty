@@ -5,6 +5,7 @@ using ChatyChaty.Infrastructure.Repositories.MessageRepository;
 using ChatyChaty.Infrastructure.Repositories.NotificationRepository;
 using ChatyChaty.Infrastructure.Repositories.UserRepository;
 using CloudinaryDotNet;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -14,9 +15,9 @@ namespace ChatyChaty.Infrastructure.StartupConfiguration
 {
     public static class DIExtension
     {
-        public static void AddInfrastructureClasses(this IServiceCollection services)
+        public static void AddInfrastructureClasses(this IServiceCollection services, IConfiguration Configuration)
         {
-            services.AddSingleton<Cloudinary>();
+            services.AddSingleton<Cloudinary>(new Cloudinary(Configuration["CLOUDINARY_URL"]));
             services.AddScoped<INotificationRepository, NotificationRepository>();
             services.AddScoped<IMessageRepository, MessageRepository>();
             services.AddScoped<IChatRepository, ChatRepository>();

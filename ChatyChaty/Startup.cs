@@ -55,7 +55,7 @@ namespace ChatyChaty
 
             services.AddSignalR();
 
-            services.AddInfrastructureClasses();
+            services.AddInfrastructureClasses(Configuration);
 
             //add MediatR 
             services.AddMediatR(Assembly.GetExecutingAssembly(), typeof(UsersGotChatUpdateAsync).Assembly);

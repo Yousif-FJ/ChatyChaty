@@ -11,17 +11,19 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using CloudinaryDotNet;
+using Microsoft.Extensions.Configuration;
 
 namespace ChatyChaty.HealthChecks
 {
     public class CloudinaryUploadHealthCheck : IHealthCheck
     {
         private readonly CloudinaryPictureProvider pictureProvider;
-        public CloudinaryUploadHealthCheck()
+
+        public CloudinaryUploadHealthCheck(IConfiguration configuration)
         {
             var logger = new Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory().CreateLogger<CloudinaryPictureProvider>(); ;
             var pictureProvider = new CloudinaryPictureProvider(
-                new Cloudinary(), logger);
+                new Cloudinary(configuration["CLOUDINARY_URL"]), logger);
             this.pictureProvider = pictureProvider;
         }
         public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)

@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ChatyChatyMain\ChatyChaty.csproj" />
+    <ProjectReference Include="..\ChatyChaty\ChatyChaty.csproj" />
   </ItemGroup>
 
 </Project>
