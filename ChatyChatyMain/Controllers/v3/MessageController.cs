@@ -4,8 +4,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using ChatyChaty.ControllerSchema.v3;
-using ChatyChaty.Services;
+using ChatyChaty.ControllerHubSchema.v3;
+using ChatyChaty.Domain.Services.MessageServices;
 using ChatyChaty.ValidationAttribute;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -65,30 +65,20 @@ namespace ChatyChaty.Controllers.v3
         {
             var userId = long.Parse(HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
             var result = await messageService.GetNewMessages(userId, lastMessageId);
+            //the error never a value
             if (result.Error != null)
             {
-                return BadRequest(new ResponseBase<IEnumerable<MessageInfoBase>>
+                return BadRequest(new Response<IEnumerable<MessageInfoReponseBase>>
                 {
                     Success = false,
                     Errors = new Collection<string>() { result.Error }
                 });
             }
-            var Messages = new List<MessageInfoBase>();
-            foreach (var message in result.Messages)
-            {
-                Messages.Add(new MessageInfoBase
-                {
-                    Body = message.Body,
-                    ChatId = message.ConversationId,
-                    MessageId = message.Id,
-                    Sender = message.Sender.UserName,
-                    Delivered = message.SenderId == userId ? message.Delivered : (bool?)null
-                }); ;
-            }
-            return Ok(new ResponseBase<IEnumerable<MessageInfoBase>>
+            var messages = result.Messages.ToMessageInfoResponse(userId);
+            return Ok(new Response<IEnumerable<MessageInfoReponseBase>>
             {
                 Success = true,
-                Data = Messages
+                Data = messages
             });
         }
 
@@ -121,13 +111,13 @@ namespace ChatyChaty.Controllers.v3
             var result = await messageService.IsDelivered(long.Parse(userIdClaim.Value), messageId);
             if (result.Error != null)
             {
-                return BadRequest(new ResponseBase<bool?>
+                return BadRequest(new Response<bool?>
                 {
                     Success = false,
                     Errors = new Collection<string> { result.Error }
                 });
             }
-            return Ok(new ResponseBase<bool?>
+            return Ok(new Response<bool?>
             {
                 Success = true,
                 Data = result.IsDelivered
@@ -172,7 +162,7 @@ namespace ChatyChaty.Controllers.v3
 
             if (result.Error != null)
             {
-                return BadRequest(new ResponseBase<MessageInfoBase>
+                return BadRequest(new Response<MessageInfoReponseBase>
                 {
                     Success = false,
                     Errors = new Collection<string> { result.Error}
@@ -180,7 +170,7 @@ namespace ChatyChaty.Controllers.v3
             }
             var userNameClaim = HttpContext.User.Claims.FirstOrDefault(
                 claim => claim.Type == ClaimTypes.Name);
-            var responseBase = new MessageInfoBase
+            var responseBase = new MessageInfoReponseBase
             {
                 Body = result.Message.Body,
                 MessageId = result.Message.Id,
@@ -188,7 +178,7 @@ namespace ChatyChaty.Controllers.v3
                 Sender = userNameClaim.Value,
                 Delivered = false
             };
-            return Ok(new ResponseBase<MessageInfoBase>
+            return Ok(new Response<MessageInfoReponseBase>
             {
                 Success = true,
                 Data = responseBase

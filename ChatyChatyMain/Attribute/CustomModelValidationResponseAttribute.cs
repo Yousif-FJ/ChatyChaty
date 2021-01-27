@@ -1,4 +1,4 @@
-﻿using ChatyChaty.ControllerSchema.v3;
+﻿using ChatyChaty.ControllerHubSchema.v3;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System;
@@ -14,7 +14,7 @@ namespace ChatyChaty.ValidationAttribute
         {
             if (!context.ModelState.IsValid)
             {
-                context.Result = new BadRequestObjectResult(new ResponseBase<object>(context.ModelState));
+                context.Result = new BadRequestObjectResult(new Response<object>(context.ModelState));
             }
             else
             {

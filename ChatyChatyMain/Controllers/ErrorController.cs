@@ -1,4 +1,4 @@
-﻿using ChatyChaty.ControllerSchema.v3;
+﻿using ChatyChaty.ControllerHubSchema.v3;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -21,7 +21,7 @@ namespace ChatyChaty.Controllers
         [Route("/error")]
         public IActionResult Error()
         {
-            return StatusCode(500, new ResponseBase<object>
+            return StatusCode(500, new Response<object>
             {
                 Success = false,
                 Errors = new Collection<string> { "An error occurred at the server" }

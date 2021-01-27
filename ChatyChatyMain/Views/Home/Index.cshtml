@@ -1,12 +1,13 @@
-﻿<!doctype html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-    <title>Index</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-<body>
-    <h2>App is runnig</h2>
-    <a href="/swagger/index.html">Open Swagger for API info</a><br />
+﻿@{
+    ViewData["Title"] = "Home";
+    Layout = "_Layout";
+}
+<h2>App is runnig</h2>
+<a href="/swagger/index.html">Open Swagger for API info</a>
+<br />
+<a asp-action="HubTestClient">Open SignalR js test client</a>
+<br />
+<a href="/health">Open health endpoint</a>
+<br />
 
-</body>
-</html>
+

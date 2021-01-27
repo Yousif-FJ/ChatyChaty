@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using System.Transactions;
-using ChatyChaty.ControllerSchema.v3;
-using ChatyChaty.Services;
+using ChatyChaty.ControllerHubSchema.v3;
+using ChatyChaty.Domain.Services.AccountServices;
+using ChatyChaty.Domain.Services.MessageServices;
 using ChatyChaty.ValidationAttribute;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -23,12 +22,10 @@ namespace ChatyChaty.Controllers.v3
     public class ProfileController : ControllerBase
     {
         private readonly IAccountManager accountManager;
-        private readonly IMessageService messageService;
 
-        public ProfileController(IAccountManager accountManager, IMessageService messageService)
+        public ProfileController(IAccountManager accountManager)
         {
             this.accountManager = accountManager;
-            this.messageService = messageService;
         }
 
 
@@ -53,10 +50,11 @@ namespace ChatyChaty.Controllers.v3
         public async Task<IActionResult> SetPhotoForSelf([FromForm]UploadFileSchema uploadFile)
         {
             var userId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
-            var setPhotoResult = await accountManager.SetPhoto(long.Parse(userId), uploadFile.PhotoFile);
+            var setPhotoResult = await accountManager.SetPhotoAsync(long.Parse(userId),
+                uploadFile.PhotoFile.FileName, uploadFile.PhotoFile.OpenReadStream());
             if (setPhotoResult.Success == true)
             {
-                return Ok(new ResponseBase<string>
+                return Ok(new Response<string>
                 {
                     Success = true,
                     Data = setPhotoResult.URL
@@ -64,7 +62,7 @@ namespace ChatyChaty.Controllers.v3
             }
             else
             {
-                return BadRequest(new ResponseBase<string>
+                return BadRequest(new Response<string>
                 {
                     Success = false,
                     Errors = setPhotoResult.Errors
@@ -106,26 +104,26 @@ namespace ChatyChaty.Controllers.v3
         public async Task<IActionResult> GetUser([FromHeader]string userName)
         {
             var userId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
-            var result = await accountManager.NewConversation(long.Parse(userId), userName);
+            var result = await accountManager.NewConversationAsync(long.Parse(userId), userName);
             if (result.Error != null)
             {
-                return NotFound(new ResponseBase<GetUserProfileResponseBase>
+                return NotFound(new Response<UserProfileResponseBase>
                 {
                     Success = false,
                     Errors = new Collection<string> { result.Error }
                 });
             }
-            var response = new ResponseBase<GetUserProfileResponseBase>
+            var response = new Response<UserProfileResponseBase>
             {
                 Success = true,
-                Data = new GetUserProfileResponseBase
+                Data = new UserProfileResponseBase
                 { 
-                    ChatId = result.Conversation.ConversationId,
-                    Profile = new ProfileSchema
+                    ChatId = result.Conversation.ChatId,
+                    Profile = new ProfileResponseBase
                     {
-                        DisplayName = result.Conversation.SecondUserDisplayName,
-                        Username = result.Conversation.SecondUserUsername,
-                        PhotoURL = result.Conversation.SecondUserPhoto
+                        DisplayName = result.Conversation.DisplayName,
+                        Username = result.Conversation.Username,
+                        PhotoURL = result.Conversation.PhotoURL
                     }
                 }
             };
@@ -163,26 +161,26 @@ namespace ChatyChaty.Controllers.v3
         public async Task<IActionResult> GetChats()
         {
             var userId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
-            var chats = await messageService.GetConversations(long.Parse(userId));
+            var chats = await accountManager.GetConversations(long.Parse(userId));
 
-            var chatList = new List<GetUserProfileResponseBase>();
+            var chatList = new List<UserProfileResponseBase>();
 
             foreach (var chat in chats)
             {
                 chatList.Add(
-                new GetUserProfileResponseBase
+                new UserProfileResponseBase
                 {
-                    ChatId = chat.ConversationId,
-                    Profile = new ProfileSchema
+                    ChatId = chat.ChatId,
+                    Profile = new ProfileResponseBase
                     {
-                        DisplayName = chat.SecondUserDisplayName,
-                        Username = chat.SecondUserUsername,
-                        PhotoURL = chat.SecondUserPhoto
+                        DisplayName = chat.DisplayName,
+                        Username = chat.Username,
+                        PhotoURL = chat.PhotoURL
                     }
                 }
                     );
             };
-            var response = new ResponseBase<IEnumerable<GetUserProfileResponseBase>>()
+            var response = new Response<IEnumerable<UserProfileResponseBase>>()
             {
                 Success = true,
                 Data = chatList
@@ -215,8 +213,8 @@ namespace ChatyChaty.Controllers.v3
         public async Task<IActionResult> UpdateDisplayName([FromBody]string newDisplayName)
         {
             var UserId = long.Parse(HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
-            var newName = await accountManager.UpdateDisplayName(UserId, newDisplayName);
-            return Ok(new ResponseBase<string>
+            var newName = await accountManager.UpdateDisplayNameAsync(UserId, newDisplayName);
+            return Ok(new Response<string>
             {
                 Success = true,
                 Data = newName

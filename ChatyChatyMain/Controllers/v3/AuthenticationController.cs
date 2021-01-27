@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ChatyChaty.Model.AccountModel;
-using ChatyChaty.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ChatyChaty.ValidationAttribute;
 using Microsoft.AspNetCore.Authorization;
-using ChatyChaty.ControllerSchema.v3;
+using ChatyChaty.ControllerHubSchema.v3;
 using System.Security.Claims;
+using ChatyChaty.Domain.Services.AuthenticationManager;
 
 namespace ChatyChaty.Controllers.v3
 {
@@ -59,7 +58,7 @@ namespace ChatyChaty.Controllers.v3
 
             if (!authenticationResult.Success)
             {
-                ResponseBase<AuthenticationResponseBase> authenticationSchemaF = new ResponseBase<AuthenticationResponseBase>()
+                Response<AuthResponseBase> authenticationSchemaF = new Response<AuthResponseBase>()
                 {
                     Errors = authenticationResult.Errors,
                     Success = authenticationResult.Success,
@@ -67,17 +66,17 @@ namespace ChatyChaty.Controllers.v3
                 return BadRequest(authenticationSchemaF);
             }
 
-            ProfileSchema profileSchema = new ProfileSchema
+            ProfileResponseBase profileSchema = new ProfileResponseBase
             {
                 DisplayName = authenticationResult.Profile.DisplayName,
                 Username = authenticationResult.Profile.Username,
                 PhotoURL = authenticationResult.Profile.PhotoURL
             };
 
-            ResponseBase<AuthenticationResponseBase> authenticationSchema = new ResponseBase<AuthenticationResponseBase>()
+            Response<AuthResponseBase> authenticationSchema = new Response<AuthResponseBase>()
             {
                 Success = authenticationResult.Success,
-                Data = new AuthenticationResponseBase
+                Data = new AuthResponseBase
                 {
                     Token = authenticationResult.Token,
                     Profile = profileSchema
@@ -118,7 +117,7 @@ namespace ChatyChaty.Controllers.v3
 
             if (!authenticationResult.Success)
             {
-                ResponseBase<AuthenticationResponseBase> authenticationSchemaF = new ResponseBase<AuthenticationResponseBase>()
+                Response<AuthResponseBase> authenticationSchemaF = new Response<AuthResponseBase>()
                 {
                     Errors = authenticationResult.Errors,
                     Success = authenticationResult.Success,
@@ -126,18 +125,18 @@ namespace ChatyChaty.Controllers.v3
                 return BadRequest(authenticationSchemaF);
             }
 
-            ProfileSchema profileSchema = new ProfileSchema
+            ProfileResponseBase profileSchema = new ProfileResponseBase
             {
                 DisplayName = authenticationResult.Profile.DisplayName,
                 Username = authenticationResult.Profile.Username,
                 PhotoURL = authenticationResult.Profile.PhotoURL
             };
 
-            ResponseBase<AuthenticationResponseBase> authenticationSchema = new ResponseBase<AuthenticationResponseBase>()
+            Response<AuthResponseBase> authenticationSchema = new Response<AuthResponseBase>()
             {
                 Errors = authenticationResult.Errors,
                 Success = authenticationResult.Success,
-                Data = new AuthenticationResponseBase
+                Data = new AuthResponseBase
                 {
                     Token = authenticationResult.Token,
                     Profile = profileSchema
@@ -172,7 +171,7 @@ namespace ChatyChaty.Controllers.v3
         {
             var userId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
             var result = await authenticationManager.ChangePassword(userId, passwordSchema.CurrentPassword, passwordSchema.NewPassword);
-            var changePasswordResponse = new ResponseBase<object>
+            var changePasswordResponse = new Response<object>
             {
                 Success = result.Success,
                 Errors = result.Errors,

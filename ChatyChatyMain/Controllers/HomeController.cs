@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ChatyChaty.Services.GoogleFirebase;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ChatyChaty.Controllers
@@ -16,6 +15,13 @@ namespace ChatyChaty.Controllers
         [Route("/")]
         [HttpGet]
         public IActionResult Index()
+        {
+            return View();
+        }
+
+        [Route("/HubTestClient")]
+        [HttpGet]
+        public IActionResult HubTestClient()
         {
             return View();
         }
