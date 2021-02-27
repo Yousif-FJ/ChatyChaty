@@ -1,4 +1,5 @@
 ﻿using ChatyChaty.Domain.Model.AccountModel;
+using ChatyChaty.Domain.Model.Entity;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,8 +13,8 @@ namespace ChatyChaty.Domain.InfastructureInterfaces
     /// </summary>
     public interface IPictureProvider
     {
-        public Task<PhotoUrlModel> ChangePhoto(long userID, string userName,string fileName, Stream file);
-        public Task<string> GetPhotoURL(long userID, string userName);
-        public Task DeletePhoto(long userID, string userName);
+        public Task<PhotoUrlModel> ChangePhoto(UserId userID, string userName,string fileName, Stream file);
+        public Task<string> GetPhotoURL(UserId userID, string userName);
+        public Task DeletePhoto(UserId userID, string userName);
     }
 }

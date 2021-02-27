@@ -28,7 +28,7 @@ namespace ChatyChaty.Hubs.v3
             this.hubClients = hubClients;
         }
 
-        public bool TrySendChatUpdate(long receiverId, ProfileAccountModel chatInfo)
+        public bool TrySendChatUpdate(UserId receiverId, ProfileAccountModel chatInfo)
         {
             if (hubClients.IsClientConnected(receiverId) == false)
             {
@@ -46,7 +46,7 @@ namespace ChatyChaty.Hubs.v3
                         PhotoURL = chatInfo.PhotoURL,
                         Username = chatInfo.Username
                     },
-                    ChatId = chatInfo.ChatId
+                    ChatId = chatInfo.ChatId.Value
                 }
             };
 
@@ -54,7 +54,7 @@ namespace ChatyChaty.Hubs.v3
             return true;
         }
 
-        public bool TrySendMessageStatusUpdate(long receiverId, long chatId, long messageId)
+        public bool TrySendMessageStatusUpdate(UserId receiverId, ConversationId chatId, MessageId messageId)
         {
             if (hubClients.IsClientConnected(receiverId) == false)
             {
@@ -64,7 +64,7 @@ namespace ChatyChaty.Hubs.v3
             var response = new Response<MessageStatusResponseBase>()
             {
                 Success = true,
-                Data = new MessageStatusResponseBase(messageId, chatId, true)
+                Data = new MessageStatusResponseBase(messageId.Value, chatId.Value, true)
             };
 
             _ = hubContext.Clients.User(receiverId.ToString()).UpdateMessageStatus(response);
@@ -78,7 +78,7 @@ namespace ChatyChaty.Hubs.v3
         /// <param name="receiverId"></param>
         /// <param name="messages"></param>
         /// <returns></returns>
-        public bool TrySendMessageUpdate(long receiverId, IEnumerable<Message> messages)
+        public bool TrySendMessageUpdate(UserId receiverId, IEnumerable<Message> messages)
         {
             if (hubClients.IsClientConnected(receiverId) == false)
             {

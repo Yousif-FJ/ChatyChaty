@@ -2,7 +2,6 @@
 using ChatyChaty.Infrastructure.PictureServices;
 using ChatyChaty.Infrastructure.Repositories.ChatRepository;
 using ChatyChaty.Infrastructure.Repositories.MessageRepository;
-using ChatyChaty.Infrastructure.Repositories.NotificationRepository;
 using ChatyChaty.Infrastructure.Repositories.UserRepository;
 using CloudinaryDotNet;
 using Microsoft.Extensions.Configuration;
@@ -18,7 +17,6 @@ namespace ChatyChaty.Infrastructure.StartupConfiguration
         public static void AddInfrastructureClasses(this IServiceCollection services, IConfiguration Configuration)
         {
             services.AddSingleton<Cloudinary>(new Cloudinary(Configuration["CLOUDINARY_URL"]));
-            services.AddScoped<INotificationRepository, NotificationRepository>();
             services.AddScoped<IMessageRepository, MessageRepository>();
             services.AddScoped<IChatRepository, ChatRepository>();
             services.AddScoped<IUserRepository, UserRepository>();

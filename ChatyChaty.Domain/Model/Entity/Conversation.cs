@@ -8,35 +8,34 @@ namespace ChatyChaty.Domain.Model.Entity
 {
     public class Conversation
     {
-        public Conversation(long firstUserId, long secondUserId)
+        public Conversation(UserId firstUserId, UserId secondUserId)
         {
             FirstUserId = firstUserId;
             SecondUserId = secondUserId;
+            Id = new ConversationId();
         }
-
-        [Key]
-        public long Id { get; set; }
+        public ConversationId Id { get; set; }
         public AppUser FirstUser { get; set; }
-        public long FirstUserId { get; set; }
+        public UserId FirstUserId { get; set; }
         public AppUser SecondUser { get; set; }
-        public long SecondUserId { get; set; }
+        public UserId SecondUserId { get; set; }
         public ICollection<Message> Messages { get; set; }
 
-        public long? FindReceiverId(long senderId)
+        public UserId FindReceiverId(UserId senderId)
         {
-            long? receiverId = null;
-            if (senderId == FirstUserId)
+            UserId receiverId = null;
+            if (FirstUserId.Equals(senderId))
             {
                 receiverId = SecondUserId;
             }
-            else if (senderId == SecondUserId)
+            else if (senderId.Equals(SecondUserId))
             {
                 receiverId = FirstUserId;
             }
             return receiverId;
         }
 
-        public AppUser FindReceiver(long senderId)
+        public AppUser FindReceiver(UserId senderId)
         {
             AppUser receiver = null;
             if (senderId == FirstUserId)
@@ -49,6 +48,10 @@ namespace ChatyChaty.Domain.Model.Entity
             }
             return receiver;
         }
+    }
 
+    public record ConversationId(string Value)
+    {
+        public ConversationId()  : this(Guid.NewGuid().ToString()) { }
     }
 }

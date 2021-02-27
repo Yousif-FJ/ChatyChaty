@@ -1,4 +1,5 @@
 ﻿using ChatyChaty.Domain.Model.AccountModel;
+using ChatyChaty.Domain.Model.Entity;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -13,10 +14,10 @@ namespace ChatyChaty.Domain.Services.AccountServices
     /// </summary>
     public interface IAccountManager
     {
-        Task<NewConversationModel> NewConversationAsync(long senderId, string receiverUsername);
-        Task<IEnumerable<ProfileAccountModel>> GetConversations(long userId);
-        Task<ProfileAccountModel> GetConversation(long chatId, long userId);
-        Task<string> UpdateDisplayNameAsync(long UserId, string NewDisplayName);
-        Task<PhotoUrlModel> SetPhotoAsync(long UserId, string fileName ,Stream file);
+        Task<NewConversationModel> NewConversationAsync(UserId senderId, string receiverUsername);
+        Task<IEnumerable<ProfileAccountModel>> GetConversations(UserId userId);
+        Task<ProfileAccountModel> GetConversation(ConversationId chatId, UserId userId);
+        Task<string> UpdateDisplayNameAsync(UserId UserId, string NewDisplayName);
+        Task<PhotoUrlModel> SetPhotoAsync(UserId UserId, string fileName ,Stream file);
     }
 }

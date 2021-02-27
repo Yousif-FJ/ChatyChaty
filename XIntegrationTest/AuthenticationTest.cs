@@ -39,6 +39,7 @@ namespace XIntegrationTest
             client.Authenticate(createResponse.Data.Token);
             //Act
             var response = await client.GetAsync("/api/v3/message/NewMessages");
+            var textResponse = await response.Content.ReadAsStringAsync();
             //Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }

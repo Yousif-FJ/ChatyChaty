@@ -5,6 +5,8 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using ChatyChaty.ControllerHubSchema.v3;
+using ChatyChaty.Domain.Model.Entity;
+using ChatyChaty.Domain.Model.MessagingModel;
 using ChatyChaty.Domain.Services.MessageServices;
 using ChatyChaty.ValidationAttribute;
 using Microsoft.AspNetCore.Authorization;
@@ -30,41 +32,27 @@ namespace ChatyChaty.Controllers.v3
 
 
         /// <summary>
-        /// Get new messages by supplying the last messageId of the last chat (Require authentication)
+        /// Get new messages by supplying the last messageId of the last chat or null if no messages (Require authentication)
         /// </summary>
-        /// <remarks>
-        /// <br>Use CheckForNewMessages first for performance.</br>
-        /// <br>You may supply 0 as last messageId if there are no messages.</br>
-        /// <br>Expect delivered to be null for the message you received.</br>
-        /// <br>You may get the full chat info (like sender username and picture) using the ChatId,
-        /// You can use the action GetChatInfo to get the chat info.</br>
-        /// Example response:
-        /// <br>
-        /// {
-        ///  "success": true,
-        ///  "errors": null,
-        ///  "data":[
-        ///  {
-        ///    "chatId": 1,
-        ///    "messageId": 1,
-        ///    "sender": "*Username*",
-        ///    "body": "*The message*",
-        ///    "delivered": true
-        ///  }]
-        /// }
-        /// </br>
-        /// </remarks>
-        /// <param name="lastMessageId"></param>
-        /// <returns></returns>
         /// <response code="200">An array of messages</response>
         /// <response code="400">Invalid MessageId</response>
         /// <response code="401">Not Authenticated</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [HttpGet("NewMessages")]
-        public async Task<IActionResult> GetNewMessages([FromHeader]long lastMessageId)
+        public async Task<IActionResult> GetNewMessages([FromHeader]string lastMessageId)
         {
-            var userId = long.Parse(HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
-            var result = await messageService.GetNewMessages(userId, lastMessageId);
+            var userId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
+
+            GetNewMessagesModel result;
+            if (string.IsNullOrEmpty(lastMessageId))
+            {
+                result = await messageService.GetNewMessages(new UserId(userId), null);
+            }
+            else
+            {
+                result = await messageService.GetNewMessages(new UserId(userId), new MessageId(lastMessageId));
+            }
+
             //the error never a value
             if (result.Error != null)
             {
@@ -74,7 +62,7 @@ namespace ChatyChaty.Controllers.v3
                     Errors = new Collection<string>() { result.Error }
                 });
             }
-            var messages = result.Messages.ToMessageInfoResponse(userId);
+            var messages = result.Messages.ToMessageInfoResponse(new UserId(userId));
             return Ok(new Response<IEnumerable<MessageInfoReponseBase>>
             {
                 Success = true,
@@ -105,10 +93,10 @@ namespace ChatyChaty.Controllers.v3
         /// <response code="401">Not Authenticated</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [HttpGet("Delivered")]
-        public async Task<IActionResult> CheckDelivered([FromHeader]long messageId)
+        public async Task<IActionResult> CheckDelivered([FromHeader]string messageId)
         {
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
-            var result = await messageService.IsDelivered(long.Parse(userIdClaim.Value), messageId);
+            var result = await messageService.IsDelivered(new UserId(userIdClaim.Value),new MessageId(messageId));
             if (result.Error != null)
             {
                 return BadRequest(new Response<bool?>
@@ -157,8 +145,8 @@ namespace ChatyChaty.Controllers.v3
         {
             var userIdClaim = HttpContext.User.Claims.FirstOrDefault(
                 claim => claim.Type == ClaimTypes.NameIdentifier);
-            var result = await messageService.SendMessage(messageSchema.ChatId,
-                long.Parse(userIdClaim.Value), messageSchema.Body);
+            var result = await messageService.SendMessage(new ConversationId(messageSchema.ChatId),
+                 new UserId(userIdClaim.Value), messageSchema.Body);
 
             if (result.Error != null)
             {
@@ -173,8 +161,8 @@ namespace ChatyChaty.Controllers.v3
             var responseBase = new MessageInfoReponseBase
             {
                 Body = result.Message.Body,
-                MessageId = result.Message.Id,
-                ChatId = result.Message.ConversationId,
+                MessageId = result.Message.Id.Value,
+                ChatId = result.Message.ConversationId.Value,
                 Sender = userNameClaim.Value,
                 Delivered = false
             };

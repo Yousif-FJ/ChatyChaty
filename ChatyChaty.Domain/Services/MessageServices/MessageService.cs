@@ -36,7 +36,7 @@ namespace ChatyChaty.Domain.Services.MessageServices
         /// <param name="userId">The Id of the user who own the message</param>
         /// <param name="messageId">The Id of the message to be checked</param>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the UserId doesn't exist</exception>
-        public async Task<IsDeliveredModel> IsDelivered(long userId, long messageId)
+        public async Task<IsDeliveredModel> IsDelivered(UserId userId, MessageId messageId)
         {
             var message = await messageRepository.GetMessageAsync(messageId);
             if (message == null)
@@ -46,7 +46,7 @@ namespace ChatyChaty.Domain.Services.MessageServices
                     Error = "No such a message Id"
                 };
             }
-            if (message.SenderId != userId)
+            if (!message.SenderId.Equals(userId))
             {
                 return new IsDeliveredModel
                 {
@@ -66,22 +66,22 @@ namespace ChatyChaty.Domain.Services.MessageServices
         /// <param name="SenderId">The sender Id</param>
         /// <param name="MessageBody">The message</param>
         /// <returns>Return the sent message back</returns>
-        public async Task<SendMessageModel> SendMessage(long ConversationId, long SenderId, string MessageBody)
+        public async Task<SendMessageModel> SendMessage(ConversationId conversationId, UserId senderId, string MessageBody)
         {
             //check if the conversation exist
-            var conversation = await chatRepository.GetConversationAsync(ConversationId);
+            var conversation = await chatRepository.GetConversationAsync(conversationId);
             if (conversation == null)
             {
                 return new SendMessageModel { Error = "Invalid ChatId" };
             }
 
             //check if the user is part of a conversation and find the receiver
-            long ReceiverId;
-            if (conversation.FirstUserId == SenderId)
+            UserId ReceiverId;
+            if (conversation.FirstUserId == senderId)
             {
                 ReceiverId = conversation.SecondUserId;
             }
-            else if (conversation.SecondUserId == SenderId)
+            else if (conversation.SecondUserId == senderId)
             {
                 ReceiverId = conversation.FirstUserId;
             }
@@ -90,7 +90,7 @@ namespace ChatyChaty.Domain.Services.MessageServices
                 return new SendMessageModel { Error = "Invalid ChatId" };
             }
 
-            var message = new Message(MessageBody, conversation.Id, SenderId);
+            var message = new Message(MessageBody, conversation.Id, senderId);
             var returnedMessage = await messageRepository.AddMessageAsync(message);
 
             await mediator.Send(new UserGotNewMessageAsync((ReceiverId, returnedMessage.Id)));
@@ -99,9 +99,23 @@ namespace ChatyChaty.Domain.Services.MessageServices
         }
 
 
-        public async Task<GetNewMessagesModel> GetNewMessages(long userId, long lastMessageId)
+        public async Task<GetNewMessagesModel> GetNewMessages(UserId userId, MessageId lastMessageId)
         {
-            var newMessages = await messageRepository.GetMessagesForUser(lastMessageId, userId);
+            if (userId is null)
+            {
+                return new GetNewMessagesModel { Error = "UserId is null" };
+            }
+
+            IEnumerable<Message> newMessages;
+            if (lastMessageId is null)
+            {
+                newMessages = await messageRepository.GetMessagesForUser(userId);
+            }
+            else
+            {
+                newMessages = await messageRepository.GetNewMessagesForUser(lastMessageId, userId);
+            }
+
             //Mark messages as read
             var markMessages = new List<Message>();
             foreach (var message in newMessages)
@@ -114,7 +128,6 @@ namespace ChatyChaty.Domain.Services.MessageServices
             }
             await messageRepository.UpdateMessagesAsync(markMessages);
             await mediator.Send(new UsersGotMessageStatusUpdateAsync(markMessages.Select(m => (m.SenderId,m.ConversationId, m.Id)).ToArray()));
- //error in get new message is redundant currently
             return new GetNewMessagesModel { Messages = newMessages };
         }
     }

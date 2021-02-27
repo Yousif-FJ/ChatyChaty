@@ -1,5 +1,6 @@
 ﻿using ChatyChaty.Domain.InfastructureInterfaces;
 using ChatyChaty.Domain.Model.AccountModel;
+using ChatyChaty.Domain.Model.Entity;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace XUnitTest.MockClasses
 {
     class MockPictureProvider : IPictureProvider
     {
-        public Task<PhotoUrlModel> ChangePhoto(long userID, string userName, string fileName, Stream file)
+        public Task<PhotoUrlModel> ChangePhoto(UserId userID, string userName, string fileName, Stream file)
         {
             var tcs = new TaskCompletionSource<PhotoUrlModel>();
             try
@@ -27,12 +28,12 @@ namespace XUnitTest.MockClasses
             }
         }
 
-        public Task DeletePhoto(long UserID, string UserName)
+        public Task DeletePhoto(UserId userID, string UserName)
         {
             return Task.CompletedTask;
         }
 
-        public Task<string> GetPhotoURL(long UserID, string UserName)
+        public Task<string> GetPhotoURL(UserId userID, string UserName)
         {
             return null;
         }

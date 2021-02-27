@@ -28,7 +28,7 @@ namespace ChatyChaty.Infrastructure.Repositories.MessageRepository
             return DBMessage.Entity;
         }
 
-        public async Task<IEnumerable<Message>> GetLastDeliveredMessageForEachChat(long userId)
+        public async Task<IEnumerable<Message>> GetLastDeliveredMessageForEachChat(UserId userId)
         {
             /*
             SELECT MAX(Id), SenderId FROM Messages WHERE {0} = SenderId AND Delivered = 1 GROUP BY SenderId;
@@ -47,21 +47,36 @@ namespace ChatyChaty.Infrastructure.Repositories.MessageRepository
             return dBContext.Messages.Where(m => MessageIds.Contains(m.Id));
         }
 
-        public async Task<Message> GetMessageAsync(long Id)
+        public async Task<Message> GetMessageAsync(MessageId Id)
         {
             return await dBContext.Messages.FindAsync(Id);
         }
 
-        public async Task<IEnumerable<Message>> GetMessagesForUser(long messageId, long userId)
+        public async Task<IEnumerable<Message>> GetMessagesForUser(UserId userId)
         {
             var ConversationsIds = await dBContext.Conversations
-                .Where(c => c.FirstUserId == userId || c.SecondUserId == userId)
-                .Select(c => c.Id)
-                .ToListAsync();
+            .Where(c => c.FirstUserId == userId || c.SecondUserId == userId)
+            .Select(c => c.Id.Value)
+            .ToListAsync();
+
+            return await dBContext.Messages
+        //    .Where(m => ConversationsIds.Contains(m.ConversationId.Value))
+            .Include(m => m.Sender)
+            .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Message>> GetNewMessagesForUser(MessageId messageId, UserId userId)
+        {
+            var ConversationsIds = await dBContext.Conversations
+            .Where(c => c.FirstUserId == userId || c.SecondUserId == userId)
+            .Select(c => c.Id)
+            .ToListAsync();
+
+            var message = await GetMessageAsync(messageId);
 
             return await dBContext.Messages.Where(
-                m => m.Id > messageId &&
-                ConversationsIds.Any(id => id == m.ConversationId)
+                m => m.TimeSent > message.TimeSent &&
+                ConversationsIds.Contains(m.ConversationId)
                 ).Include(c => c.Sender).ToListAsync();
         }
 

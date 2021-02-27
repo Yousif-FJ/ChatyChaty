@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ChatyChaty.Domain.Model.Entity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,11 +13,11 @@ namespace ChatyChaty.Hubs.v3
     {
         public MemoryHubSessions()
         {
-            connectedClientIds = new List<long>();
+            connectedClientIds = new List<UserId>();
         }
-        private readonly IList<long> connectedClientIds;
+        private readonly IList<UserId> connectedClientIds;
 
-        public void AddClient(long userId)
+        public void AddClient(UserId userId)
         {
             //check if the client already exists
             var IsConnected = IsClientConnected(userId);
@@ -26,12 +27,12 @@ namespace ChatyChaty.Hubs.v3
             }
         }
 
-        public bool IsClientConnected(long userId)
+        public bool IsClientConnected(UserId userId)
         {
             return connectedClientIds.Contains(userId);
         }
 
-        public bool RemoveClient(long userId)
+        public bool RemoveClient(UserId userId)
         {
             return connectedClientIds.Remove(userId);
         }

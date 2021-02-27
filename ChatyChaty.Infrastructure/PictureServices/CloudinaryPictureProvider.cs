@@ -1,5 +1,6 @@
 ﻿using ChatyChaty.Domain.InfastructureInterfaces;
 using ChatyChaty.Domain.Model.AccountModel;
+using ChatyChaty.Domain.Model.Entity;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Http;
@@ -35,12 +36,12 @@ namespace ChatyChaty.Infrastructure.PictureServices
         /// </summary>
         /// <remarks>The method Add new Picture or Overrade existing Photo with the same name</remarks>
         /// <returns>The Uploaded Photo idetitifier</returns>
-        public async Task<PhotoUrlModel> ChangePhoto(long UserID, string UserName, string fileName, Stream File)
+        public async Task<PhotoUrlModel> ChangePhoto(UserId userID, string UserName, string fileName, Stream File)
         {
             ImageUploadParams uploadParams = new ImageUploadParams()
             {
                 File = new FileDescription(name: fileName, stream: File),
-                PublicId = ConstructPublicId(UserID, UserName),
+                PublicId = ConstructPublicId(userID, UserName),
                 Overwrite = true
             };
             var uploadResult = await cloudinary.UploadAsync(uploadParams);
@@ -69,7 +70,7 @@ namespace ChatyChaty.Infrastructure.PictureServices
         /// <param name="userID">User's ID which is part of the stored Photo idetitifier</param>
         /// <param name="userName">UserName which is part of the stored Photo idetitifier</param>
         /// <returns>user's PhotoURL</returns>
-        public async Task<string> GetPhotoURL(long userID, string userName)
+        public async Task<string> GetPhotoURL(UserId userID, string userName)
         {
             var resourceResult = await cloudinary.GetResourceAsync(ConstructPublicId(userID, userName));
             if (resourceResult.StatusCode == System.Net.HttpStatusCode.OK)
@@ -85,9 +86,9 @@ namespace ChatyChaty.Infrastructure.PictureServices
         /// </summary>
         /// <param name="UserID">User's ID which is part of the stored Photo idetitifier</param>
         /// <param name="UserName">UserName which is part of the stored Photo idetitifier</param>
-        public async Task DeletePhoto(long UserID, string UserName)
+        public async Task DeletePhoto(UserId userID, string UserName)
         {
-            var Result = await cloudinary.DeleteResourcesAsync(publicIds: ConstructPublicId(UserID, UserName));
+            var Result = await cloudinary.DeleteResourcesAsync(publicIds: ConstructPublicId(userID, UserName));
             if (Result.Error is null)
             {
                 return;
@@ -104,7 +105,7 @@ namespace ChatyChaty.Infrastructure.PictureServices
         /// <param name="UserID">User's ID which is part of the stored Photo idetitifier</param>
         /// <param name="UserName">UserName which is part of the stored Photo idetitifier</param>
         /// <returns>PublicId</returns>
-        private static string ConstructPublicId(long UserID, string UserName)
+        private static string ConstructPublicId(UserId UserID, string UserName)
         {
             return $"{FileConatiner}/{UserName}{UserID}";
         }

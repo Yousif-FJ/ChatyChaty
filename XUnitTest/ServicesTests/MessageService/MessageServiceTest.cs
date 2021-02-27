@@ -61,7 +61,7 @@ namespace XUnitTest
         }
 
         [Fact]
-        public async Task GetNewMessages_ZeroAsMessageId()
+        public async Task GetNewMessages_AllMessages()
         {
             //Arrange
             var u1 = (await dbContext.Users.AddAsync(new AppUser("Test1"))).Entity;
@@ -79,7 +79,7 @@ namespace XUnitTest
 
 
             //Act
-            var MessagesResult = await messageService.GetNewMessages(u1.Id, 0);
+            var MessagesResult = await messageService.GetNewMessages(u1.Id, null);
             //Assert
             var Messagelist = new List<Message>(MessagesResult.Messages);
             Assert.True(Messagelist[0].Body == "test1");
@@ -108,7 +108,7 @@ namespace XUnitTest
             await dbContext.SaveChangesAsync();
 
             //Act
-            var MessagesResult = await messageService.GetNewMessages(u2.Id, 0);
+            var MessagesResult = await messageService.GetNewMessages(u2.Id, null);
             //Assert
             var Messagelist = new List<Message>(MessagesResult.Messages);
             Assert.True(Messagelist[0].Body == "test1");
@@ -140,7 +140,7 @@ namespace XUnitTest
             var conversation2 = (await dbContext.Conversations.AddAsync(new Conversation( u1.Id,u2.Id))).Entity;
             await dbContext.SaveChangesAsync();
             var messageResult = await messageService.SendMessage(conversation2.Id, u1.Id, "Test Message");
-            await messageService.GetNewMessages(u2.Id, 0);
+            await messageService.GetNewMessages(u2.Id, null);
             //Act
             var result = await messageService.IsDelivered(u1.Id, messageResult.Message.Id);
             //Assert

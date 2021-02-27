@@ -19,12 +19,10 @@ namespace ChatyChaty.Domain.Services.NotficationServices.Handler
     /// </summary>
     public abstract class NotificationHandlerCommon<T> : AsyncRequestHandler<T> where T : IRequest
     {
-        protected readonly INotificationRepository notificationRepository;
         protected readonly IHubHelper hubHelper;
 
-        public NotificationHandlerCommon(INotificationRepository notificationRepository, IHubHelper hubHelper)
+        public NotificationHandlerCommon(IHubHelper hubHelper)
         {
-            this.notificationRepository = notificationRepository;
             this.hubHelper = hubHelper;
         }
     }
@@ -32,7 +30,7 @@ namespace ChatyChaty.Domain.Services.NotficationServices.Handler
     {
         private readonly IMessageRepository messageRepository;
 
-        public NewMessageHandler(INotificationRepository notificationRepository, IHubHelper hubHelper, IMessageRepository messageRepository) : base(notificationRepository, hubHelper)
+        public NewMessageHandler(IHubHelper hubHelper, IMessageRepository messageRepository) : base(hubHelper)
         {
             this.messageRepository = messageRepository;
         }
@@ -47,7 +45,6 @@ namespace ChatyChaty.Domain.Services.NotficationServices.Handler
                 bool successful = hubHelper.TrySendMessageUpdate(userId, new List<Message> { message});
                 if (successful == false)
                 {
-                    await notificationRepository.StoreUserNewMessageStatusAsync(userId);
                 }
             }
         }
@@ -57,7 +54,7 @@ namespace ChatyChaty.Domain.Services.NotficationServices.Handler
     {
         private readonly IAccountManager accountManager;
 
-        public ChatUpdateHandler(INotificationRepository notificationRepository, IHubHelper hubHelper, IAccountManager accountManager) : base(notificationRepository, hubHelper)
+        public ChatUpdateHandler(IHubHelper hubHelper, IAccountManager accountManager) : base(hubHelper)
         {
             this.accountManager = accountManager;
         }
@@ -70,7 +67,6 @@ namespace ChatyChaty.Domain.Services.NotficationServices.Handler
                 bool successful = hubHelper.TrySendChatUpdate(receiverId,chat);
                 if (successful == false)
                 {
-                    await notificationRepository.StoreUsersChatUpdateStatusAsync(receiverId);
                 }
             }
         }
@@ -78,20 +74,21 @@ namespace ChatyChaty.Domain.Services.NotficationServices.Handler
 
     public class MessageStatusHandler : NotificationHandlerCommon<UsersGotMessageStatusUpdateAsync>
     {
-        public MessageStatusHandler(INotificationRepository notificationRepository, IHubHelper hubHelper) : base(notificationRepository, hubHelper)
+        public MessageStatusHandler( IHubHelper hubHelper) : base(hubHelper)
         {
         }
 
-        protected override async Task Handle(UsersGotMessageStatusUpdateAsync request, CancellationToken cancellationToken)
+        protected override Task Handle(UsersGotMessageStatusUpdateAsync request, CancellationToken cancellationToken)
         {
             foreach (var (receieverId, chatId, messageId) in request.MessageInfo)
             {
                 var sentSuccessfully = hubHelper.TrySendMessageStatusUpdate(receieverId, chatId, messageId);
                 if (sentSuccessfully == false)
                 {
-                    await notificationRepository.StoreUsersMessageStatusAsync(receieverId);
                 }
             }
+
+            return Task.CompletedTask;
         }
     }
     
@@ -99,7 +96,7 @@ namespace ChatyChaty.Domain.Services.NotficationServices.Handler
     {
         private readonly IAccountManager accountManager;
 
-        public ProfileUpdateHandler(INotificationRepository notificationRepository, IHubHelper hubHelper, IAccountManager accountManager) : base(notificationRepository, hubHelper)
+        public ProfileUpdateHandler(IHubHelper hubHelper, IAccountManager accountManager) : base(hubHelper)
         {
             this.accountManager = accountManager;
         }
@@ -109,10 +106,9 @@ namespace ChatyChaty.Domain.Services.NotficationServices.Handler
             IEnumerable<ProfileAccountModel> chats = await accountManager.GetConversations(request.UserId);
             foreach (var chat in chats)
             {
-                var successful = hubHelper.TrySendChatUpdate(chat.UserId.Value,chat);
+                var successful = hubHelper.TrySendChatUpdate(chat.UserId,chat);
                 if (successful == false)
                 {
-                    await notificationRepository.StoreUsersChatUpdateStatusAsync(chat.UserId.Value);
                 }
             }
         }

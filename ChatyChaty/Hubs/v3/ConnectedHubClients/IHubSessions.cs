@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ChatyChaty.Domain.Model.Entity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,8 +11,8 @@ namespace ChatyChaty.Hubs.v3
     /// </summary>
     public interface IHubSessions
     {
-        void AddClient(long userId);
-        bool IsClientConnected(long userId);
-        bool RemoveClient(long userId);
+        void AddClient(UserId userId);
+        bool IsClientConnected(UserId userId);
+        bool RemoveClient(UserId userId);
     }
 }

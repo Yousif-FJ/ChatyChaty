@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using ChatyChaty.Domain.Model.Entity;
+using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,9 +13,9 @@ namespace ChatyChaty.Domain.Services.NotficationServices.Handler
 
     public class UsersGotChatUpdateAsync : IRequest
     {
-        public readonly (long receiverId, long chatId)[] InvokerAndReceiverIds;
+        public readonly (UserId receiverId, ConversationId chatId)[] InvokerAndReceiverIds;
 
-        public UsersGotChatUpdateAsync(params (long receiverId, long chatId)[] invokerAndReceiverIds)
+        public UsersGotChatUpdateAsync(params (UserId receiverId, ConversationId chatId)[] invokerAndReceiverIds)
         {
             this.InvokerAndReceiverIds = invokerAndReceiverIds;
         }
@@ -22,9 +23,9 @@ namespace ChatyChaty.Domain.Services.NotficationServices.Handler
 
     public class UserGotNewMessageAsync: IRequest
     {
-        public readonly (long userId, long messageId)[] UserAndMessageId;
+        public readonly (UserId userId, MessageId messageId)[] UserAndMessageId;
 
-        public UserGotNewMessageAsync(params (long userId, long messageId)[] userAndMessageId)
+        public UserGotNewMessageAsync(params (UserId userId, MessageId messageId)[] userAndMessageId)
         {
             this.UserAndMessageId = userAndMessageId;
         }
@@ -32,9 +33,9 @@ namespace ChatyChaty.Domain.Services.NotficationServices.Handler
 
     public class UsersGotMessageStatusUpdateAsync : IRequest
     {
-        public readonly (long receieverId, long chatId, long messageId)[] MessageInfo;
+        public readonly (UserId receieverId, ConversationId chatId, MessageId messageId)[] MessageInfo;
 
-        public UsersGotMessageStatusUpdateAsync(params (long receieverId, long chatId, long messageId)[] messageInfo)
+        public UsersGotMessageStatusUpdateAsync(params (UserId receieverId, ConversationId chatId, MessageId messageId)[] messageInfo)
         {
             this.MessageInfo = messageInfo;
         }
@@ -42,9 +43,9 @@ namespace ChatyChaty.Domain.Services.NotficationServices.Handler
 
     public class UserUpdatedTheirProfileAsync : IRequest
     {
-        public readonly long UserId;
+        public readonly UserId UserId;
 
-        public UserUpdatedTheirProfileAsync(long usersId)
+        public UserUpdatedTheirProfileAsync(UserId usersId)
         {
             this.UserId = usersId;
         }

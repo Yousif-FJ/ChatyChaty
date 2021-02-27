@@ -17,7 +17,7 @@ namespace ChatyChaty.Infrastructure.Repositories.UserRepository
             dBContext = DBContext;
         }
 
-        public async Task<string> UpdateDisplayNameAsync(long UserId, string NewDisplayName)
+        public async Task<string> UpdateDisplayNameAsync(UserId UserId, string NewDisplayName)
         {
             var User = await dBContext.Users.FindAsync(UserId);
             User.DisplayName = NewDisplayName;
@@ -27,7 +27,7 @@ namespace ChatyChaty.Infrastructure.Repositories.UserRepository
 
         }
 
-        public async Task<AppUser> GetUserAsync(long Id)
+        public async Task<AppUser> GetUserAsync(UserId Id)
         {
             return await dBContext.Users.FindAsync(Id);
         }

@@ -48,7 +48,7 @@ namespace ChatyChaty.Domain.Services.AccountServices
         /// </summary>
         /// <param name="senderId">First user Id</param>
         /// <param name="receiverUsername">Second user Id</param>
-        public async Task<NewConversationModel> NewConversationAsync(long senderId, string receiverUsername)
+        public async Task<NewConversationModel> NewConversationAsync(UserId senderId, string receiverUsername)
         {
             var receiver = await userManager.FindByNameAsync(receiverUsername); ;
             if (receiver == null)
@@ -81,7 +81,7 @@ namespace ChatyChaty.Domain.Services.AccountServices
         /// <remarks>throws exception if the user doesn't exist</remarks>
         /// <param name="userId">The userId who have the conversations</param>
         /// <returns>a list of conversations</returns>
-        public async Task<IEnumerable<ProfileAccountModel>> GetConversations(long userId)
+        public async Task<IEnumerable<ProfileAccountModel>> GetConversations(UserId userId)
         {
             var user = await userRepository.GetUserAsync(userId);
             if (user == null)
@@ -115,7 +115,7 @@ namespace ChatyChaty.Domain.Services.AccountServices
         }
 
 
-        public async Task<ProfileAccountModel> GetConversation(long chatId, long userId)
+        public async Task<ProfileAccountModel> GetConversation(ConversationId chatId, UserId userId)
         {
             var conversation = await chatRepository.GetConversationAsync(chatId);
 
@@ -126,7 +126,7 @@ namespace ChatyChaty.Domain.Services.AccountServices
                 throw new InvalidOperationException("Conversation is not for the given user");
             }
 
-            var secondUser = await userRepository.GetUserAsync(secondUserId.Value);
+            var secondUser = await userRepository.GetUserAsync(secondUserId);
 
 
             var response = new ProfileAccountModel
@@ -139,7 +139,7 @@ namespace ChatyChaty.Domain.Services.AccountServices
             return response;
         }
 
-        public async Task<PhotoUrlModel> SetPhotoAsync(long userId, string fileName, Stream file)
+        public async Task<PhotoUrlModel> SetPhotoAsync(UserId userId, string fileName, Stream file)
         {
             var user = await userRepository.GetUserAsync(userId);
             if (user == null)
@@ -151,7 +151,7 @@ namespace ChatyChaty.Domain.Services.AccountServices
             return setPhotoResult;
         }
 
-        public async Task<string> UpdateDisplayNameAsync(long userId, string newDisplayName)
+        public async Task<string> UpdateDisplayNameAsync(UserId userId, string newDisplayName)
         {
             var user = await userRepository.GetUserAsync(userId);
             if (user is null)
@@ -164,7 +164,7 @@ namespace ChatyChaty.Domain.Services.AccountServices
         }
 
         //To-Do: finish implementation
-        public async Task<bool> DeleteAccountAsync(long userId)
+        public async Task<bool> DeleteAccountAsync(UserId userId)
         {
             var user = await userRepository.GetUserAsync(userId);
             var result = await userManager.DeleteAsync(user);

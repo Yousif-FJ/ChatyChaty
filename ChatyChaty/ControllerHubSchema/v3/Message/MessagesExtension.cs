@@ -8,13 +8,13 @@ namespace ChatyChaty.ControllerHubSchema.v3
 {
     public static class MessagesExtension
     {
-        public static IEnumerable<MessageInfoReponseBase> ToMessageInfoResponse(this IEnumerable<Message> messages, long userId)
+        public static IEnumerable<MessageInfoReponseBase> ToMessageInfoResponse(this IEnumerable<Message> messages, UserId userId)
         {
             return messages.Select(message => new MessageInfoReponseBase
             {
                 Body = message.Body,
-                ChatId = message.ConversationId,
-                MessageId = message.Id,
+                ChatId = message.ConversationId.Value,
+                MessageId = message.Id.Value,
                 Sender = message.Sender.UserName,
                 Delivered = message.SenderId == userId ? message.Delivered : (bool?)null
             });

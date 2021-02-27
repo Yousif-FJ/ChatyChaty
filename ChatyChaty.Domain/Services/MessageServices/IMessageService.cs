@@ -1,4 +1,5 @@
 ﻿using ChatyChaty.Domain.Model.AccountModel;
+using ChatyChaty.Domain.Model.Entity;
 using ChatyChaty.Domain.Model.MessagingModel;
 using System;
 using System.Collections.Generic;
@@ -12,8 +13,8 @@ namespace ChatyChaty.Domain.Services.MessageServices
     /// </summary>
     public interface IMessageService
     {
-        Task<SendMessageModel> SendMessage(long conversationId, long senderId, string messageBody);
-        Task<GetNewMessagesModel> GetNewMessages(long userId, long lastMessageId);
-        Task<IsDeliveredModel> IsDelivered(long userId, long messageId);
+        Task<SendMessageModel> SendMessage(ConversationId conversationId, UserId senderId, string messageBody);
+        Task<GetNewMessagesModel> GetNewMessages(UserId userId, MessageId lastMessageId);
+        Task<IsDeliveredModel> IsDelivered(UserId userId, MessageId messageId);
     }
 }

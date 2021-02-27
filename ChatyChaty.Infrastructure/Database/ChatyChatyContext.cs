@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace ChatyChaty.Infrastructure.Database
 {
-    public class ChatyChatyContext : IdentityUserContext<AppUser, long>
+    public class ChatyChatyContext : IdentityUserContext<AppUser,UserId>
     {
         public ChatyChatyContext(DbContextOptions dbContextOptions) : base(dbContextOptions)
         {
@@ -18,7 +18,6 @@ namespace ChatyChaty.Infrastructure.Database
 
         public DbSet<Message> Messages { get; set; }
         public DbSet<Conversation> Conversations { get; set; }
-        public DbSet<Notification> Notifications { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -34,6 +33,9 @@ namespace ChatyChaty.Infrastructure.Database
 
 
             builder.Entity<Message>()
+                .HasKey(m => m.Id);
+
+            builder.Entity<Message>()
                 .HasOne<Conversation>(x => x.Conversation)
                 .WithMany(x => x.Messages)
                 .HasForeignKey(x => x.ConversationId);
@@ -42,6 +44,14 @@ namespace ChatyChaty.Infrastructure.Database
                 .HasOne<AppUser>(x => x.Sender)
                 .WithMany(x => x.MessageSender)
                 .HasForeignKey(x => x.SenderId);
+
+            builder.Entity<Message>()
+                .Property(x => x.Id)
+                .HasConversion(x => x.Value,
+                               x => new MessageId(x));
+
+            builder.Entity<Conversation>()
+                .HasKey(c => c.Id);
 
             builder.Entity<Conversation>()
                 .HasOne<AppUser>(x => x.FirstUser)
@@ -53,11 +63,10 @@ namespace ChatyChaty.Infrastructure.Database
                 .WithMany(x => x.Conversations2)
                 .HasForeignKey(x => x.SecondUserId);
 
-            builder.Entity<AppUser>()
-                .HasOne<Notification>(x => x.Notification)
-                .WithOne(x => x.AppUser)
-                .HasForeignKey<Notification>(x => x.UserId)
-                .IsRequired();
+            builder.Entity<Conversation>()
+                .Property(x => x.Id)
+                .HasConversion(x => x.Value,
+                               x => new ConversationId(x));
 
             builder.Entity<AppUser>()
                 .Property(x => x.UserName)
@@ -66,6 +75,11 @@ namespace ChatyChaty.Infrastructure.Database
             builder.Entity<AppUser>()
                 .Property(x => x.DisplayName)
                 .HasMaxLength(32);
+
+            builder.Entity<AppUser>()
+                .Property(x => x.Id)
+                .HasConversion(x => x.Value,
+                               x => new UserId(x));
         }
     }
 }

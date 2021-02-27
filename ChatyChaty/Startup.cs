@@ -13,7 +13,6 @@ using ChatyChaty.Hubs.v3;
 using ChatyChaty.Domain.Services.AccountServices;
 using ChatyChaty.Domain.Services.AuthenticationManager;
 using ChatyChaty.Domain.Services.MessageServices;
-using ChatyChaty.Domain.Services.NotficationServices.Getter;
 using ChatyChaty.Domain.Services.NotficationServices.Handler;
 using ChatyChaty.Domain.Model.Entity;
 using ChatyChaty.Infrastructure.Database;
@@ -48,8 +47,6 @@ namespace ChatyChaty
             services.AddSingleton<IHubSessions,MemoryHubSessions>();
 
             services.AddScoped<IAuthenticationManager, AuthenticationManager>();
-
-            services.AddScoped<INotificationGetter, NotificationGetter>();
 
             services.AddScoped<IMessageService, MessageService>();
 
