@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Threading.Tasks;
 using System.Net.Http.Headers;
 using System.Linq;
-using Microsoft.EntityFrameworkCore.Internal;
 using ChatyChaty.Infrastructure.Database;
 
 namespace XIntegrationTest
@@ -19,25 +18,28 @@ namespace XIntegrationTest
         protected readonly HttpClient client;
         public IntegrationTestBase()
         {
-            //construct an In-Memory server with chaty startup class
             var Factory = new WebApplicationFactory<Startup>().WithWebHostBuilder(builder =>
             {
                 builder.ConfigureServices(services =>
                 {
-                //Remove the real DB refrence 
-                var descriptor = services.SingleOrDefault(
-                    d => d.ServiceType == typeof(DbContextOptions<ChatyChatyContext>));
-                services.Remove(descriptor);
+                    RemoveRealDBContext(services);
 
-                    //use an In-Memory db  
-                    services.AddDbContextPool<ChatyChatyContext>(options =>
+                    var sqliteMemory = new SqliteInMemory();
+                    services.AddDbContextFactory<ChatyChatyContext>(optionsBuilder =>
                     {
-                        options.UseInMemoryDatabase("TestDb");
+                        optionsBuilder.UseSqlite(sqliteMemory.Connection);
                     });
                 });
             });
             //create a special client that work the In-Memory app
             client = Factory.CreateClient();
+        }
+
+        private static void RemoveRealDBContext(IServiceCollection services)
+        {
+            var descriptor = services.SingleOrDefault(
+                d => d.ServiceType == typeof(DbContextOptions<ChatyChatyContext>));
+            services.Remove(descriptor);
         }
     }
 }

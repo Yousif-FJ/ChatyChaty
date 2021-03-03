@@ -10,7 +10,7 @@ namespace XUnitTest.RepositoryTest.MessageRepositoryTest
     public class GetMessage: BaseMessageRepositoryTest
     {
         [Fact]
-        public async Task Success()
+        public async Task OneMessage_OneChat_ShouldReturn_OneMessage()
         {
             //Arrange
             var messageBody = "Some message";

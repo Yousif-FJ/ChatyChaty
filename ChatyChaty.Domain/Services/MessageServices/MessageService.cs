@@ -109,11 +109,11 @@ namespace ChatyChaty.Domain.Services.MessageServices
             IEnumerable<Message> newMessages;
             if (lastMessageId is null)
             {
-                newMessages = await messageRepository.GetMessagesForUser(userId);
+                newMessages = await messageRepository.GetMessagesForUserAsync(userId);
             }
             else
             {
-                newMessages = await messageRepository.GetNewMessagesForUser(lastMessageId, userId);
+                newMessages = await messageRepository.GetNewMessagesForUserAsync(lastMessageId, userId);
             }
 
             //Mark messages as read

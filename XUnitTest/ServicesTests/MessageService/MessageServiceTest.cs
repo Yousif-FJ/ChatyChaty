@@ -6,8 +6,6 @@ using ChatyChaty.Infrastructure.Repositories.ChatRepository;
 using ChatyChaty.Infrastructure.Repositories.MessageRepository;
 using ChatyChaty.Infrastructure.Repositories.UserRepository;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -16,7 +14,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
-using XUnitTest.MockClasses;
 
 namespace XUnitTest
 {
@@ -26,16 +23,11 @@ namespace XUnitTest
         private readonly ChatyChatyContext dbContext;
         public MessageServiceTest()
         {
-            //construct an In-Memory Database
-            var options = new DbContextOptionsBuilder<ChatyChatyContext>()
-                .UseInMemoryDatabase(databaseName: "database")
-                .Options;
-            var context = new ChatyChatyContext(options);
-            dbContext = context;
+            dbContext = new ChatyChatySqliteInMemoryBuilder()
+                .CreateChatyChatyContext() ;
 
-            //construct a message repositor and notfication handler then a message service
-            var messageRepository = new MessageRepository(context);
-            var chatRepository = new ChatRepository(context);
+            var messageRepository = new MessageRepository(dbContext);
+            var chatRepository = new ChatRepository(dbContext);
 
             var notificationHandlerMock = new Mock<IMediator>() ;
             messageService = new MessageService(messageRepository, chatRepository, notificationHandlerMock.Object);
@@ -56,7 +48,7 @@ namespace XUnitTest
             //Act
             await messageService.SendMessage(conversation.Id, sender.Id, message);
             //Assert
-            var m = await dbContext.Messages.LastAsync();
+            var m = await dbContext.Messages.FirstAsync();
             Assert.True(m.Body == message);
         }
 

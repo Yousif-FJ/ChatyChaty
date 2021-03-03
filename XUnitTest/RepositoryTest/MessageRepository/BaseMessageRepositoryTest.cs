@@ -1,14 +1,16 @@
 ﻿using ChatyChaty.Domain.Model.Entity;
 using ChatyChaty.Infrastructure.Database;
 using ChatyChaty.Infrastructure.Repositories.MessageRepository;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Text;
 
 namespace XUnitTest.RepositoryTest.MessageRepositoryTest
 {
-    public class BaseMessageRepositoryTest
+    public abstract class BaseMessageRepositoryTest
     {
         protected readonly ChatyChatyContext dbContext;
         protected readonly MessageRepository repository;
@@ -17,14 +19,10 @@ namespace XUnitTest.RepositoryTest.MessageRepositoryTest
         protected readonly AppUser user3;
         public BaseMessageRepositoryTest()
         {
-            //construct an In-Memory Database
-            var options = new DbContextOptionsBuilder<ChatyChatyContext>()
-                .UseInMemoryDatabase(databaseName: "database")
-                .Options;
-            var context = new ChatyChatyContext(options);
-            dbContext = context;
+            var SqliteInMemory = new ChatyChatySqliteInMemoryBuilder();
 
-            //construct repository
+            dbContext = SqliteInMemory.CreateChatyChatyContext();
+
             repository = new MessageRepository(dbContext);
 
             //create users to test

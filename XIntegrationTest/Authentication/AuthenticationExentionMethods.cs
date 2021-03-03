@@ -29,13 +29,16 @@ namespace XIntegrationTest
                 DisplayName = displayName, Password = password, Username = userName
             });
             Response<AuthResponseBase> responseAsClass;
-            responseAsClass = await response.Content.ReadAsAsync<Response<AuthResponseBase>>();
-
-            if (responseAsClass.Success == false)
+            try
+            {
+                responseAsClass = await response.Content.ReadAsAsync<Response<AuthResponseBase>>();
+            }
+            catch (UnsupportedMediaTypeException)
             {
                 var responseAsString = await response.Content.ReadAsStringAsync();
-                throw new Exception($"Error, The response as string is : {responseAsString}");
+                throw new Exception($"Unsupported type response, The response as string : {responseAsString}");
             }
+
             return responseAsClass;
         }
     }

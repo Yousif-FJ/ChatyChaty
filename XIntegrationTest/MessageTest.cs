@@ -24,7 +24,17 @@ namespace XIntegrationTest
             requestMessage.Headers.Add("UserName", user2CreationResponse.Data.Profile.Username);
             var response = await client.SendAsync(requestMessage);
             //Assert
-            var result = await response.Content.ReadAsAsync<Response<UserProfileResponseBase>>();
+            Response<UserProfileResponseBase> result;
+            try
+            {
+                 result = await response.Content.ReadAsAsync<Response<UserProfileResponseBase>>();
+            }
+            catch (UnsupportedMediaTypeException)
+            {
+                var responseAsString = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Unsupported type reponse, The response as string : {responseAsString}");
+            }
+
             Assert.True(result.Success, $"response as string : { await response.Content.ReadAsStringAsync()}");
             Assert.NotNull(result.Data.ChatId);
             Assert.False(result.Data.ChatId is not null);
@@ -46,8 +56,19 @@ namespace XIntegrationTest
             //Act
             var response = await client.PostAsJsonAsync("api/v3/Message/Message",
                 new SendMessageSchema { Body = messageBody, ChatId = chatId });
+
             //Assert
-            var result = await response.Content.ReadAsAsync<Response<MessageInfoReponseBase>>();
+            Response<MessageInfoReponseBase> result;
+            try
+            {
+                result = await response.Content.ReadAsAsync<Response<MessageInfoReponseBase>>();
+            }
+            catch (UnsupportedMediaTypeException)
+            {
+                var responseAsString = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Unsupported type reponse, The response as string : {responseAsString}");
+            }
+
             Assert.True(result.Success, $"response as string : { await response.Content.ReadAsStringAsync()}");
             Assert.False(result.Data.Delivered);
             Assert.Equal(messageBody, result.Data.Body);
