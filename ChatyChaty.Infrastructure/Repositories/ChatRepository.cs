@@ -32,25 +32,16 @@ namespace ChatyChaty.Infrastructure.Repositories.ChatRepository
                 .ToListAsync();
         }
 
-        public async Task<Conversation> CreateConversationAsync(UserId User1Id, UserId User2Id)
+        public async Task<Conversation> AddConversationAsync(Conversation conversation)
         {
-            var conversation = await dBContext.Conversations.FirstOrDefaultAsync(
-                (c => (c.FirstUserId == User1Id && c.SecondUserId == User2Id) ||
-                      (c.FirstUserId == User2Id && c.SecondUserId == User1Id)
-            ));
+            if (conversation is null)
+            {
+                throw new ArgumentNullException(nameof(conversation));
+            }
 
-            //convestaion not found create one
-            if (conversation == null)
-            {
-                var newConversation = new Conversation(User1Id, User2Id);
-                var resultConv = await dBContext.Conversations.AddAsync(newConversation);
-                await dBContext.SaveChangesAsync();
-                return resultConv.Entity;
-            }
-            else
-            {
-                return conversation;
-            }
+            await dBContext.Conversations.AddAsync(conversation);
+            await dBContext.SaveChangesAsync();
+            return conversation;
         }
 
 
@@ -59,6 +50,16 @@ namespace ChatyChaty.Infrastructure.Repositories.ChatRepository
             return await dBContext.Conversations
                .Where(c => c.FirstUserId == userId || c.SecondUserId == userId)
                .ToListAsync();
+        }
+
+        public async Task<Conversation> FindConversationAsync(UserId user1Id, UserId user2Id)
+        {
+            var conversation = await dBContext.Conversations.FirstOrDefaultAsync(
+                c => (c.FirstUserId == user1Id && c.SecondUserId == user2Id) ||
+                     (c.FirstUserId == user2Id && c.SecondUserId == user1Id)
+                        );
+
+            return conversation;
         }
     }
 }

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace ChatyChaty.Domain.Model.Entity
 {
@@ -10,16 +8,16 @@ namespace ChatyChaty.Domain.Model.Entity
     {
         public Conversation(UserId firstUserId, UserId secondUserId)
         {
-            FirstUserId = firstUserId;
-            SecondUserId = secondUserId;
+            FirstUserId = firstUserId ?? throw new ArgumentNullException(nameof(firstUserId));
+            SecondUserId = secondUserId ?? throw new ArgumentNullException(nameof(secondUserId));
             Id = new ConversationId();
         }
-        public ConversationId Id { get; set; }
-        public AppUser FirstUser { get; set; }
-        public UserId FirstUserId { get; set; }
-        public AppUser SecondUser { get; set; }
-        public UserId SecondUserId { get; set; }
-        public ICollection<Message> Messages { get; set; }
+        public ConversationId Id { get; private set; }
+        public AppUser FirstUser { get; private set; }
+        public UserId FirstUserId { get; private set; }
+        public AppUser SecondUser { get; private set; }
+        public UserId SecondUserId { get; private set; }
+        public List<Message> Messages { get; private set; }
 
         public UserId FindReceiverId(UserId senderId)
         {
@@ -52,6 +50,6 @@ namespace ChatyChaty.Domain.Model.Entity
 
     public record ConversationId(string Value)
     {
-        public ConversationId()  : this(Guid.NewGuid().ToString()) { }
+        public ConversationId() : this(Guid.NewGuid().ToString()) { }
     }
 }

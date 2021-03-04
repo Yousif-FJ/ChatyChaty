@@ -46,10 +46,8 @@ namespace ChatyChaty.Domain.Services.AuthenticationManager
                     Errors = new Collection<string>() { "Account Creation is disabled" }
                 };
             }
-            AppUser identityUser = new AppUser(username)
-            {
-                DisplayName = displayName
-            };
+            AppUser identityUser = new AppUser(username, displayName);
+
             var AccountCreationResult = await userManager.CreateAsync(identityUser, password);
             if (!AccountCreationResult.Succeeded)
             {

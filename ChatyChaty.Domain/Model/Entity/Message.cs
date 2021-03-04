@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace ChatyChaty.Domain.Model.Entity
 {
@@ -17,18 +15,18 @@ namespace ChatyChaty.Domain.Model.Entity
             Id = new MessageId();
             TimeSent = DateTime.Now; 
             Body = body;
-            ConversationId = conversationId;
-            SenderId = senderId;
+            ConversationId = conversationId ?? throw new ArgumentNullException(nameof(conversationId));
+            SenderId = senderId ?? throw new ArgumentNullException(nameof(senderId));
             Delivered = false;
         }
-        public MessageId Id { get; set; }
-        public string Body { get; set; }
-        public ConversationId ConversationId { get; set; }
-        public UserId SenderId { get; set; }
-        public AppUser Sender { get; set; }
-        public Conversation Conversation { get; set; }
+        public MessageId Id { get; private set; }
+        public string Body { get; private set; }
+        public ConversationId ConversationId { get; private set; }
+        public UserId SenderId { get; private set; }
+        public AppUser Sender { get; private set; }
+        public Conversation Conversation { get; private set; }
         public bool Delivered { get; private set; }
-        public DateTime TimeSent { get; set; }
+        public DateTime TimeSent { get; private set; }
 
         public Message MarkAsDelivered()
         {

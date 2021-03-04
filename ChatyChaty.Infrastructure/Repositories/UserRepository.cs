@@ -2,7 +2,6 @@
 using ChatyChaty.Domain.Model.Entity;
 using ChatyChaty.Infrastructure.Database;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -17,19 +16,20 @@ namespace ChatyChaty.Infrastructure.Repositories.UserRepository
             dBContext = DBContext;
         }
 
-        public async Task<string> UpdateDisplayNameAsync(UserId UserId, string NewDisplayName)
-        {
-            var User = await dBContext.Users.FindAsync(UserId);
-            User.DisplayName = NewDisplayName;
-            var Updated = dBContext.Users.Update(User);
-            await dBContext.SaveChangesAsync();
-            return Updated.Entity.DisplayName;
-
-        }
-
-        public async Task<AppUser> GetUserAsync(UserId Id)
+        public async Task<AppUser> GetAsync(UserId Id)
         {
             return await dBContext.Users.FindAsync(Id);
+        }
+
+        public async Task<AppUser> UpdateAsync(AppUser user)
+        {
+            if (user is null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+            dBContext.Users.Update(user);
+            await dBContext.SaveChangesAsync();
+            return user;
         }
     }
 }

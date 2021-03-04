@@ -11,6 +11,7 @@ namespace ChatyChaty.Domain.InfastructureInterfaces
         Task<IEnumerable<Conversation>> GetConversationsAsync(UserId userId);
         Task<IEnumerable<Conversation>> GetConversationsWithUsersAsync(UserId userId);
         Task<Conversation> GetConversationAsync(ConversationId Id);
-        Task<Conversation> CreateConversationAsync(UserId user1Id, UserId user2Id);
+        Task<Conversation> AddConversationAsync(Conversation conversation);
+        Task<Conversation> FindConversationAsync(UserId user1Id, UserId user2Id);
     }
 }

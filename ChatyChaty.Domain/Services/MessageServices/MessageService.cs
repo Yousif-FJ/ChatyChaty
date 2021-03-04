@@ -39,7 +39,7 @@ namespace ChatyChaty.Domain.Services.MessageServices
         public async Task<IsDeliveredModel> IsDelivered(UserId userId, MessageId messageId)
         {
             var message = await messageRepository.GetMessageAsync(messageId);
-            if (message == null)
+            if (message is null)
             {
                 return new IsDeliveredModel
                 {
@@ -70,7 +70,7 @@ namespace ChatyChaty.Domain.Services.MessageServices
         {
             //check if the conversation exist
             var conversation = await chatRepository.GetConversationAsync(conversationId);
-            if (conversation == null)
+            if (conversation is null)
             {
                 return new SendMessageModel { Error = "Invalid ChatId" };
             }

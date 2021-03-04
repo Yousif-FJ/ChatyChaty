@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-//TODO - Fix the notification logic
 
 namespace ChatyChaty.Domain.Services.AccountServices
 {
@@ -19,6 +18,7 @@ namespace ChatyChaty.Domain.Services.AccountServices
     /// </summary>
     public class AccountManager : IAccountManager
     {
+        //TODO- Factor out userManager and make it integrated with user repo
         private readonly UserManager<AppUser> userManager;
         private readonly IUserRepository userRepository;
         private readonly IChatRepository chatRepository;
@@ -48,10 +48,10 @@ namespace ChatyChaty.Domain.Services.AccountServices
         /// </summary>
         /// <param name="senderId">First user Id</param>
         /// <param name="receiverUsername">Second user Id</param>
-        public async Task<NewConversationModel> NewConversationAsync(UserId senderId, string receiverUsername)
+        public async Task<NewConversationModel> CreateConversationAsync(UserId senderId, string receiverUsername)
         {
             var receiver = await userManager.FindByNameAsync(receiverUsername); ;
-            if (receiver == null)
+            if (receiver is null)
             {
                 return new NewConversationModel
                 {
@@ -59,7 +59,13 @@ namespace ChatyChaty.Domain.Services.AccountServices
                 };
             }
 
-            var conversation = await chatRepository.CreateConversationAsync(senderId, receiver.Id);
+            var conversation = await chatRepository.FindConversationAsync(senderId, receiver.Id);
+
+            if (conversation is null)
+            {
+                conversation = new Conversation(senderId, receiver.Id);
+                conversation = await chatRepository.AddConversationAsync(conversation);
+            }
 
             await mediator.Send(new UsersGotChatUpdateAsync((receiver.Id, conversation.Id)));
 
@@ -83,8 +89,8 @@ namespace ChatyChaty.Domain.Services.AccountServices
         /// <returns>a list of conversations</returns>
         public async Task<IEnumerable<ProfileAccountModel>> GetConversations(UserId userId)
         {
-            var user = await userRepository.GetUserAsync(userId);
-            if (user == null)
+            var user = await userRepository.GetAsync(userId);
+            if (user is null)
             {
                 throw new ArgumentOutOfRangeException(nameof(userId),"Invalid Id");
             };
@@ -97,7 +103,7 @@ namespace ChatyChaty.Domain.Services.AccountServices
             {
 
                 AppUser SecondUser = conversation.FindReceiver(user.Id);
-                if (SecondUser == null)
+                if (SecondUser is null)
                 {
                     throw new InvalidOperationException("Conversation is not for the given user");
                 }
@@ -121,12 +127,12 @@ namespace ChatyChaty.Domain.Services.AccountServices
 
             var secondUserId = conversation.FindReceiverId(userId);
 
-            if (secondUserId == null)
+            if (secondUserId is null)
             {
                 throw new InvalidOperationException("Conversation is not for the given user");
             }
 
-            var secondUser = await userRepository.GetUserAsync(secondUserId);
+            var secondUser = await userRepository.GetAsync(secondUserId);
 
 
             var response = new ProfileAccountModel
@@ -141,11 +147,12 @@ namespace ChatyChaty.Domain.Services.AccountServices
 
         public async Task<PhotoUrlModel> SetPhotoAsync(UserId userId, string fileName, Stream file)
         {
-            var user = await userRepository.GetUserAsync(userId);
-            if (user == null)
+            var user = await userRepository.GetAsync(userId);
+            if (user is null)
             {
                 throw new ArgumentOutOfRangeException(nameof(userId),"Invalid userId");
             }
+
             var setPhotoResult = await pictureProvider.ChangePhoto(user.Id, user.UserName, fileName, file);
             await mediator.Send(new UserUpdatedTheirProfileAsync(userId));
             return setPhotoResult;
@@ -153,20 +160,29 @@ namespace ChatyChaty.Domain.Services.AccountServices
 
         public async Task<string> UpdateDisplayNameAsync(UserId userId, string newDisplayName)
         {
-            var user = await userRepository.GetUserAsync(userId);
+            if (string.IsNullOrWhiteSpace(newDisplayName))
+            {
+                throw new ArgumentException($"'{nameof(newDisplayName)}' cannot be null or whitespace", nameof(newDisplayName));
+            }
+
+            var user = await userRepository.GetAsync(userId);
             if (user is null)
             {
                 throw new ArgumentOutOfRangeException(nameof(userId), "Invalid UserId");
             }
-            var newName = await userRepository.UpdateDisplayNameAsync(userId, newDisplayName);
+            user.ChangeDisplayName(newDisplayName);
+
+            await userRepository.UpdateAsync(user);
+
             await mediator.Send(new UserUpdatedTheirProfileAsync(userId));
-            return newName;
+
+            return user.DisplayName;
         }
 
         //To-Do: finish implementation
         public async Task<bool> DeleteAccountAsync(UserId userId)
         {
-            var user = await userRepository.GetUserAsync(userId);
+            var user = await userRepository.GetAsync(userId);
             var result = await userManager.DeleteAsync(user);
             if (result.Succeeded)
             {

@@ -105,7 +105,7 @@ namespace ChatyChaty.Controllers.v3
         public async Task<IActionResult> GetUser([FromHeader]string userName)
         {
             var userId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
-            var result = await accountManager.NewConversationAsync(new UserId(userId), userName);
+            var result = await accountManager.CreateConversationAsync(new UserId(userId), userName);
             if (result.Error != null)
             {
                 return NotFound(new Response<UserProfileResponseBase>

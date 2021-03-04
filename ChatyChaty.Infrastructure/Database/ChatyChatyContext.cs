@@ -6,7 +6,7 @@ using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+
 
 namespace ChatyChaty.Infrastructure.Database
 {
@@ -23,7 +23,7 @@ namespace ChatyChaty.Infrastructure.Database
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-
+//TODO-Factor out configuration
             builder.Entity<AppUser>().Ignore(f => f.Email);
             builder.Entity<AppUser>().Ignore(f => f.PhoneNumber);
             builder.Entity<AppUser>().Ignore(f => f.NormalizedEmail);
