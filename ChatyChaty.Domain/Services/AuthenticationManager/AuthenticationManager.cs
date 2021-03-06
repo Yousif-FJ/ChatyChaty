@@ -131,7 +131,14 @@ namespace ChatyChaty.Domain.Services.AuthenticationManager
         private string JwtTokenGenerator(string UserName, string Id)
         {
             JwtSecurityTokenHandler jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_SECRET"));
+
+            var secret = configuration["JWT_SECRET"];
+            if (secret is null)
+            {
+                throw new KeyNotFoundException("Faild to obtain JWT Secret");
+            }
+
+            var key = Encoding.UTF8.GetBytes(secret);
             SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims: new[]
