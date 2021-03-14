@@ -50,7 +50,23 @@ namespace ChatyChaty.Domain.Services.AccountServices
         /// <param name="receiverUsername">Second user Id</param>
         public async Task<NewConversationModel> CreateConversationAsync(UserId senderId, string receiverUsername)
         {
-            var receiver = await userManager.FindByNameAsync(receiverUsername); ;
+            if (senderId is null)
+            {
+                throw new ArgumentNullException(nameof(senderId));
+            }
+
+            if (string.IsNullOrWhiteSpace(receiverUsername))
+            {
+                throw new ArgumentException($"'{nameof(receiverUsername)}' cannot be null or whitespace", nameof(receiverUsername));
+            }
+
+            var sender = await userRepository.GetAsync(senderId);
+            if (sender is null)
+            {
+                throw new ArgumentOutOfRangeException(nameof(senderId), $"{senderId} is invalid");
+            }
+
+            var receiver = await userManager.FindByNameAsync(receiverUsername); 
             if (receiver is null)
             {
                 return new NewConversationModel
@@ -64,7 +80,7 @@ namespace ChatyChaty.Domain.Services.AccountServices
             if (conversation is null)
             {
                 conversation = new Conversation(senderId, receiver.Id);
-                conversation = await chatRepository.AddConversationAsync(conversation);
+                conversation = await chatRepository.AddConversationAsync(conversation); 
             }
 
             await mediator.Send(new UsersGotChatUpdateAsync((receiver.Id, conversation.Id)));

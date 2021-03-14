@@ -6,9 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace XUnitTest.RepositoryTest.MessageRepositoryTest
-{ 
-    public class AddMessage: BaseMessageRepositoryTest
+namespace XUnitTest.MessageRepositoryTests
+{
+    public class AddMessageTest : BaseMessageRepositoryTest
     {
         [Fact]
         public async Task Success()

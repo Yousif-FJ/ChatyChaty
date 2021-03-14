@@ -51,5 +51,10 @@ namespace ChatyChaty.Domain.Model.Entity
     public record ConversationId(string Value)
     {
         public ConversationId() : this(Guid.NewGuid().ToString()) { }
+
+        public override string ToString()
+        {
+            return Value;
+        }
     }
 }

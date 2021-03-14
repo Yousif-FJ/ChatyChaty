@@ -38,7 +38,7 @@ namespace ChatyChaty.Domain.Services.AuthenticationManager
 
         public async Task<AuthenticationResult> CreateAccount(string username, string password, string displayName)
         {
-            if (Environment.GetEnvironmentVariable("DISABLE_REGESTRATION") == "true")
+            if (configuration["DISABLE_REGESTRATION"] == "true")
             {
                 return new AuthenticationResult
                 {

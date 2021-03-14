@@ -16,9 +16,10 @@ namespace XIntegrationTest
         public async Task CreateChat()
         {
             //Arrange
-            var user1CreationResponse = await client.CreateAccount("user1", "A name", "veryGoodPassword123");
             var user2CreationResponse = await client.CreateAccount("user2", "A name", "veryGoodPassword123");
-            client.Authenticate(user1CreationResponse.Data.Token);
+            var user1CreationResponse = await client.CreateAccount("user1", "A name", "veryGoodPassword123");
+            var user3CreationResponse = await client.CreateAccount("user3", "A name", "veryGoodPassword123");
+            client.Authenticate(user3CreationResponse.Data.Token);
             //Act
             using HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Get, "api/v3/Profile/User");
             requestMessage.Headers.Add("UserName", user2CreationResponse.Data.Profile.Username);
@@ -37,7 +38,7 @@ namespace XIntegrationTest
 
             Assert.True(result.Success, $"response as string : { await response.Content.ReadAsStringAsync()}");
             Assert.NotNull(result.Data.ChatId);
-            Assert.False(result.Data.ChatId is not null);
+            Assert.NotNull(result.Data.ChatId);
             Assert.Equal(user2CreationResponse.Data.Profile.Username, result.Data.Profile.Username);
         }
 
@@ -66,7 +67,7 @@ namespace XIntegrationTest
             catch (UnsupportedMediaTypeException)
             {
                 var responseAsString = await response.Content.ReadAsStringAsync();
-                throw new Exception($"Unsupported type reponse, The response as string : {responseAsString}");
+                throw new Exception($"Unsupported type response, The response as string : {responseAsString}");
             }
 
             Assert.True(result.Success, $"response as string : { await response.Content.ReadAsStringAsync()}");

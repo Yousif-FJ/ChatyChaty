@@ -44,5 +44,10 @@ namespace ChatyChaty.Domain.Model.Entity
 
     public record UserId(string Value) {
         public UserId() : this(Guid.NewGuid().ToString()) { }
+        
+        public override string ToString()
+        {
+            return Value;
+        }
     };
 }

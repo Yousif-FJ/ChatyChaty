@@ -22,6 +22,7 @@ namespace ChatyChaty.Domain.Model.Entity
         public MessageId Id { get; private set; }
         public string Body { get; private set; }
         public ConversationId ConversationId { get; private set; }
+        //TODO Add shadow property for sender name
         public UserId SenderId { get; private set; }
         public AppUser Sender { get; private set; }
         public Conversation Conversation { get; private set; }
@@ -38,5 +39,10 @@ namespace ChatyChaty.Domain.Model.Entity
     public record MessageId(string Value)
     {
         public MessageId() : this(Guid.NewGuid().ToString()) { }
+
+        public override string ToString()
+        {
+            return Value;
+        }
     }
 }

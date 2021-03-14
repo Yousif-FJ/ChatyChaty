@@ -14,8 +14,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
-
-namespace XUnitTest
+//TODO: Service test should test The service logic not the repository logic
+namespace XUnitTest.Services
 {
     public class MessageServiceTest
     {

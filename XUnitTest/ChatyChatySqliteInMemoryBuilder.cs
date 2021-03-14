@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace XUnitTest
 {
-    public class ChatyChatySqliteInMemoryBuilder : IDisposable
+    public sealed class ChatyChatySqliteInMemoryBuilder : IDisposable
     {
         private readonly DbConnection connection;
         private readonly DbContextOptions options;

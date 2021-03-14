@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace XUnitTest.RepositoryTest.MessageRepositoryTest
+namespace XUnitTest.MessageRepositoryTests
 {
-    public class GetMessage: BaseMessageRepositoryTest
+    public class GetMessageTests : BaseMessageRepositoryTest
     {
         [Fact]
         public async Task OneMessage_OneChat_ShouldReturn_OneMessage()
