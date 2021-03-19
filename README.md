@@ -11,4 +11,4 @@ The project features:
 - Picture storage with Cloudinary 
 - Unit tests and integration tests
 - API Versioning
-- In development Real time communication with SignalR
+- Real time communication with SignalR
