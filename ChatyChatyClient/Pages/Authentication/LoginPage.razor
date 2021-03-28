@@ -11,14 +11,19 @@
     <form>
         <div class="mb-3">
             <label for="exampleInputEmail1" class="form-label">Username</label>
-            <input @bind="Username" class="form-control" type="text">
+            <input @bind-value="Username" class="form-control" type="text">
         </div>
         <div class="mb-3">
             <label for="exampleInputPassword1" class="form-label">Password</label>
-            <input @bind="Password" class="form-control" type="password">
+            <input @bind-value="Password" class="form-control" type="password">
         </div>
-
-        <button @onsubmit="Login" type="submit" class="btn btn-primary">Login</button>
+        @if (Error is not null)
+        {
+        <div class="alert alert-danger">
+            @Error
+        </div>
+        }
+        <button @onclick="Login" type="button" class="btn btn-primary">Login</button>
     </form>
 </div>
 
