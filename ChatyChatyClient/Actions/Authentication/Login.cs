@@ -1,4 +1,5 @@
-﻿using ChatyChatyClient.HttpSchemas;
+﻿using ChatyChatyClient.Entities;
+using ChatyChatyClient.HttpSchemas;
 using ChatyChatyClient.HttpSchemas.Authentication;
 using ChatyChatyClient.Repository;
 using MediatR;
@@ -13,8 +14,6 @@ using System.Threading.Tasks;
 
 namespace ChatyChatyClient.Actions.Authentication
 {
-    public record LoginResult(bool IsSuccessful, string Error);
-
     public class Login : IRequest<LoginResult>
     {
         public Login(string username, string password)
@@ -27,28 +26,22 @@ namespace ChatyChatyClient.Actions.Authentication
         public string Password { get; set; }
     }
 
-    public class LoginHandler : IRequestHandler<Login, LoginResult>
+    public class LoginHandler : AuthenticationActionHandlerBase ,IRequestHandler<Login, LoginResult>
     {
-        private readonly HttpClient httpClient;
-        private readonly IAuthenticationRepository authenticationRepository;
         private static readonly string LoginURL = "/api/v3/Authentication/Account";
 
-        public LoginHandler(HttpClient httpClient, IAuthenticationRepository authenticationRepository)
-        {
-            this.httpClient = httpClient;
-            this.authenticationRepository = authenticationRepository;
-        }
+        public LoginHandler(HttpClient httpClient, IAuthenticationRepository authenticationRepository, IProfileRepository profileRepository)
+            : base(httpClient, authenticationRepository, profileRepository) { }
 
         public async Task<LoginResult> Handle(Login request, CancellationToken cancellationToken)
         {
-            if (IsInputNotValid(request,out string error ))
+            if (IsInValidInput(request,out string error ))
             {
                 return new LoginResult(false, error);
             }
 
             var loginInfo = new LoginAccountSchema() { Password = request.Password, Username = request.Username };
             var httpResponse = await httpClient.PostAsJsonAsync(LoginURL, loginInfo, cancellationToken);
-
             var response = await httpResponse.ReadAppResponseDataAs<AuthResponseBase>(cancellationToken);
 
 
@@ -57,11 +50,18 @@ namespace ChatyChatyClient.Actions.Authentication
                 return new LoginResult(false, response.Errors.FirstOrDefault());
             }
 
-            authenticationRepository.SetToken(response.Data.Token);
+            await authenticationRepository.SetToken(response.Data.Token);
+            await profileRepository.Set(
+                new UserProfile(
+                    response.Data.Profile.Username,
+                    response.Data.Profile.DisplayName,
+                    response.Data.Profile.PhotoURL
+                ));
+
             return new LoginResult(true, null);
         }
 
-        private static bool IsInputNotValid(Login request, out string errors)
+        private static bool IsInValidInput(Login request, out string errors)
         {
             if (string.IsNullOrWhiteSpace(request.Username))
             {
@@ -77,4 +77,6 @@ namespace ChatyChatyClient.Actions.Authentication
             return false;
         }
     }
+
+    public record LoginResult(bool IsSuccessful, string Error);
 }

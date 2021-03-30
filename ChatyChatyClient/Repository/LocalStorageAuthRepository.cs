@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace ChatyChatyClient.Repository
 {
-    public class BlazoredLocalStorageRepository : IAuthenticationRepository
+    public class LocalStorageAuthRepository : IAuthenticationRepository
     {
         private static readonly string tokenKey = "token";
         private readonly ILocalStorageService localStorage;
-        public BlazoredLocalStorageRepository(ILocalStorageService localStorage)
+        public LocalStorageAuthRepository(ILocalStorageService localStorage)
         {
             this.localStorage = localStorage;
         }
@@ -20,12 +20,12 @@ namespace ChatyChatyClient.Repository
             return await localStorage.GetItemAsStringAsync(tokenKey);
         }
 
-        public async void RemoveToken()
+        public async Task RemoveToken()
         {
             await localStorage.RemoveItemAsync(tokenKey);
         }
 
-        public async void SetToken(string value)
+        public async Task SetToken(string value)
         {
             await localStorage.SetItemAsync(tokenKey, value);
         }

@@ -30,7 +30,8 @@ namespace ChatyChatyClient
             builder.Services.AddBlazoredLocalStorage();
             builder.Services.AddMediatR(typeof(Program));
 
-            builder.Services.AddScoped<IAuthenticationRepository, BlazoredLocalStorageRepository>();
+            builder.Services.AddScoped<IAuthenticationRepository, LocalStorageAuthRepository>();
+            builder.Services.AddScoped<IProfileRepository, LocalStorageProfileRepository>();
 
             await builder.Build().RunAsync();
         }

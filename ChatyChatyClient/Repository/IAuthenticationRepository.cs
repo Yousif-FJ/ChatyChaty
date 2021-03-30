@@ -8,7 +8,7 @@ namespace ChatyChatyClient.Repository
     public interface IAuthenticationRepository
     {
         public Task<string> GetToken();
-        public void SetToken(string value);
-        public void RemoveToken();
+        public Task SetToken(string value);
+        public Task RemoveToken();
     }
 }

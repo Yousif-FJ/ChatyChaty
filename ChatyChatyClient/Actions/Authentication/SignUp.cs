@@ -1,4 +1,5 @@
-﻿using ChatyChatyClient.HttpSchemas;
+﻿using ChatyChatyClient.Entities;
+using ChatyChatyClient.HttpSchemas;
 using ChatyChatyClient.HttpSchemas.Authentication;
 using ChatyChatyClient.Repository;
 using MediatR;
@@ -13,36 +14,35 @@ using System.Threading.Tasks;
 
 namespace ChatyChatyClient.Actions.Authentication
 {
-    public record SignUpResult(bool IsSuccessful, string Error);
     public class SignUp : IRequest<SignUpResult>
     {
+        public SignUp(string username, string password, string displayName)
+        {
+            Username = username;
+            Password = password;
+            DisplayName = displayName;
+        }
         public string Username { get; set; }
         public string Password { get; set; }
         public string DisplayName { get; set; }
     }
 
-    public class SignUpHandler : IRequestHandler<SignUp, SignUpResult>
+    public class SignUpHandler : AuthenticationActionHandlerBase, IRequestHandler<SignUp, SignUpResult>
     {
-        private readonly HttpClient httpClient;
-        private readonly IAuthenticationRepository authenticationRepository;
-        private static readonly string LoginURL = "/api/v3/Authentication/NewAccount";
+        private static readonly string SignupURL = "/api/v3/Authentication/NewAccount";
 
-        public SignUpHandler(HttpClient httpClient, IAuthenticationRepository authenticationRepository)
-        {
-            this.httpClient = httpClient;
-            this.authenticationRepository = authenticationRepository;
-        }
+        public SignUpHandler(HttpClient httpClient, IAuthenticationRepository authenticationRepository, IProfileRepository profileRepository)
+            : base(httpClient, authenticationRepository, profileRepository){}
 
         public async Task<SignUpResult> Handle(SignUp request, CancellationToken cancellationToken)
         {
-            if (IsInputNotValid(request, out string error))
+            if (IsInvalidInput(request, out string error))
             {
                 return new SignUpResult(false, error);
             }
 
             var signUpInfo = new CreateAccountSchema() { Password = request.Password, Username = request.Username, DisplayName = request.DisplayName };
-            var httpResponse = await httpClient.PostAsJsonAsync(LoginURL, signUpInfo, cancellationToken);
-
+            var httpResponse = await httpClient.PostAsJsonAsync(SignupURL, signUpInfo, cancellationToken);
             var response = await httpResponse.ReadAppResponseDataAs<AuthResponseBase>(cancellationToken);
 
 
@@ -51,11 +51,18 @@ namespace ChatyChatyClient.Actions.Authentication
                 return new SignUpResult(false, response.Errors.FirstOrDefault());
             }
 
-            authenticationRepository.SetToken(response.Data.Token);
+            await authenticationRepository.SetToken(response.Data.Token);
+            await profileRepository.Set(
+                new UserProfile(
+                    response.Data.Profile.Username,
+                    response.Data.Profile.DisplayName,
+                    response.Data.Profile.PhotoURL
+             ));
+
             return new SignUpResult(true, null);
         }
 
-        private static bool IsInputNotValid(SignUp request, out string errors)
+        private static bool IsInvalidInput(SignUp request, out string errors)
         {
             if (string.IsNullOrWhiteSpace(request.Username))
             {
@@ -76,4 +83,6 @@ namespace ChatyChatyClient.Actions.Authentication
             return false;
         }
     }
+
+    public record SignUpResult(bool IsSuccessful, string Error);
 }

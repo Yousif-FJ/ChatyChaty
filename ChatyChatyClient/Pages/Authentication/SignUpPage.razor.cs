@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using ChatyChatyClient.Actions.Authentication;
+using MediatR;
 using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
@@ -10,14 +11,44 @@ namespace ChatyChatyClient.Pages.Authentication
     public partial class SignUpPage
     {
         [Inject]
-        protected IMediator MediatR { get; set; }
-        public string DisplayName { get; set; }
-        public string Username { get; set; }
-        public string Password { get; set; }
-        public string Error { get; set; }
-        public void SignUp()
-        {
+        private IMediator MediatR { get; set; }
+        [Inject]
+        private NavigationManager NavigationManager { get; set; }
 
+#pragma warning disable IDE0044 // Add readonly modifier
+        private string Username;
+        private string Password;
+        private string DisplayName;
+        private string Error;
+
+
+        private bool ShowLoadingIndicator;
+        private bool DisableLoginButton;
+
+        public async Task SignUp()
+        {
+            DisableButton();
+            var result = await MediatR.Send(new SignUp(Username, Password, DisplayName));
+            if (result.IsSuccessful == false)
+            {
+                Error = result.Error;
+                EnableButton();
+                return;
+            }
+
+            NavigationManager.NavigateTo("/client");
+        }
+
+        private void DisableButton()
+        {
+            ShowLoadingIndicator = true;
+            DisableLoginButton = true;
+        }
+
+        private void EnableButton()
+        {
+            ShowLoadingIndicator = false;
+            DisableLoginButton = false;
         }
     }
 }
