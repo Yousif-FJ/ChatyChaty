@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace ChatyChatyClient.Actions.Authentication
 {
-    public class Login : IRequest<LoginResult>
+    public class Login : IRequest<AuthenticationResult>
     {
         public Login(string username, string password)
         {
@@ -26,18 +26,18 @@ namespace ChatyChatyClient.Actions.Authentication
         public string Password { get; set; }
     }
 
-    public class LoginHandler : AuthenticationActionHandlerBase ,IRequestHandler<Login, LoginResult>
+    public class LoginHandler : AuthenticationActionHandlerBase ,IRequestHandler<Login, AuthenticationResult>
     {
         private static readonly string LoginURL = "/api/v3/Authentication/Account";
 
         public LoginHandler(HttpClient httpClient, IAuthenticationRepository authenticationRepository, IProfileRepository profileRepository)
             : base(httpClient, authenticationRepository, profileRepository) { }
 
-        public async Task<LoginResult> Handle(Login request, CancellationToken cancellationToken)
+        public async Task<AuthenticationResult> Handle(Login request, CancellationToken cancellationToken)
         {
             if (IsInValidInput(request,out string error ))
             {
-                return new LoginResult(false, error);
+                return new AuthenticationResult(false, error);
             }
 
             var loginInfo = new LoginAccountSchema() { Password = request.Password, Username = request.Username };
@@ -47,7 +47,7 @@ namespace ChatyChatyClient.Actions.Authentication
 
             if (response.Success == false)
             {
-                return new LoginResult(false, response.Errors.FirstOrDefault());
+                return new AuthenticationResult(false, response.Errors.FirstOrDefault());
             }
 
             await authenticationRepository.SetToken(response.Data.Token);
@@ -58,7 +58,7 @@ namespace ChatyChatyClient.Actions.Authentication
                     response.Data.Profile.PhotoURL
                 ));
 
-            return new LoginResult(true, null);
+            return new AuthenticationResult(true, null);
         }
 
         private static bool IsInValidInput(Login request, out string errors)
@@ -77,6 +77,4 @@ namespace ChatyChatyClient.Actions.Authentication
             return false;
         }
     }
-
-    public record LoginResult(bool IsSuccessful, string Error);
 }

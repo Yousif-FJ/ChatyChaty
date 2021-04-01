@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using ChatyChatyClient.Services;
 using MediatR;
 using Blazored.LocalStorage;
 using ChatyChatyClient.Repository;

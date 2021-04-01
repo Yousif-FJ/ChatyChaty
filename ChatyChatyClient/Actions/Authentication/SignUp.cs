@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace ChatyChatyClient.Actions.Authentication
 {
-    public class SignUp : IRequest<SignUpResult>
+    public class SignUp : IRequest<AuthenticationResult>
     {
         public SignUp(string username, string password, string displayName)
         {
@@ -27,18 +27,18 @@ namespace ChatyChatyClient.Actions.Authentication
         public string DisplayName { get; set; }
     }
 
-    public class SignUpHandler : AuthenticationActionHandlerBase, IRequestHandler<SignUp, SignUpResult>
+    public class SignUpHandler : AuthenticationActionHandlerBase, IRequestHandler<SignUp, AuthenticationResult>
     {
         private static readonly string SignupURL = "/api/v3/Authentication/NewAccount";
 
         public SignUpHandler(HttpClient httpClient, IAuthenticationRepository authenticationRepository, IProfileRepository profileRepository)
             : base(httpClient, authenticationRepository, profileRepository){}
 
-        public async Task<SignUpResult> Handle(SignUp request, CancellationToken cancellationToken)
+        public async Task<AuthenticationResult> Handle(SignUp request, CancellationToken cancellationToken)
         {
             if (IsInvalidInput(request, out string error))
             {
-                return new SignUpResult(false, error);
+                return new AuthenticationResult(false, error);
             }
 
             var signUpInfo = new CreateAccountSchema() { Password = request.Password, Username = request.Username, DisplayName = request.DisplayName };
@@ -48,7 +48,7 @@ namespace ChatyChatyClient.Actions.Authentication
 
             if (response.Success == false)
             {
-                return new SignUpResult(false, response.Errors.FirstOrDefault());
+                return new AuthenticationResult(false, response.Errors.FirstOrDefault());
             }
 
             await authenticationRepository.SetToken(response.Data.Token);
@@ -59,7 +59,7 @@ namespace ChatyChatyClient.Actions.Authentication
                     response.Data.Profile.PhotoURL
              ));
 
-            return new SignUpResult(true, null);
+            return new AuthenticationResult(true, null);
         }
 
         private static bool IsInvalidInput(SignUp request, out string errors)
@@ -83,6 +83,4 @@ namespace ChatyChatyClient.Actions.Authentication
             return false;
         }
     }
-
-    public record SignUpResult(bool IsSuccessful, string Error);
 }

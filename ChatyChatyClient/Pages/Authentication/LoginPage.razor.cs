@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
 using ChatyChatyClient.Actions.Authentication;
+using ChatyChatyClient.Entities;
 
 namespace ChatyChatyClient.Pages.Authentication
 {
@@ -20,8 +21,8 @@ namespace ChatyChatyClient.Pages.Authentication
         private string Password;
         private string Error;
 
-
-        private bool ShowLoadingIndicator;
+        [CascadingParameter]
+        protected LoadingIndicator LoadingIndicator { get; set; }
         private bool DisableLoginButton;
 
         public async Task Login()
@@ -40,14 +41,14 @@ namespace ChatyChatyClient.Pages.Authentication
 
         private void DisableButton()
         {
-            ShowLoadingIndicator = true;
+            LoadingIndicator.Show();
             DisableLoginButton = true;
         }
 
         private void EnableButton()
         {
-            ShowLoadingIndicator = false;
             DisableLoginButton = false;
+            LoadingIndicator.Hide();
         }
     }
 }
