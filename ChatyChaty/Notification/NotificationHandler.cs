@@ -40,7 +40,7 @@ namespace ChatyChaty.Domain.Services.NotficationServices.Handler
             foreach (var (userId, messageId) in request.UserAndMessageId)
             {
 
-                var message = await messageRepository.GetMessageAsync(messageId);
+                var message = await messageRepository.GetAsync(messageId);
 
                 bool successful = hubHelper.TrySendMessageUpdate(userId, new List<Message> { message});
                 if (successful == false)

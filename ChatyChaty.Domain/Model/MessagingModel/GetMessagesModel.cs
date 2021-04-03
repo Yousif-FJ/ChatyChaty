@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ChatyChaty.Domain.Model.MessagingModel
 {
-    public class GetNewMessagesModel
+    public class GetMessagesModel
     {
         public IEnumerable<Message> Messages { get; set; }
         public string Error { get; set; }

@@ -8,9 +8,9 @@ namespace ChatyChaty.Domain.Model.Entity
     {
         public Message(string body, ConversationId conversationId, UserId senderId)
         {
-            if (string.IsNullOrEmpty(body))
+            if (string.IsNullOrWhiteSpace(body))
             {
-                throw new ArgumentNullException(nameof(body),"Message body shouldn't be empty");
+                throw new ArgumentNullException(nameof(body),"Message body can't be empty");
             }
             Id = new MessageId();
             TimeSent = DateTime.Now; 
@@ -22,7 +22,6 @@ namespace ChatyChaty.Domain.Model.Entity
         public MessageId Id { get; private set; }
         public string Body { get; private set; }
         public ConversationId ConversationId { get; private set; }
-        //TODO Add shadow property for sender name
         public UserId SenderId { get; private set; }
         public AppUser Sender { get; private set; }
         public Conversation Conversation { get; private set; }

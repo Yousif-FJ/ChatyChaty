@@ -22,7 +22,7 @@ namespace XUnitTest.ChatRepositoryTests
             //Arrange
             var conversation = new Conversation(testKit.users[0].Id, testKit.users[1].Id);
             //Act
-            await testKit.ChatRepository.AddConversationAsync(conversation);
+            await testKit.ChatRepository.AddAsync(conversation);
             //Assert
             var dbConversation = testKit.Context.Conversations.Find(conversation.Id);
             Assert.Equal(conversation.Id, dbConversation.Id);

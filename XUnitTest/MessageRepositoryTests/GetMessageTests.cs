@@ -18,7 +18,7 @@ namespace XUnitTest.MessageRepositoryTests
             var message = dbContext.Messages.Add(new Message(messageBody, chat.Id, user1.Id)).Entity;
             dbContext.SaveChanges();
             //Act
-            var returnedMessage = await repository.GetMessageAsync(message.Id);
+            var returnedMessage = await repository.GetAsync(message.Id);
             //Assert
             Assert.True(returnedMessage.Body == message.Body);
             Assert.True(returnedMessage.ConversationId == message.ConversationId);

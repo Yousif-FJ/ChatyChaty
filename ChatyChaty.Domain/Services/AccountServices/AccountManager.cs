@@ -75,12 +75,12 @@ namespace ChatyChaty.Domain.Services.AccountServices
                 };
             }
 
-            var conversation = await chatRepository.FindConversationAsync(senderId, receiver.Id);
+            var conversation = await chatRepository.GetAsync(senderId, receiver.Id);
 
             if (conversation is null)
             {
                 conversation = new Conversation(senderId, receiver.Id);
-                conversation = await chatRepository.AddConversationAsync(conversation); 
+                conversation = await chatRepository.AddAsync(conversation); 
             }
 
             await mediator.Send(new UsersGotChatUpdateAsync((receiver.Id, conversation.Id)));
@@ -111,7 +111,7 @@ namespace ChatyChaty.Domain.Services.AccountServices
                 throw new ArgumentOutOfRangeException(nameof(userId),"Invalid Id");
             };
 
-            var conversations = await chatRepository.GetConversationsWithUsersAsync(userId);
+            var conversations = await chatRepository.GetWithUsersAsync(userId);
 
             var response = new List<ProfileAccountModel>();
 
@@ -139,7 +139,7 @@ namespace ChatyChaty.Domain.Services.AccountServices
 
         public async Task<ProfileAccountModel> GetConversation(ConversationId chatId, UserId userId)
         {
-            var conversation = await chatRepository.GetConversationAsync(chatId);
+            var conversation = await chatRepository.GetAsync(chatId);
 
             var secondUserId = conversation.FindReceiverId(userId);
 

@@ -30,6 +30,22 @@ namespace ChatyChaty.Controllers.v3
             this.messageService = messageService;
         }
 
+        [HttpGet("MessagesForChat")]
+        public async Task<IActionResult> GetMessagesForChat([FromQuery]string chatId)
+        {
+            var userId = GetUserIdFromHeader();
+
+            var result = await messageService.GetMessageForChat(userId, new ConversationId(chatId));
+
+            if (result.Error is not null)
+            {
+                return BadRequest(new Response<MessageInfoReponseBase> { Errors = new List<string> { result.Error } });
+            }
+
+            var messages = result.Messages.ToMessageInfoResponse(userId);
+            return Ok(new Response<IEnumerable<MessageInfoReponseBase>> { Success = true, Data = messages });
+        }
+
 
         /// <summary>
         /// Get new messages by supplying the last messageId of the last chat or null if no messages (Require authentication)
@@ -39,18 +55,18 @@ namespace ChatyChaty.Controllers.v3
         /// <response code="401">Not Authenticated</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [HttpGet("NewMessages")]
-        public async Task<IActionResult> GetNewMessages([FromHeader]string lastMessageId)
+        public async Task<IActionResult> GetNewMessages([FromQuery] string lastMessageId)
         {
-            var userId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
+            var userId = GetUserIdFromHeader();
 
-            GetNewMessagesModel result;
+            GetMessagesModel result;
             if (string.IsNullOrEmpty(lastMessageId))
             {
-                result = await messageService.GetNewMessages(new UserId(userId), null);
+                result = await messageService.GetNewMessages(userId, null);
             }
             else
             {
-                result = await messageService.GetNewMessages(new UserId(userId), new MessageId(lastMessageId));
+                result = await messageService.GetNewMessages(userId, new MessageId(lastMessageId));
             }
 
             //the error never a value
@@ -62,7 +78,7 @@ namespace ChatyChaty.Controllers.v3
                     Errors = new Collection<string>() { result.Error }
                 });
             }
-            var messages = result.Messages.ToMessageInfoResponse(new UserId(userId));
+            var messages = result.Messages.ToMessageInfoResponse(userId);
             return Ok(new Response<IEnumerable<MessageInfoReponseBase>>
             {
                 Success = true,
@@ -75,8 +91,6 @@ namespace ChatyChaty.Controllers.v3
         /// Check if the message is Delivered or not (Require authentication)
         /// </summary>
         /// <remarks>
-        /// <br>Only works if the message was sent by the user himself.</br>
-        /// <br>should be only used when the chat is open, to reduce performance hit</br>
         /// <br>Example response:</br>
         /// <br>
         /// {
@@ -86,17 +100,15 @@ namespace ChatyChaty.Controllers.v3
         ///  }
         /// </br>
         /// </remarks>
-        /// <param name="messageId">long represent the message Id</param>
-        /// <returns></returns>
         /// <response code="200">A bool whether the message is Delivered or not</response>
         /// <response code="400">The user doesn't own the message or invalid MessageId</response>
         /// <response code="401">Not Authenticated</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [HttpGet("Delivered")]
-        public async Task<IActionResult> CheckDelivered([FromHeader]string messageId)
+        public async Task<IActionResult> CheckDelivered([FromQuery] string messageId)
         {
-            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
-            var result = await messageService.IsDelivered(new UserId(userIdClaim.Value),new MessageId(messageId));
+            var userId = GetUserIdFromHeader();
+            var result = await messageService.IsDelivered(userId, new MessageId(messageId));
             if (result.Error != null)
             {
                 return BadRequest(new Response<bool?>
@@ -117,8 +129,6 @@ namespace ChatyChaty.Controllers.v3
         /// Send New message with the chatId(Require authentication)
         /// </summary>
         /// <remarks>
-        /// <br>you can get the chatId using the action GetUser,
-        /// and get the chat info from the action GetChatInfo.</br>
         /// <br>Example response:</br>
         /// <br>
         /// {       
@@ -134,8 +144,6 @@ namespace ChatyChaty.Controllers.v3
         /// }
         /// </br>
         /// </remarks>
-        /// <param name="messageSchema">Object representing the message info</param>
-        /// <returns></returns>
         /// <response code="200">sent! You get the message back in the response</response>
         /// <response code="400">The user doesn't own the chat</response>
         /// <response code="401">Not Authenticated</response>
@@ -143,10 +151,10 @@ namespace ChatyChaty.Controllers.v3
         [HttpPost("Message")]
         public async Task<IActionResult> SendMessage([FromBody]SendMessageSchema messageSchema)
         {
-            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(
-                claim => claim.Type == ClaimTypes.NameIdentifier);
-            var result = await messageService.SendMessage(new ConversationId(messageSchema.ChatId),
-                 new UserId(userIdClaim.Value), messageSchema.Body);
+            var userId = GetUserIdFromHeader();
+            var result = await messageService.SendMessage(
+                new ConversationId(messageSchema.ChatId),
+                userId, messageSchema.Body);
 
             if (result.Error != null)
             {
@@ -171,6 +179,11 @@ namespace ChatyChaty.Controllers.v3
                 Success = true,
                 Data = responseBase
             });
+        }
+
+        private UserId GetUserIdFromHeader()
+        {
+            return new UserId(HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
         }
     }
 }
