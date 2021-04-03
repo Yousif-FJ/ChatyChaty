@@ -17,7 +17,7 @@ namespace ChatyChaty.StartupConfiguration
             services.AddSwaggerGen(c =>
             {
                 c.CustomSchemaIds(x => x.FullName);
-                c.SwaggerDoc("v2", new OpenApiInfo { Title = "ChatyChatyAPI - V2", Version = "v2" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "ChatyChatyAPI - V1", Version = "v1" });
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
@@ -56,7 +56,7 @@ namespace ChatyChaty.StartupConfiguration
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v2/swagger.json", "v2");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
             });
         }
     }

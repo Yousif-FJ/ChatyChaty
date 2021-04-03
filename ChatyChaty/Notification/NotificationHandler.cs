@@ -4,7 +4,7 @@ using ChatyChaty.Domain.Model.Entity;
 using ChatyChaty.Domain.Model.MessagingModel;
 using ChatyChaty.Domain.Services.AccountServices;
 using ChatyChaty.Domain.Services.MessageServices;
-using ChatyChaty.Hubs.v3;
+using ChatyChaty.Hubs.v1;
 using MediatR;
 using System;
 using System.Collections.Generic;

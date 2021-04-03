@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace ChatyChaty.ControllerHubSchema.v3
+namespace ChatyChaty.ControllerHubSchema.v1
 {
     public class AuthResponseBase
     {

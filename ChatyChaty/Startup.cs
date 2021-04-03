@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using ChatyChaty.Hubs.v3;
+using ChatyChaty.Hubs.v1;
 using ChatyChaty.Domain.Services.AccountServices;
 using ChatyChaty.Domain.Services.AuthenticationManager;
 using ChatyChaty.Domain.Services.MessageServices;

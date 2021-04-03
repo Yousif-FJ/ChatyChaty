@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using WebApplication1.ValidationAttributes;
 
-namespace ChatyChaty.ControllerHubSchema.v3
+namespace ChatyChaty.ControllerHubSchema.v1
 {
     public class UploadFileSchema
     {

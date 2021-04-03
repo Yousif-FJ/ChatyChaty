@@ -4,18 +4,18 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using ChatyChaty.ValidationAttribute;
 using Microsoft.AspNetCore.Authorization;
-using ChatyChaty.ControllerHubSchema.v3;
 using System.Security.Claims;
+using ChatyChaty.ValidationAttribute;
+using ChatyChaty.ControllerHubSchema.v1;
 using ChatyChaty.Domain.Services.AuthenticationManager;
 
-namespace ChatyChaty.Controllers.v3
+namespace ChatyChaty.Controllers.v1
 {
-    [ApiExplorerSettings(GroupName = "v2")]
+    [ApiExplorerSettings(GroupName = "v1")]
     [SuppressAutoModelStateResponse]
     [CustomModelValidationResponse]
-    [Route("api/v3/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
@@ -161,7 +161,6 @@ namespace ChatyChaty.Controllers.v3
         /// }
         /// </br>
         /// </remarks>
-        /// <returns></returns>
         /// <response code="200">Password change Succeed or failed</response>
         /// <response code="400">Model validation failed</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>

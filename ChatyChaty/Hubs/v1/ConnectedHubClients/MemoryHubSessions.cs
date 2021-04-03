@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ChatyChaty.Hubs.v3
+namespace ChatyChaty.Hubs.v1
 {
     /// <summary>
     /// Store an InMemory list of the current active sessions

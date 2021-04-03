@@ -1,4 +1,4 @@
-﻿using ChatyChaty.ControllerHubSchema.v3;
+﻿using ChatyChaty.ControllerHubSchema.v1;
 using ChatyChaty.Domain.Model.AccountModel;
 using ChatyChaty.Domain.Model.Entity;
 using ChatyChaty.Domain.Services.AccountServices;
@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace ChatyChaty.Hubs.v3
+namespace ChatyChaty.Hubs.v1
 {
     /// <summary>
     /// Used to send real time update using signalR

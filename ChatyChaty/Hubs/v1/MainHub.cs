@@ -1,4 +1,4 @@
-﻿using ChatyChaty.ControllerHubSchema.v3;
+﻿using ChatyChaty.ControllerHubSchema.v1;
 using ChatyChaty.Domain.Model.Entity;
 using ChatyChaty.Domain.Services.MessageServices;
 using Microsoft.AspNetCore.Authorization;
@@ -10,7 +10,7 @@ using System.Security.Claims;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace ChatyChaty.Hubs.v3
+namespace ChatyChaty.Hubs.v1
 {
     /// <summary>
     /// Main sigalR hub that handles WebSocket method calles

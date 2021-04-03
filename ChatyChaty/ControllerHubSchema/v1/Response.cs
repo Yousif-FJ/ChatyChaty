@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace ChatyChaty.ControllerHubSchema.v3
+namespace ChatyChaty.ControllerHubSchema.v1
 {
     public class Response<T>
     {

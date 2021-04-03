@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using ChatyChaty.ControllerHubSchema.v3;
+using ChatyChaty.ControllerHubSchema.v1;
 using ChatyChaty.Domain.Model.Entity;
 using ChatyChaty.Domain.Model.MessagingModel;
 using ChatyChaty.Domain.Services.MessageServices;
@@ -13,14 +13,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ChatyChaty.Controllers.v3
+namespace ChatyChaty.Controllers.v1
 {
-    [ApiExplorerSettings(GroupName = "v2")]
+    [ApiExplorerSettings(GroupName = "v1")]
     [Authorize]
     [SuppressAutoModelStateResponse]
     [CustomModelValidationResponse]
     [ApiController]
-    [Route("api/v3/[controller]")]
+    [Route("api/v1/[controller]")]
     public class MessageController : ControllerBase
     {
         private readonly IMessageService messageService;

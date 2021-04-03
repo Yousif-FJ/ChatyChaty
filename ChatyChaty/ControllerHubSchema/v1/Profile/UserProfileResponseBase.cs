@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ChatyChaty.ControllerHubSchema.v3
+namespace ChatyChaty.ControllerHubSchema.v1
 {
     public class UserProfileResponseBase
     {
