@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ChatyChaty.ControllerHubSchema.v1
 {
-    public class ProfileResponseBase
+    public class ProfileResponse
     {
         public string Username { get; set; }
         public string DisplayName { get; set; }

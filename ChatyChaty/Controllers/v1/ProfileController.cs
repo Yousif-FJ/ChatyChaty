@@ -20,6 +20,7 @@ namespace ChatyChaty.Controllers.v1
     [CustomModelValidationResponse]
     [Route("api/v1/[controller]")]
     [ApiController]
+    [Authorize]
     public class ProfileController : ControllerBase
     {
         private readonly IAccountManager accountManager;
@@ -37,38 +38,30 @@ namespace ChatyChaty.Controllers.v1
         /// <br>Example response:</br>
         /// <br>
         /// {
-        ///  "success": true,
-        ///  "errors": null,
-        ///  "data": "*photoUrl*"
+        ///  "*photoUrl*"
         /// }
         /// </br>
         /// </remarks>
         /// <response code="400">The uploaded Photo must be a vaild img with png, jpg or jpeg with less than 4MB size</response>
         /// <response code="401">Unauthenticated</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
-        [Authorize]
+
         [HttpPost("Photo")]
-        public async Task<IActionResult> SetPhotoForSelf([FromForm]UploadFileSchema uploadFile)
+        public async Task<IActionResult> SetPhotoForSelf([FromForm] UploadFileSchema uploadFile)
         {
             var userId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
-            var setPhotoResult = await accountManager.SetPhotoAsync(new UserId(userId),
-                uploadFile.PhotoFile.FileName, uploadFile.PhotoFile.OpenReadStream());
-            if (setPhotoResult.Success == true)
+
+            var result = await accountManager.SetPhotoAsync(
+                new UserId(userId),
+                uploadFile.PhotoFile.FileName,
+                uploadFile.PhotoFile.OpenReadStream());
+
+            if (result.Success == false)
             {
-                return Ok(new Response<string>
-                {
-                    Success = true,
-                    Data = setPhotoResult.URL
-                }); 
+                return BadRequest(new ErrorResponse(result.Errors));
             }
-            else
-            {
-                return BadRequest(new Response<string>
-                {
-                    Success = false,
-                    Errors = setPhotoResult.Errors
-                });
-            }
+
+            return Ok(result.URL);
 
         }
 
@@ -82,15 +75,11 @@ namespace ChatyChaty.Controllers.v1
         /// <br>Example response:</br>
         /// <br>
         /// {
-        ///  "success": true,
-        ///  "errors": null,
-        ///  "data":{
-        ///     "chatId": 1,
-        ///     "profile":{
-        ///     "username": "*UserName*",
-        ///     "displayName": "*DisplayName*",
-        ///     "PhotoURL": "*URL*"}
-        ///         }
+        /// "chatId": 1,
+        /// "profile":{
+        /// "username": "*UserName*",
+        /// "displayName": "*DisplayName*",
+        /// "PhotoURL": "*URL*"}
         /// }
         /// </br>
         /// </remarks>
@@ -100,93 +89,78 @@ namespace ChatyChaty.Controllers.v1
         /// <response code="401">Unauthenticated</response>
         /// <response code="404">User not found</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
-        [Authorize]
+
         [HttpGet("User")]
         public async Task<IActionResult> GetUser([FromHeader]string userName)
         {
             var userId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
             var result = await accountManager.CreateConversationAsync(new UserId(userId), userName);
-            if (result.Error != null)
+            if (result.Error is not null)
             {
-                return NotFound(new Response<UserProfileResponseBase>
-                {
-                    Success = false,
-                    Errors = new Collection<string> { result.Error }
-                });
+                return NotFound(new ErrorResponse(result.Error));
             }
-            var response = new Response<UserProfileResponseBase>
+
+            var response = new UserProfileResponse
             {
-                Success = true,
-                Data = new UserProfileResponseBase
-                { 
-                    ChatId = result.Conversation.ChatId.Value,
-                    Profile = new ProfileResponseBase
-                    {
-                        DisplayName = result.Conversation.DisplayName,
-                        Username = result.Conversation.Username,
-                        PhotoURL = result.Conversation.PhotoURL
-                    }
+                ChatId = result.Conversation.ChatId.Value,
+                Profile = new ProfileResponse
+                {
+                    DisplayName = result.Conversation.DisplayName,
+                    Username = result.Conversation.Username,
+                    PhotoURL = result.Conversation.PhotoURL
                 }
             };
             return Ok(response);
         }
 
         /// <summary>
-        /// Get a list of all chat's information like username and ... so on (Require authentication)
+        /// Get a list of all chat's information (Require authentication)
         /// </summary>
         /// <remarks>
         /// <br>This is used when there is an update in chat info.</br>
         /// <br>Example response:</br>
         /// <br>
-        /// {
-        ///  "success": true,
-        ///  "errors": null,
-        ///  "data":[
-        ///         {
-        ///     "chatId": 1,
-        ///     "profile":{
-        ///     "username": "*UserName*",
-        ///     "displayName": "*DisplayName*",
-        ///     "PhotoURL": "*URL*"}
-        ///         }
-        ///     ]
-        /// }
+        /// [
+        ///      {
+        /// "chatId": 1,
+        /// "profile":{
+        /// "username": "*UserName*",
+        /// "displayName": "*DisplayName*",
+        /// "PhotoURL": "*URL*"}
+        ///     }
+        /// ]
         /// </br>
         /// </remarks>
         /// <returns></returns>
         /// <response code="200">Success</response>
         /// <response code="401">Unauthenticated</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
-        [Authorize]
+
         [HttpGet("Chats")]
         public async Task<IActionResult> GetChats()
         {
             var userId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
             var chats = await accountManager.GetConversations(new UserId(userId));
 
-            var chatList = new List<UserProfileResponseBase>();
+            var chatListResponse = new List<UserProfileResponse>();
 
             foreach (var chat in chats)
             {
-                chatList.Add(
-                new UserProfileResponseBase
+                chatListResponse.Add(
+                new UserProfileResponse
                 {
                     ChatId = chat.ChatId.Value,
-                    Profile = new ProfileResponseBase
+                    Profile = new ProfileResponse
                     {
                         DisplayName = chat.DisplayName,
                         Username = chat.Username,
                         PhotoURL = chat.PhotoURL
                     }
                 }
-                    );
+                        );
             };
-            var response = new Response<IEnumerable<UserProfileResponseBase>>()
-            {
-                Success = true,
-                Data = chatList
-            };
-            return Ok(response);
+
+            return Ok(chatListResponse);
         }
 
 
@@ -197,9 +171,7 @@ namespace ChatyChaty.Controllers.v1
         /// <br>Example reposne:</br>
         /// <br>
         /// {
-        ///  "success": true,
-        ///  "errors": null,
-        ///  "data": "*newName*"
+        ///  "*newName*"
         /// }
         /// </br>
         /// </remarks>
@@ -209,17 +181,15 @@ namespace ChatyChaty.Controllers.v1
         /// <response code="400">Model validation error</response>
         /// <response code="401">Unauthenticated</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
-        [Authorize]
+
         [HttpPatch("DisplayName")]
         public async Task<IActionResult> UpdateDisplayName([FromBody]string newDisplayName)
         {
             var userId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
+
             var newName = await accountManager.UpdateDisplayNameAsync(new UserId(userId), newDisplayName);
-            return Ok(new Response<string>
-            {
-                Success = true,
-                Data = newName
-            });
+
+            return Ok(newName);
         }
     }
 }

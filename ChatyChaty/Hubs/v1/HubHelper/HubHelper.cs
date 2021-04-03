@@ -35,19 +35,15 @@ namespace ChatyChaty.Hubs.v1
                 return false;
             }
 
-            Response<UserProfileResponseBase> response = new()
-            {
-                Success = true,
-                Data = new UserProfileResponseBase
+            var response = new UserProfileResponse
                 {
-                    Profile = new ProfileResponseBase
+                    Profile = new ProfileResponse
                     {
                         DisplayName = chatInfo.DisplayName,
                         PhotoURL = chatInfo.PhotoURL,
                         Username = chatInfo.Username
                     },
                     ChatId = chatInfo.ChatId.Value
-                }
             };
 
             _ = hubContext.Clients.User(receiverId.ToString()).UpdateChat(response);
@@ -61,11 +57,7 @@ namespace ChatyChaty.Hubs.v1
                 return false;
             }
 
-            var response = new Response<MessageStatusResponseBase>()
-            {
-                Success = true,
-                Data = new MessageStatusResponseBase(messageId.Value, chatId.Value, true)
-            };
+            var response =  new MessageStatusResponse(messageId.Value, chatId.Value, true);
 
             _ = hubContext.Clients.User(receiverId.ToString()).UpdateMessageStatus(response);
 
@@ -87,14 +79,7 @@ namespace ChatyChaty.Hubs.v1
 
             if (messages.Any())
             {
-                IEnumerable<MessageInfoReponseBase> messagesInfo = messages.ToMessageInfoResponse(receiverId);
-
-
-                var response = new Response<IEnumerable<MessageInfoReponseBase>>
-                {
-                    Success = true,
-                    Data = messagesInfo
-                };
+                IEnumerable<MessageInfoReponse> response = messages.ToMessageInfoResponse(receiverId);
 
                 //send response to clients
                 _ = hubContext.Clients.User(receiverId.ToString()).UpdateMessages(response);

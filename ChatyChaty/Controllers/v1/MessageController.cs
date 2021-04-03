@@ -39,11 +39,12 @@ namespace ChatyChaty.Controllers.v1
 
             if (result.Error is not null)
             {
-                return BadRequest(new Response<MessageInfoReponseBase> { Errors = new List<string> { result.Error } });
+                return BadRequest(new ErrorResponse(result.Error));
             }
 
             var messages = result.Messages.ToMessageInfoResponse(userId);
-            return Ok(new Response<IEnumerable<MessageInfoReponseBase>> { Success = true, Data = messages });
+
+            return Ok(new List<MessageInfoReponse>(messages));
         }
 
 
@@ -72,18 +73,12 @@ namespace ChatyChaty.Controllers.v1
             //the error never a value
             if (result.Error != null)
             {
-                return BadRequest(new Response<IEnumerable<MessageInfoReponseBase>>
-                {
-                    Success = false,
-                    Errors = new Collection<string>() { result.Error }
-                });
+                return BadRequest(new ErrorResponse(result.Error));
             }
+
             var messages = result.Messages.ToMessageInfoResponse(userId);
-            return Ok(new Response<IEnumerable<MessageInfoReponseBase>>
-            {
-                Success = true,
-                Data = messages
-            });
+
+            return Ok(new List<MessageInfoReponse>(messages));
         }
 
 
@@ -94,9 +89,7 @@ namespace ChatyChaty.Controllers.v1
         /// <br>Example response:</br>
         /// <br>
         /// {
-        ///  "success": true,
-        ///  "errors": null,
-        ///  "data": true
+        ///  true
         ///  }
         /// </br>
         /// </remarks>
@@ -111,17 +104,9 @@ namespace ChatyChaty.Controllers.v1
             var result = await messageService.IsDelivered(userId, new MessageId(messageId));
             if (result.Error != null)
             {
-                return BadRequest(new Response<bool?>
-                {
-                    Success = false,
-                    Errors = new Collection<string> { result.Error }
-                });
+                return BadRequest(new ErrorResponse(result.Error));
             }
-            return Ok(new Response<bool?>
-            {
-                Success = true,
-                Data = result.IsDelivered
-            });
+            return Ok(result.IsDelivered);
         }
 
 
@@ -131,16 +116,12 @@ namespace ChatyChaty.Controllers.v1
         /// <remarks>
         /// <br>Example response:</br>
         /// <br>
-        /// {       
-        ///  "success": true,
-        ///  "errors": null,
-        ///  "data": {
+        /// {
         ///    "chatId": 1,
         ///    "messageId": 1,
         ///    "sender": "*Username*",
         ///    "body": "*The message*",
         ///    "delivered": null
-        ///         }
         /// }
         /// </br>
         /// </remarks>
@@ -158,15 +139,13 @@ namespace ChatyChaty.Controllers.v1
 
             if (result.Error != null)
             {
-                return BadRequest(new Response<MessageInfoReponseBase>
-                {
-                    Success = false,
-                    Errors = new Collection<string> { result.Error}
-                });
+                return BadRequest(new ErrorResponse(result.Error));
             }
+
             var userNameClaim = HttpContext.User.Claims.FirstOrDefault(
                 claim => claim.Type == ClaimTypes.Name);
-            var responseBase = new MessageInfoReponseBase
+
+            var response = new MessageInfoReponse
             {
                 Body = result.Message.Body,
                 MessageId = result.Message.Id.Value,
@@ -174,11 +153,8 @@ namespace ChatyChaty.Controllers.v1
                 Sender = userNameClaim.Value,
                 Delivered = false
             };
-            return Ok(new Response<MessageInfoReponseBase>
-            {
-                Success = true,
-                Data = responseBase
-            });
+
+            return Ok(response);
         }
 
         private UserId GetUserIdFromHeader()

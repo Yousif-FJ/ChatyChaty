@@ -21,10 +21,9 @@ namespace XIntegrationTest
             //Act
             var result = await client.CreateAccount(username, displayName, password);
             //Assert
-            Assert.True(result.Success);
-            Assert.Equal(username, result.Data.Profile.Username);
-            Assert.Null(result.Data.Profile.PhotoURL);
-            Assert.NotNull(result.Data.Token);
+            Assert.Equal(username, result.Profile.Username);
+            Assert.Null(result.Profile.PhotoURL);
+            Assert.NotNull(result.Token);
         }
 
         [Fact]
@@ -36,10 +35,9 @@ namespace XIntegrationTest
             var displayName = "something funny";
             var createResponse = await client.CreateAccount(username, displayName, password);
             //add token to header
-            client.Authenticate(createResponse.Data.Token);
+            client.Authenticate(createResponse.Token);
             //Act
-            var response = await client.GetAsync("/api/v3/message/NewMessages");
-            var textResponse = await response.Content.ReadAsStringAsync();
+            var response = await client.GetAsync("/api/v1/message/NewMessages");
             //Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }

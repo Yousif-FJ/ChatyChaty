@@ -21,11 +21,7 @@ namespace ChatyChaty.Controllers
         [Route("/error")]
         public IActionResult Error()
         {
-            return StatusCode(500, new Response<object>
-            {
-                Success = false,
-                Errors = new Collection<string> { "An error occurred at the server" }
-            });
+            return StatusCode(500, new ErrorResponse("An error occurred at the server"));
         }
     }
 }

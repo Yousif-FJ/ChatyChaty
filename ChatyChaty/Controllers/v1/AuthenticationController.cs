@@ -34,17 +34,13 @@ namespace ChatyChaty.Controllers.v1
         /// <br>Example Response: </br>
         /// <br>
         /// {
-        ///  "success": true,
-        ///  "errors": null,
-        ///  "data":{
-        ///     "token": "*The Token*",
-        ///     "profile": {
-        ///         "username": "*UserName*",
-        ///         "displayName": "*DisplayName*",
-        ///         "photoURL": "*Picture URL*"
-        ///         }
+        /// "token": "*The Token*",
+        /// "profile": {
+        ///     "username": "*UserName*",
+        ///     "displayName": "*DisplayName*",
+        ///     "photoURL": "*Picture URL*"
+        ///     }
         ///  }
-        /// }
         /// </br>
         /// </remarks>
         /// <response code="200">Login Succeed or failed</response>
@@ -53,36 +49,27 @@ namespace ChatyChaty.Controllers.v1
         [HttpPost("NewAccount")]
         public async Task<IActionResult> CreateAccount([FromBody]CreateAccountSchema accountSchema)
         {
-           var authenticationResult = await authenticationManager.CreateAccount(
+           var result = await authenticationManager.CreateAccount(
                accountSchema.Username, accountSchema.Password, accountSchema.DisplayName);
 
-            if (!authenticationResult.Success)
+            if (result.Success == false)
             {
-                Response<AuthResponseBase> authenticationSchemaF = new Response<AuthResponseBase>()
-                {
-                    Errors = authenticationResult.Errors,
-                    Success = authenticationResult.Success,
-                };
-                return BadRequest(authenticationSchemaF);
+                return BadRequest(new ErrorResponse(result.Errors));
             }
 
-            ProfileResponseBase profileSchema = new ProfileResponseBase
+            ProfileResponse profile = new ProfileResponse
             {
-                DisplayName = authenticationResult.Profile.DisplayName,
-                Username = authenticationResult.Profile.Username,
-                PhotoURL = authenticationResult.Profile.PhotoURL
+                DisplayName = result.Profile.DisplayName,
+                Username = result.Profile.Username,
+                PhotoURL = result.Profile.PhotoURL
             };
 
-            Response<AuthResponseBase> authenticationSchema = new Response<AuthResponseBase>()
+            var response = new AuthResponse
             {
-                Success = authenticationResult.Success,
-                Data = new AuthResponseBase
-                {
-                    Token = authenticationResult.Token,
-                    Profile = profileSchema
-                }
+                Token = result.Token,
+                Profile = profile
             };
-            return Ok(authenticationSchema);
+            return Ok(response);
         }
 
 
@@ -93,17 +80,13 @@ namespace ChatyChaty.Controllers.v1
         /// <br>Example Response: </br>
         /// <br>
         /// {
-        ///  "success": true,
-        ///  "errors": null,
-        ///  "data":{
-        ///     "token": "*The Token*",
-        ///     "profile": {
-        ///         "username": "*UserName*",
-        ///         "displayName": "*DisplayName*",
-        ///         "photoURL": "*Picture URL*"
-        ///         }
+        /// "token": "*The Token*",
+        /// "profile": {
+        ///     "username": "*UserName*",
+        ///     "displayName": "*DisplayName*",
+        ///     "photoURL": "*Picture URL*"
+        ///     }
         ///  }
-        ///}
         /// </br>
         /// </remarks>
         /// <response code="200">Login Succeed or failed</response>
@@ -115,34 +98,25 @@ namespace ChatyChaty.Controllers.v1
             var authenticationResult = await authenticationManager.Login(
                 accountSchema.Username, accountSchema.Password);
 
-            if (!authenticationResult.Success)
+            if (authenticationResult.Success == false)
             {
-                Response<AuthResponseBase> authenticationSchemaF = new Response<AuthResponseBase>()
-                {
-                    Errors = authenticationResult.Errors,
-                    Success = authenticationResult.Success,
-                };
-                return BadRequest(authenticationSchemaF);
+                return BadRequest(new ErrorResponse(authenticationResult.Errors));
             }
 
-            ProfileResponseBase profileSchema = new ProfileResponseBase
+            ProfileResponse profile = new ProfileResponse
             {
                 DisplayName = authenticationResult.Profile.DisplayName,
                 Username = authenticationResult.Profile.Username,
                 PhotoURL = authenticationResult.Profile.PhotoURL
             };
 
-            Response<AuthResponseBase> authenticationSchema = new Response<AuthResponseBase>()
+            var response = new AuthResponse
             {
-                Errors = authenticationResult.Errors,
-                Success = authenticationResult.Success,
-                Data = new AuthResponseBase
-                {
-                    Token = authenticationResult.Token,
-                    Profile = profileSchema
-                }
+                Token = authenticationResult.Token,
+                Profile = profile
             };
-            return Ok(authenticationSchema);
+
+            return Ok(response);
         }
 
 
@@ -152,14 +126,7 @@ namespace ChatyChaty.Controllers.v1
         /// <remarks>
         /// <br>Currently this doesn't make existing logins sessions invalid. </br>
         /// <br>If you set the new password back to the same current password you won't get any errors</br>
-        /// <br>Example response: </br>
-        /// <br>
-        /// {
-        ///  "success": true,
-        ///  "errors": [],
-        ///  "data": null
-        /// }
-        /// </br>
+        /// <br>Return empty response</br>
         /// </remarks>
         /// <response code="200">Password change Succeed or failed</response>
         /// <response code="400">Model validation failed</response>
@@ -170,18 +137,14 @@ namespace ChatyChaty.Controllers.v1
         {
             var userId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
             var result = await authenticationManager.ChangePassword(userId, passwordSchema.CurrentPassword, passwordSchema.NewPassword);
-            var changePasswordResponse = new Response<object>
-            {
-                Success = result.Success,
-                Errors = result.Errors,
-            };
+
             if (result.Success == false)
             {
-                return BadRequest(changePasswordResponse);
+                return BadRequest(new ErrorResponse(result.Errors));
             }
             else
             {
-                return Ok(changePasswordResponse);
+                return Ok();
             }
         }
     }

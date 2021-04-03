@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace ChatyChaty.ControllerHubSchema.v1
 {
-    public class MessageInfoReponseBase
+    public class MessageInfoReponse
     {
-        public MessageInfoReponseBase()
+        public MessageInfoReponse()
         {
 
         }
-        public MessageInfoReponseBase(Message message, UserId messageReceiverId)
+        public MessageInfoReponse(Message message, UserId messageReceiverId)
         {
             Body = message.Body;
             ChatId = message.ConversationId.Value;

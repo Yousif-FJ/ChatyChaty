@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace ChatyChaty.ControllerHubSchema.v1
 {
-    public record MessageStatusResponseBase(string MessageId, string ChatId, bool Delievered);
+    public record MessageStatusResponse(string MessageId, string ChatId, bool Delievered);
 }

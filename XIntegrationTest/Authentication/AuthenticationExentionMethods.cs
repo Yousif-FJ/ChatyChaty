@@ -21,17 +21,17 @@ namespace XIntegrationTest
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token);
         }
 
-        public async static Task<Response<AuthResponseBase>> CreateAccount(this HttpClient httpClient,string userName, string displayName, string password)
+        public async static Task<AuthResponse> CreateAccount(this HttpClient httpClient,string userName, string displayName, string password)
         {
 
-            var response = await httpClient.PostAsJsonAsync("/api/v3/Authentication/NewAccount", new CreateAccountSchema
+            var response = await httpClient.PostAsJsonAsync("/api/v1/Authentication/NewAccount", new CreateAccountSchema
             {
                 DisplayName = displayName, Password = password, Username = userName
             });
-            Response<AuthResponseBase> responseAsClass;
+            AuthResponse responseAsClass;
             try
             {
-                responseAsClass = await response.Content.ReadAsAsync<Response<AuthResponseBase>>();
+                responseAsClass = await response.Content.ReadAsAsync<AuthResponse>();
             }
             catch (UnsupportedMediaTypeException)
             {
