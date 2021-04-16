@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Net.Http;
 using System.Net;
-using ChatyChaty.Infrastructure.PictureServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using CloudinaryDotNet;
 using Microsoft.Extensions.Configuration;
+using ChatyChaty.Infrastructure.PictureServices;
 using ChatyChaty.Domain.Model.Entity;
 
 namespace ChatyChaty.HealthChecks

@@ -13,8 +13,6 @@ using ChatyChaty.Domain.Services.AuthenticationManager;
 namespace ChatyChaty.Controllers.v1
 {
     [ApiExplorerSettings(GroupName = "v1")]
-    [SuppressAutoModelStateResponse]
-    [CustomModelValidationResponse]
     [Route("api/v1/[controller]")]
     [ApiController]
     public class AuthenticationController : ControllerBase
@@ -30,22 +28,9 @@ namespace ChatyChaty.Controllers.v1
         /// <summary>
         /// Create an account and retrieve JWT token with Profile 
         /// </summary>
-        /// <remarks>
-        /// <br>Example Response: </br>
-        /// <br>
-        /// {
-        /// "token": "*The Token*",
-        /// "profile": {
-        ///     "username": "*UserName*",
-        ///     "displayName": "*DisplayName*",
-        ///     "photoURL": "*Picture URL*"
-        ///     }
-        ///  }
-        /// </br>
-        /// </remarks>
-        /// <response code="200">Login Succeed or failed</response>
-        /// <response code="400">Model validation failed</response>
-        /// <response code="500">Server Error (This shouldn't happen)</response>
+        [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
+        [ProducesDefaultResponseType(typeof(ErrorResponse))]
+        [AllowAnonymous]
         [HttpPost("NewAccount")]
         public async Task<IActionResult> CreateAccount([FromBody] CreateAccountSchema accountSchema)
         {
@@ -68,22 +53,9 @@ namespace ChatyChaty.Controllers.v1
         /// <summary>
         /// Login with an existing account and retrieve JWT token with Profile
         /// </summary>
-        /// <remarks>
-        /// <br>Example Response: </br>
-        /// <br>
-        /// {
-        /// "token": "*The Token*",
-        /// "profile": {
-        ///     "username": "*UserName*",
-        ///     "displayName": "*DisplayName*",
-        ///     "photoURL": "*Picture URL*"
-        ///     }
-        ///  }
-        /// </br>
-        /// </remarks>
-        /// <response code="200">Login Succeed or failed</response>
-        /// <response code="400">Model validation failed</response>
-        /// <response code="500">Server Error (This shouldn't happen)</response>
+        [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
+        [ProducesDefaultResponseType(typeof(ErrorResponse))]
+        [AllowAnonymous]
         [HttpPost("Account")]
         public async Task<IActionResult> Login([FromBody]LoginAccountSchema accountSchema)
         {
@@ -108,17 +80,14 @@ namespace ChatyChaty.Controllers.v1
 
 
         /// <summary>
-        /// Change the logged in user password
+        /// Change the logged in user password 
         /// </summary>
         /// <remarks>
         /// <br>Currently this doesn't make existing logins sessions invalid. </br>
         /// <br>If you set the new password back to the same current password you won't get any errors</br>
-        /// <br>Return empty response</br>
         /// </remarks>
-        /// <response code="200">Password change Succeed or failed</response>
-        /// <response code="400">Model validation failed</response>
-        /// <response code="500">Server Error (This shouldn't happen)</response>
-        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesDefaultResponseType(typeof(ErrorResponse))]
         [HttpPatch("Password")]
         public async Task<IActionResult> ChangePassword([FromBody]ChangePasswordSchema passwordSchema)
         {

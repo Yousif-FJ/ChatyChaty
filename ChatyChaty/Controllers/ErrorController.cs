@@ -1,4 +1,5 @@
 ﻿using ChatyChaty.ControllerHubSchema.v1;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -14,9 +15,7 @@ namespace ChatyChaty.Controllers
         /// <summary>
         /// This action is ran when an exception happens in the server
         /// </summary>
-        /// <response code="200">(This method actually never retrun 200)</response>
-        /// <response code="500">The error code</response>
-        /// <returns></returns>
+        [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status500InternalServerError)]
         [HttpGet]
         [Route("/error")]
         public IActionResult Error()

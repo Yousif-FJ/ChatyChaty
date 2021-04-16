@@ -17,11 +17,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace ChatyChaty.Controllers.v1
 {
     [ApiExplorerSettings(GroupName = "v1")]
-    [SuppressAutoModelStateResponse]
-    [CustomModelValidationResponse]
     [Route("api/v1/[controller]")]
     [ApiController]
-    [Authorize]
     public class ProfileController : ControllerBase
     {
         private readonly IAccountManager accountManager;
@@ -35,18 +32,8 @@ namespace ChatyChaty.Controllers.v1
         /// <summary>
         /// Set photo or replace existing one (Require authentication)
         /// </summary>
-        /// <remarks>
-        /// <br>Example response:</br>
-        /// <br>
-        /// {
-        ///  "*photoUrl*"
-        /// }
-        /// </br>
-        /// </remarks>
-        /// <response code="400">The uploaded Photo must be a vaild img with png, jpg or jpeg with less than 4MB size</response>
-        /// <response code="401">Unauthenticated</response>
-        /// <response code="500">Server Error (This shouldn't happen)</response>
-
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesDefaultResponseType(typeof(ErrorResponse))]
         [HttpPost("Photo")]
         public async Task<IActionResult> SetPhotoForSelf([FromForm] UploadFileSchema uploadFile)
         {
@@ -71,26 +58,8 @@ namespace ChatyChaty.Controllers.v1
         /// Find users and return user profile with a chat Id,
         /// which is used to send messages and get other users info(Require authentication)
         /// </summary>
-        /// <remarks><br>This is used to start a chat with a user</br>
-        /// <br>You may get the DisplayName as null due to account greated before the last change</br>
-        /// <br>Example response:</br>
-        /// <br>
-        /// {
-        /// "chatId": 1,
-        /// "profile":{
-        /// "username": "*UserName*",
-        /// "displayName": "*DisplayName*",
-        /// "PhotoURL": "*URL*"}
-        /// }
-        /// </br>
-        /// </remarks>
-        /// <returns></returns>
-        /// <response code="200">When user was found</response>
-        /// <response code="400">Model validation error</response>
-        /// <response code="401">Unauthenticated</response>
-        /// <response code="404">User not found</response>
-        /// <response code="500">Server Error (This shouldn't happen)</response>
-
+        [ProducesResponseType(typeof(UserProfileResponse), StatusCodes.Status200OK)]
+        [ProducesDefaultResponseType(typeof(ErrorResponse))]
         [HttpGet("User")]
         public async Task<IActionResult> GetUser([FromQuery][Required] string userName)
         {
@@ -113,26 +82,8 @@ namespace ChatyChaty.Controllers.v1
         /// <summary>
         /// Get a list of all chat's information (Require authentication)
         /// </summary>
-        /// <remarks>
-        /// <br>This is used when there is an update in chat info.</br>
-        /// <br>Example response:</br>
-        /// <br>
-        /// [
-        ///      {
-        /// "chatId": 1,
-        /// "profile":{
-        /// "username": "*UserName*",
-        /// "displayName": "*DisplayName*",
-        /// "PhotoURL": "*URL*"}
-        ///     }
-        /// ]
-        /// </br>
-        /// </remarks>
-        /// <returns></returns>
-        /// <response code="200">Success</response>
-        /// <response code="401">Unauthenticated</response>
-        /// <response code="500">Server Error (This shouldn't happen)</response>
-
+        [ProducesResponseType(typeof(List<UserProfileResponse>), StatusCodes.Status200OK)]
+        [ProducesDefaultResponseType(typeof(ErrorResponse))]
         [HttpGet("Chats")]
         public async Task<IActionResult> GetChats()
         {
@@ -158,21 +109,8 @@ namespace ChatyChaty.Controllers.v1
         /// <summary>
         /// Set or update the DisplayName of the authenticated user (Require authentication)
         /// </summary>
-        /// <remarks>
-        /// <br>Example reposne:</br>
-        /// <br>
-        /// {
-        ///  "*newName*"
-        /// }
-        /// </br>
-        /// </remarks>
-        /// <param name="newDisplayName"></param>
-        /// <returns></returns>
-        /// <response code="200">Success</response>
-        /// <response code="400">Model validation error</response>
-        /// <response code="401">Unauthenticated</response>
-        /// <response code="500">Server Error (This shouldn't happen)</response>
-
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesDefaultResponseType(typeof(ErrorResponse))]
         [HttpPatch("DisplayName")]
         public async Task<IActionResult> UpdateDisplayName([FromBody][Required]string newDisplayName)
         {

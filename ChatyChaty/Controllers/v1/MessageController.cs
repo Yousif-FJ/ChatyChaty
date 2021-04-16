@@ -17,9 +17,6 @@ using ChatyChaty.ValidationAttribute;
 namespace ChatyChaty.Controllers.v1
 {
     [ApiExplorerSettings(GroupName = "v1")]
-    [Authorize]
-    [SuppressAutoModelStateResponse]
-    [CustomModelValidationResponse]
     [ApiController]
     [Route("api/v1/[controller]")]
     public class MessageController : ControllerBase
@@ -31,6 +28,11 @@ namespace ChatyChaty.Controllers.v1
             this.messageService = messageService;
         }
 
+        /// <summary>
+        /// Return the messages of a specific chat
+        /// </summary>
+        [ProducesResponseType(typeof(List<MessageInfoReponse>), StatusCodes.Status200OK)]
+        [ProducesDefaultResponseType(typeof(ErrorResponse))]
         [HttpGet("MessagesForChat")]
         public async Task<IActionResult> GetMessagesForChat([FromQuery][Required] string chatId)
         {
@@ -62,9 +64,8 @@ namespace ChatyChaty.Controllers.v1
         /// <summary>
         /// Get new messages by supplying the last messageId of the last chat or null if no messages (Require authentication)
         /// </summary>
-        /// <response code="200"></response>
-        /// <response code="400">Array of error messages </response>
-        /// <response code="401">Not Authenticated</response>
+        [ProducesResponseType(typeof(List<MessageInfoReponse>), StatusCodes.Status200OK)]
+        [ProducesDefaultResponseType(typeof(ErrorResponse))]
         [HttpGet("NewMessages")]
         public async Task<IActionResult> GetNewMessages([FromQuery] string lastMessageId)
         {
@@ -105,18 +106,8 @@ namespace ChatyChaty.Controllers.v1
         /// <summary>
         /// Check if the message is Delivered or not (Require authentication)
         /// </summary>
-        /// <remarks>
-        /// <br>Example response:</br>
-        /// <br>
-        /// {
-        ///  true
-        ///  }
-        /// </br>
-        /// </remarks>
-        /// <response code="200">A bool whether the message is Delivered or not</response>
-        /// <response code="400">The user doesn't own the message or invalid MessageId</response>
-        /// <response code="401">Not Authenticated</response>
-        /// <response code="500">Server Error (This shouldn't happen)</response>
+        [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+        [ProducesDefaultResponseType(typeof(ErrorResponse))]
         [HttpGet("Delivered")]
         public async Task<IActionResult> CheckDelivered([FromQuery][Required] string messageId)
         {
@@ -145,22 +136,8 @@ namespace ChatyChaty.Controllers.v1
         /// <summary>
         /// Send New message with the chatId(Require authentication)
         /// </summary>
-        /// <remarks>
-        /// <br>Example response:</br>
-        /// <br>
-        /// {
-        ///    "chatId": 1,
-        ///    "messageId": 1,
-        ///    "sender": "*Username*",
-        ///    "body": "*The message*",
-        ///    "delivered": null
-        /// }
-        /// </br>
-        /// </remarks>
-        /// <response code="200">sent! You get the message back in the response</response>
-        /// <response code="400">The user doesn't own the chat</response>
-        /// <response code="401">Not Authenticated</response>
-        /// <response code="500">Server Error (This shouldn't happen)</response>
+        [ProducesResponseType(typeof(MessageInfoReponse), StatusCodes.Status200OK)]
+        [ProducesDefaultResponseType(typeof(ErrorResponse))]
         [HttpPost("Message")]
         public async Task<IActionResult> SendMessage([FromBody]SendMessageSchema messageSchema)
         {
