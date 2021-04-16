@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using ChatyChaty.ControllerHubSchema.v1;
+using ChatyChaty.Domain.ApplicationExceptions;
 using ChatyChaty.Domain.Model.Entity;
 using ChatyChaty.Domain.Model.MessagingModel;
 using ChatyChaty.Domain.Services.MessageServices;
 using ChatyChaty.ValidationAttribute;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 
 namespace ChatyChaty.Controllers.v1
 {
@@ -31,11 +32,21 @@ namespace ChatyChaty.Controllers.v1
         }
 
         [HttpGet("MessagesForChat")]
-        public async Task<IActionResult> GetMessagesForChat([FromQuery]string chatId)
+        public async Task<IActionResult> GetMessagesForChat([FromQuery][Required] string chatId)
         {
-            var userId = GetUserIdFromHeader();
+            var userId = HttpContext.GetUserIdFromHeader();
 
-            var result = await messageService.GetMessageForChat(userId, new ConversationId(chatId));
+            ConversationId chatIdApp;
+            try
+            {
+                chatIdApp = new ConversationId(chatId);
+            }
+            catch (InvalidIdFormatException e)
+            {
+                return BadRequest(new ErrorResponse(e.Message));
+            }
+
+            var result = await messageService.GetMessageForChat(userId, chatIdApp);
 
             if (result.Error is not null)
             {
@@ -51,14 +62,13 @@ namespace ChatyChaty.Controllers.v1
         /// <summary>
         /// Get new messages by supplying the last messageId of the last chat or null if no messages (Require authentication)
         /// </summary>
-        /// <response code="200">An array of messages</response>
-        /// <response code="400">Invalid MessageId</response>
+        /// <response code="200"></response>
+        /// <response code="400">Array of error messages </response>
         /// <response code="401">Not Authenticated</response>
-        /// <response code="500">Server Error (This shouldn't happen)</response>
         [HttpGet("NewMessages")]
         public async Task<IActionResult> GetNewMessages([FromQuery] string lastMessageId)
         {
-            var userId = GetUserIdFromHeader();
+            var userId = HttpContext.GetUserIdFromHeader();
 
             GetMessagesModel result;
             if (string.IsNullOrEmpty(lastMessageId))
@@ -67,7 +77,17 @@ namespace ChatyChaty.Controllers.v1
             }
             else
             {
-                result = await messageService.GetNewMessages(userId, new MessageId(lastMessageId));
+                MessageId messageIdApp;
+                try
+                {
+                    messageIdApp = new MessageId(lastMessageId);
+                }
+                catch (InvalidIdFormatException e)
+                {
+                    return BadRequest(new ErrorResponse(e.Message));
+                }
+
+                result = await messageService.GetNewMessages(userId, messageIdApp);
             }
 
             //the error never a value
@@ -98,11 +118,23 @@ namespace ChatyChaty.Controllers.v1
         /// <response code="401">Not Authenticated</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [HttpGet("Delivered")]
-        public async Task<IActionResult> CheckDelivered([FromQuery] string messageId)
+        public async Task<IActionResult> CheckDelivered([FromQuery][Required] string messageId)
         {
-            var userId = GetUserIdFromHeader();
-            var result = await messageService.IsDelivered(userId, new MessageId(messageId));
-            if (result.Error != null)
+            var userId = HttpContext.GetUserIdFromHeader();
+
+            MessageId messageIdApp;
+            try
+            {
+                messageIdApp = new MessageId(messageId);
+            }
+            catch (InvalidIdFormatException e)
+            {
+                return BadRequest(new ErrorResponse(e.Message));
+            }
+
+            var result = await messageService.IsDelivered(userId, messageIdApp);
+
+            if (result.Error is not null)
             {
                 return BadRequest(new ErrorResponse(result.Error));
             }
@@ -132,10 +164,20 @@ namespace ChatyChaty.Controllers.v1
         [HttpPost("Message")]
         public async Task<IActionResult> SendMessage([FromBody]SendMessageSchema messageSchema)
         {
-            var userId = GetUserIdFromHeader();
-            var result = await messageService.SendMessage(
-                new ConversationId(messageSchema.ChatId),
-                userId, messageSchema.Body);
+            var userId = HttpContext.GetUserIdFromHeader();
+
+
+            ConversationId chatIdApp;
+            try
+            {
+                chatIdApp = new ConversationId(messageSchema.ChatId);
+            }
+            catch (InvalidIdFormatException e)
+            {
+                return BadRequest(new ErrorResponse(e.Message));
+            }
+
+            var result = await messageService.SendMessage(chatIdApp, userId, messageSchema.Body);
 
             if (result.Error != null)
             {
@@ -145,21 +187,14 @@ namespace ChatyChaty.Controllers.v1
             var userNameClaim = HttpContext.User.Claims.FirstOrDefault(
                 claim => claim.Type == ClaimTypes.Name);
 
-            var response = new MessageInfoReponse
-            {
-                Body = result.Message.Body,
-                MessageId = result.Message.Id.Value,
-                ChatId = result.Message.ConversationId.Value,
-                Sender = userNameClaim.Value,
-                Delivered = false
-            };
+            var response = new MessageInfoReponse(
+                result.Message.ConversationId.Value,
+                result.Message.Id.Value,
+                userNameClaim.Value,
+                result.Message.Body,
+                false);
 
             return Ok(response);
-        }
-
-        private UserId GetUserIdFromHeader()
-        {
-            return new UserId(HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
         }
     }
 }

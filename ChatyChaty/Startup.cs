@@ -19,6 +19,7 @@ using ChatyChaty.Infrastructure.Database;
 using ChatyChaty.Infrastructure.StartupConfiguration;
 using ChatyChaty.StartupConfiguration;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ChatyChaty
 {
@@ -58,10 +59,11 @@ namespace ChatyChaty
             services.AddMediatR(Assembly.GetExecutingAssembly(), typeof(UsersGotChatUpdateAsync).Assembly);
 
             //configure MVC 
-            services.AddMvc(option =>
+            services.AddControllersWithViews(option =>
             {
                 option.Filters.Add(new ProducesAttribute("application/json"));
                 option.Filters.Add(new ConsumesAttribute("application/json"));
+                //option.Filters.Add(typeof(AuthorizeAttribute));
             });
 
             //configure DBcontext 

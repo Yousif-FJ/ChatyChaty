@@ -121,6 +121,11 @@ namespace ChatyChaty.Domain.Services.MessageServices
         {
             var chat = await chatRepository.GetAsync(conversationId);
 
+            if (chat is null)
+            {
+                return new GetMessagesModel { Error = "Invalid chat Id" };
+            }
+
             if (chat.FirstUserId != userId || chat.SecondUserId != userId)
             {
                 return new GetMessagesModel { Error = "Invalid chat Id" };

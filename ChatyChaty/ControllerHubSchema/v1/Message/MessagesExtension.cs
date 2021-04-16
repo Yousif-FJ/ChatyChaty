@@ -11,13 +11,13 @@ namespace ChatyChaty.ControllerHubSchema.v1
         public static IEnumerable<MessageInfoReponse> ToMessageInfoResponse(this IEnumerable<Message> messages, UserId userId)
         {
             return messages.Select(message => new MessageInfoReponse
-            {
-                Body = message.Body,
-                ChatId = message.ConversationId.Value,
-                MessageId = message.Id.Value,
-                Sender = message.Sender.UserName,
-                Delivered = message.SenderId == userId ? message.Delivered : (bool?)null
-            });
+            (
+                message.Body,
+                message.ConversationId.Value,
+                message.Id.Value,
+                message.Sender.UserName,
+                message.SenderId == userId ? message.Delivered : (bool?)null
+            ));
         }
     }
 }

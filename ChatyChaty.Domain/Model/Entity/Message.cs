@@ -35,13 +35,10 @@ namespace ChatyChaty.Domain.Model.Entity
         }
     }
 
-    public record MessageId(string Value)
+    public record MessageId : IdBase
     {
-        public MessageId() : this(Guid.NewGuid().ToString()) { }
-
-        public override string ToString()
-        {
-            return Value;
-        }
+        public MessageId() : base() { }
+        public MessageId(string value) : base(value){}
+        override public string ToString() { return base.ToString(); }
     }
 }

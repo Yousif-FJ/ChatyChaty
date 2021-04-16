@@ -35,16 +35,13 @@ namespace ChatyChaty.Hubs.v1
                 return false;
             }
 
-            var response = new UserProfileResponse
-                {
-                    Profile = new ProfileResponse
-                    {
-                        DisplayName = chatInfo.DisplayName,
-                        PhotoURL = chatInfo.PhotoURL,
-                        Username = chatInfo.Username
-                    },
-                    ChatId = chatInfo.ChatId.Value
-            };
+            var response = new UserProfileResponse(
+                chatInfo.ChatId.Value,
+                new ProfileResponse(
+                    chatInfo.Username,
+                    chatInfo.DisplayName,
+                    chatInfo.PhotoURL)
+            );
 
             _ = hubContext.Clients.User(receiverId.ToString()).UpdateChat(response);
             return true;

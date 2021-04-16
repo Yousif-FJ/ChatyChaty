@@ -47,28 +47,20 @@ namespace ChatyChaty.Controllers.v1
         /// <response code="400">Model validation failed</response>
         /// <response code="500">Server Error (This shouldn't happen)</response>
         [HttpPost("NewAccount")]
-        public async Task<IActionResult> CreateAccount([FromBody]CreateAccountSchema accountSchema)
+        public async Task<IActionResult> CreateAccount([FromBody] CreateAccountSchema accountSchema)
         {
-           var result = await authenticationManager.CreateAccount(
-               accountSchema.Username, accountSchema.Password, accountSchema.DisplayName);
+            var result = await authenticationManager.CreateAccount(
+                accountSchema.Username, accountSchema.Password, accountSchema.DisplayName);
 
             if (result.Success == false)
             {
                 return BadRequest(new ErrorResponse(result.Errors));
             }
 
-            ProfileResponse profile = new ProfileResponse
-            {
-                DisplayName = result.Profile.DisplayName,
-                Username = result.Profile.Username,
-                PhotoURL = result.Profile.PhotoURL
-            };
+            ProfileResponse profile = new ProfileResponse(result.Profile.Username, result.Profile.DisplayName, result.Profile.PhotoURL);
 
-            var response = new AuthResponse
-            {
-                Token = result.Token,
-                Profile = profile
-            };
+            var response = new AuthResponse(result.Token, profile);
+
             return Ok(response);
         }
 
@@ -103,18 +95,13 @@ namespace ChatyChaty.Controllers.v1
                 return BadRequest(new ErrorResponse(authenticationResult.Errors));
             }
 
-            ProfileResponse profile = new ProfileResponse
-            {
-                DisplayName = authenticationResult.Profile.DisplayName,
-                Username = authenticationResult.Profile.Username,
-                PhotoURL = authenticationResult.Profile.PhotoURL
-            };
+            ProfileResponse profile = new ProfileResponse(
+                authenticationResult.Profile.Username,
+                authenticationResult.Profile.DisplayName,
+                authenticationResult.Profile.PhotoURL
+            );
 
-            var response = new AuthResponse
-            {
-                Token = authenticationResult.Token,
-                Profile = profile
-            };
+            var response = new AuthResponse(authenticationResult.Token,profile);
 
             return Ok(response);
         }

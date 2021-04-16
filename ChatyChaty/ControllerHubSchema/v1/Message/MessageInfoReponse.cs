@@ -6,24 +6,5 @@ using System.Threading.Tasks;
 
 namespace ChatyChaty.ControllerHubSchema.v1
 {
-    public class MessageInfoReponse
-    {
-        public MessageInfoReponse()
-        {
-
-        }
-        public MessageInfoReponse(Message message, UserId messageReceiverId)
-        {
-            Body = message.Body;
-            ChatId = message.ConversationId.Value;
-            MessageId = message.Id.Value;
-            Sender = message.Sender.UserName;
-            Delivered = message.SenderId == messageReceiverId ? message.Delivered : (bool?)null;
-        }
-        public string ChatId { get; set; }
-        public string MessageId { get; set; }
-        public string Sender { get; set; }
-        public string Body { get; set; }
-        public bool? Delivered { get; set; }
-    }
+    public record MessageInfoReponse(string ChatId, string MessageId, string Sender, string Body, bool? Delivered);
 }

@@ -42,12 +42,10 @@ namespace ChatyChaty.Domain.Model.Entity
     {
     }
 
-    public record UserId(string Value) {
-        public UserId() : this(Guid.NewGuid().ToString()) { }
-        
-        public override string ToString()
-        {
-            return Value;
-        }
-    };
+    public record UserId : IdBase
+    {
+        public UserId() : base() { }
+        public UserId(string value) : base(value) { }
+        override public string ToString() { return base.ToString(); }
+    }
 }

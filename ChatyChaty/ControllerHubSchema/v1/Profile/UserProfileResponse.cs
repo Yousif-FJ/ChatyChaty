@@ -6,9 +6,5 @@ using System.Threading.Tasks;
 
 namespace ChatyChaty.ControllerHubSchema.v1
 {
-    public class UserProfileResponse
-    {
-        public string ChatId { get; set; }
-        public ProfileResponse Profile { get; set; }
-    }
+    public record UserProfileResponse(string ChatId, ProfileResponse Profile);
 }

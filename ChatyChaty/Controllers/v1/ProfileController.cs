@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -49,10 +50,10 @@ namespace ChatyChaty.Controllers.v1
         [HttpPost("Photo")]
         public async Task<IActionResult> SetPhotoForSelf([FromForm] UploadFileSchema uploadFile)
         {
-            var userId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
+            var userId = HttpContext.GetUserIdFromHeader();
 
             var result = await accountManager.SetPhotoAsync(
-                new UserId(userId),
+                userId, 
                 uploadFile.PhotoFile.FileName,
                 uploadFile.PhotoFile.OpenReadStream());
 
@@ -91,25 +92,21 @@ namespace ChatyChaty.Controllers.v1
         /// <response code="500">Server Error (This shouldn't happen)</response>
 
         [HttpGet("User")]
-        public async Task<IActionResult> GetUser([FromHeader]string userName)
+        public async Task<IActionResult> GetUser([FromQuery][Required] string userName)
         {
-            var userId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
-            var result = await accountManager.CreateConversationAsync(new UserId(userId), userName);
+            var userId = HttpContext.GetUserIdFromHeader();
+
+            var result = await accountManager.CreateConversationAsync(userId, userName);
             if (result.Error is not null)
             {
                 return NotFound(new ErrorResponse(result.Error));
             }
 
-            var response = new UserProfileResponse
-            {
-                ChatId = result.Conversation.ChatId.Value,
-                Profile = new ProfileResponse
-                {
-                    DisplayName = result.Conversation.DisplayName,
-                    Username = result.Conversation.Username,
-                    PhotoURL = result.Conversation.PhotoURL
-                }
-            };
+            var response = new UserProfileResponse(result.Conversation.ChatId.Value,
+                     new ProfileResponse(result.Conversation.Username,
+                      result.Conversation.DisplayName,
+                      result.Conversation.PhotoURL));
+
             return Ok(response);
         }
 
@@ -139,25 +136,19 @@ namespace ChatyChaty.Controllers.v1
         [HttpGet("Chats")]
         public async Task<IActionResult> GetChats()
         {
-            var userId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
-            var chats = await accountManager.GetConversations(new UserId(userId));
+            var userId = HttpContext.GetUserIdFromHeader();
+
+            var chats = await accountManager.GetConversations(userId);
 
             var chatListResponse = new List<UserProfileResponse>();
 
             foreach (var chat in chats)
             {
                 chatListResponse.Add(
-                new UserProfileResponse
-                {
-                    ChatId = chat.ChatId.Value,
-                    Profile = new ProfileResponse
-                    {
-                        DisplayName = chat.DisplayName,
-                        Username = chat.Username,
-                        PhotoURL = chat.PhotoURL
-                    }
-                }
-                        );
+                new UserProfileResponse(chat.ChatId.Value,
+                    new ProfileResponse(chat.Username, chat.DisplayName, chat.PhotoURL
+                    )));
+               
             };
 
             return Ok(chatListResponse);
@@ -183,11 +174,11 @@ namespace ChatyChaty.Controllers.v1
         /// <response code="500">Server Error (This shouldn't happen)</response>
 
         [HttpPatch("DisplayName")]
-        public async Task<IActionResult> UpdateDisplayName([FromBody]string newDisplayName)
+        public async Task<IActionResult> UpdateDisplayName([FromBody][Required]string newDisplayName)
         {
-            var userId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
+            var userId = HttpContext.GetUserIdFromHeader();
 
-            var newName = await accountManager.UpdateDisplayNameAsync(new UserId(userId), newDisplayName);
+            var newName = await accountManager.UpdateDisplayNameAsync(userId, newDisplayName);
 
             return Ok(newName);
         }
