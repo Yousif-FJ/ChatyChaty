@@ -1,4 +1,5 @@
 ﻿using ChatyChaty.ControllerHubSchema.v1;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 namespace ChatyChaty.Controllers
 {
     [ApiController]
+    [AllowAnonymous]
     public class ErrorController : ControllerBase
     {
         /// <summary>
