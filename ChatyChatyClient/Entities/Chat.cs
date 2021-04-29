@@ -7,7 +7,7 @@ namespace ChatyChatyClient.Entities
 {
     public class Chat
     {
-        public long Id { get; set; }
+        public Guid Id { get; set; }
         public string ImgLink { get; set; }
         public string ReceiverName { get; set; }
         public bool IsThereNewMessage { get; set; }

@@ -6,9 +6,5 @@ using System.Threading.Tasks;
 
 namespace ChatyChatyClient.HttpSchemas.Authentication
 {
-    public class AuthResponseBase
-    {
-        public string Token { get; set; }
-        public ProfileResponseBase Profile { get; set; }
-    }
+    public record AuthResponse(string Token, ProfileResponse Profile);
 }

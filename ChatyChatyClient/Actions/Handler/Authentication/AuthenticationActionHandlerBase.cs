@@ -1,11 +1,11 @@
-﻿using ChatyChatyClient.Repository;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using ChatyChatyClient.Repository;
 
-namespace ChatyChatyClient.Actions.Authentication
+namespace ChatyChatyClient.Actions.Handler.Authentication
 {
     public abstract class AuthenticationActionHandlerBase
     {

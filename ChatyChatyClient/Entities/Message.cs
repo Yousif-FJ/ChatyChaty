@@ -9,7 +9,7 @@ namespace ChatyChatyClient.Entities
     {
         public string Body { get; set; }
         public string SenderName { get; set; }
-        public long Id { get; set; }
+        public Guid Id { get; set; }
         public bool IsDelivered { get; set; }
     }
 }

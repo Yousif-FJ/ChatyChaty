@@ -1,4 +1,4 @@
-﻿using ChatyChatyClient.Actions.Authentication;
+﻿using ChatyChatyClient.Actions.Request.Authentication;
 using ChatyChatyClient.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Components;
@@ -29,7 +29,7 @@ namespace ChatyChatyClient.Pages.Authentication
         public async Task SignUp()
         {
             DisableButton();
-            var result = await MediatR.Send(new SignUp(Username, Password, DisplayName));
+            var result = await MediatR.Send(new SignUpRequest(Username, Password, DisplayName));
             if (result.IsSuccessful == false)
             {
                 Error = result.Error;

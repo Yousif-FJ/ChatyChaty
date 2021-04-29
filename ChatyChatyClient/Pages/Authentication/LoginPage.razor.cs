@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
-using ChatyChatyClient.Actions.Authentication;
 using ChatyChatyClient.Entities;
+using ChatyChatyClient.Actions.Request.Authentication;
 
 namespace ChatyChatyClient.Pages.Authentication
 {
@@ -28,7 +28,7 @@ namespace ChatyChatyClient.Pages.Authentication
         public async Task Login()
         {
             DisableButton();
-            var result = await MediatR.Send(new Login(Username, Password));
+            var result = await MediatR.Send(new LoginRequest(Username, Password));
             if (result.IsSuccessful == false)
             {
                 Error = result.Error;

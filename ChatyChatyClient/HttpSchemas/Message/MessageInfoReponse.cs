@@ -5,5 +5,5 @@ using System.Threading.Tasks;
 
 namespace ChatyChatyClient.HttpSchemas.Message
 {
-    public record MessageStatusResponseBase(string MessageId, string ChatId, bool Delievered);
+    public record MessageInfoReponse(string ChatId, string MessageId, string Sender, string Body, bool? Delivered);
 }
