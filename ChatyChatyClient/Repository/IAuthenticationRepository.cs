@@ -5,7 +5,10 @@ using System.Threading.Tasks;
 
 namespace ChatyChatyClient.Repository
 {
-    public class IAuthenticationRepository
+    public interface IAuthenticationRepository
     {
+        public Task<string> GetToken();
+        public Task SetToken(string value);
+        public Task RemoveToken();
     }
 }

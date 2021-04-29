@@ -1,15 +1,32 @@
 ﻿@page "/client/login"
-<h3>Login</h3>
-<form>
-    <div class="mb-3">
-        <label for="exampleInputEmail1" class="form-label">Username</label>
-        <input @bind="Username" type="text">
-    </div>
-    <div class="mb-3">
-        <label for="exampleInputPassword1" class="form-label">Password</label>
-        <input @bind="Password" type="password">
-    </div>
 
-    <button @onsubmit="Login" type="submit" class="btn btn-primary">Submit</button>
-</form>
+<nav class="navbar navbar-dark bg-dark">
+    <div class="container-fluid">
+        <span class="navbar-brand">ChatyChaty</span>
+    </div>
+</nav>
+
+
+<div class="m-1">
+    <h4 class="my-3 fw-bold">Login</h4>
+    <form>
+        <div class="mb-3">
+            <label for="exampleInputEmail1" class="form-label">Username</label>
+            <input @bind="Username" class="form-control" type="text">
+        </div>
+        <div class="mb-3">
+            <label for="exampleInputPassword1" class="form-label">Password</label>
+            <input @bind="Password" class="form-control" type="password">
+        </div>
+        @if (Error is not null)
+        {
+            <div class="alert alert-danger">
+                @Error
+            </div>
+        }
+        <button @onclick="Login" disabled="@DisableLoginButton" type="button" class="btn btn-primary">
+            Login
+        </button>
+    </form>
+</div>
 

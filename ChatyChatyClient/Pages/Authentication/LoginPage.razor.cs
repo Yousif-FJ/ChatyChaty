@@ -1,18 +1,54 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Components;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MediatR;
+using ChatyChatyClient.Actions.Authentication;
+using ChatyChatyClient.Entities;
 
 namespace ChatyChatyClient.Pages.Authentication
 {
     public partial class LoginPage
     {
-        public string Username { get; set; }
-        public string Password { get; set; }
+        [Inject]
+        private IMediator MediatR { get; set; }
+        [Inject]
+        private NavigationManager NavigationManager { get; set; }
 
-        public void Login()
+#pragma warning disable IDE0044 // Add readonly modifier
+        private string Username;
+        private string Password;
+        private string Error;
+
+        [CascadingParameter]
+        protected LoadingIndicator LoadingIndicator { get; set; }
+        private bool DisableLoginButton;
+
+        public async Task Login()
         {
+            DisableButton();
+            var result = await MediatR.Send(new Login(Username, Password));
+            if (result.IsSuccessful == false)
+            {
+                Error = result.Error;
+                EnableButton();
+                return;
+            }
 
+            NavigationManager.NavigateTo("/client");
+        }
+
+        private void DisableButton()
+        {
+            LoadingIndicator.Show();
+            DisableLoginButton = true;
+        }
+
+        private void EnableButton()
+        {
+            DisableLoginButton = false;
+            LoadingIndicator.Hide();
         }
     }
 }

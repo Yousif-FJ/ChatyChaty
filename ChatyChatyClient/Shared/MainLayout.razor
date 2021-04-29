@@ -1,4 +1,30 @@
 ﻿@inherits LayoutComponentBase
+
 <div style="background-color:azure">
-    <div style="max-width:768px; padding:0px; background-color:white;" class="container">@Body</div>
+    <div style="max-width:768px; padding:0px; background-color:white;" class="container">
+        <CascadingValue Value="LoadingIndicator" IsFixed="true">
+            @if (LoadingIndicator.Value)
+            {
+                <div class="fixed-top text-center">
+                    <div class="spinner-grow text-primary mt-2" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            }
+            @Body
+        </CascadingValue>
+    </div>
 </div>
+
+@code{
+    private LoadingIndicator LoadingIndicator;
+    protected override void OnInitialized()
+    {
+        LoadingIndicator = new LoadingIndicator();
+        LoadingIndicator.PropertyChanged += (sender, args) => StateHasChanged();
+    }
+    public void Dispose()
+    {
+        LoadingIndicator.PropertyChanged -= (sender, args) => StateHasChanged();
+    }
+}
