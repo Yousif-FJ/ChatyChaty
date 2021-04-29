@@ -11,10 +11,11 @@ namespace ChatyChaty.Domain.InfastructureInterfaces
     /// </summary>
     public interface IMessageRepository
     {
-        Task<Message> GetMessageAsync(MessageId Id);
-        Task<IEnumerable<Message>> GetMessagesForUserAsync(UserId userId);
-        Task<IEnumerable<Message>> GetNewMessagesForUserAsync(MessageId messageId, UserId userId);
-        Task UpdateMessagesAsync(IEnumerable<Message> messages);
-        Task<Message> AddMessageAsync(Message message);
+        Task<Message> GetAsync(MessageId Id);
+        Task<IEnumerable<Message>> GetAllAsync(UserId userId);
+        Task<IEnumerable<Message>> GetNewAsync(MessageId messageId, UserId userId);
+        Task<IList<Message>> GetForChatAsync(ConversationId conversationId, int count = 100);
+        Task UpdateRangeAsync(IEnumerable<Message> messages);
+        Task<Message> AddAsync(Message message);
     }
 }

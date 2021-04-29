@@ -21,37 +21,50 @@ namespace ChatyChaty.Infrastructure.Repositories.MessageRepository
             dBContext = DBContext;
         }
 
-        public async Task<Message> AddMessageAsync(Message Message)
+        public async Task<Message> AddAsync(Message Message)
         {
             var DBMessage = await dBContext.Messages.AddAsync(Message);
             await dBContext.SaveChangesAsync();
             return DBMessage.Entity;
         }
 
-        public async Task<Message> GetMessageAsync(MessageId Id)
+        public async Task<Message> GetAsync(MessageId Id)
         {
             return await dBContext.Messages.FindAsync(Id);
         }
 
-        public async Task<IEnumerable<Message>> GetMessagesForUserAsync(UserId userId)
+        public async Task<IList<Message>> GetForChatAsync(ConversationId conversationId, int count = 100)
+        {
+            return await dBContext.Messages
+                .Where(m => m.ConversationId == conversationId)
+                .Include(m => m.Sender)
+                .AsSplitQuery()
+                .Take(count)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Message>> GetAllAsync(UserId userId)
         {
             return await dBContext.Messages
             .Where(m => m.Conversation.FirstUserId == userId || m.Conversation.SecondUserId == userId)
             .Include(m => m.Sender)
+            .AsSplitQuery()
             .ToListAsync();
         }
 
-        public async Task<IEnumerable<Message>> GetNewMessagesForUserAsync(MessageId messageId, UserId userId)
+        public async Task<IEnumerable<Message>> GetNewAsync(MessageId messageId, UserId userId)
         {
-            var message = await GetMessageAsync(messageId);
+            var message = await GetAsync(messageId);
 
             return await dBContext.Messages.Where(
                 m => m.TimeSent > message.TimeSent &&
                 m.Conversation.FirstUserId == userId || m.Conversation.SecondUserId == userId
-                ).Include(c => c.Sender).ToListAsync();
+                ).Include(c => c.Sender)
+                .AsSplitQuery()
+                .ToListAsync();
         }
 
-        public async Task UpdateMessagesAsync(IEnumerable<Message> Messages)
+        public async Task UpdateRangeAsync(IEnumerable<Message> Messages)
         {
             dBContext.Messages.UpdateRange(Messages);
             await dBContext.SaveChangesAsync();

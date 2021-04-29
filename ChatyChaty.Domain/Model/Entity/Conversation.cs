@@ -48,13 +48,10 @@ namespace ChatyChaty.Domain.Model.Entity
         }
     }
 
-    public record ConversationId(string Value)
+    public record ConversationId : IdBase
     {
-        public ConversationId() : this(Guid.NewGuid().ToString()) { }
-
-        public override string ToString()
-        {
-            return Value;
-        }
+        public ConversationId() : base() { }
+        public ConversationId(string value) : base(value) { }
+        override public string ToString() { return base.ToString(); }
     }
 }

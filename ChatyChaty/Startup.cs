@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using ChatyChaty.Hubs.v3;
+using ChatyChaty.Hubs.v1;
 using ChatyChaty.Domain.Services.AccountServices;
 using ChatyChaty.Domain.Services.AuthenticationManager;
 using ChatyChaty.Domain.Services.MessageServices;
@@ -19,6 +19,8 @@ using ChatyChaty.Infrastructure.Database;
 using ChatyChaty.Infrastructure.StartupConfiguration;
 using ChatyChaty.StartupConfiguration;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using ChatyChaty.ValidationAttribute;
 using Microsoft.AspNetCore.Routing.Patterns;
 
 namespace ChatyChaty
@@ -59,10 +61,13 @@ namespace ChatyChaty
             services.AddMediatR(Assembly.GetExecutingAssembly(), typeof(UsersGotChatUpdateAsync).Assembly);
 
             //configure MVC 
-            services.AddMvc(option =>
+            //TODO- remove views
+            services.AddControllersWithViews(option =>
             {
                 option.Filters.Add(new ProducesAttribute("application/json"));
                 option.Filters.Add(new ConsumesAttribute("application/json"));
+                option.Conventions.Add(new SuppressAutoModelStateResponseAttribute());
+                option.Filters.Add(typeof(CustomModelValidationResponseAttribute));
             });
 
             //configure DBcontext 
@@ -86,8 +91,16 @@ namespace ChatyChaty
                 "abcdefghijklmnopqrstuvwxyz0123456789_";
             });
 
+
             //configure BearerJWT using extension method 
             services.CustomConfigureJwtAuthentication(Configuration);
+
+            services.AddAuthorization(options =>
+            {
+                options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
+            });
 
 
             //configure swagger using extension method 

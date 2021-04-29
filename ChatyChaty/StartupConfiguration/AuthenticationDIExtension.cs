@@ -1,4 +1,4 @@
-﻿using ChatyChaty.ControllerHubSchema.v3;
+﻿using ChatyChaty.ControllerHubSchema.v1;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -57,11 +57,7 @@ namespace ChatyChaty.StartupConfiguration
             context.HandleResponse();
             context.Response.StatusCode = 401;
             await context.Response.WriteAsync(
-                new Response<object>
-                {
-                    Success = false,
-                    Errors = new List<string> { "The user is not authenticated" }
-                }.ToJson());
+                new ErrorResponse("The user is not authenticated").ToJson());
         }
 
         /// <summary>

@@ -6,40 +6,37 @@ using Xunit;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Mvc.Testing;
-using ChatyChaty.ControllerHubSchema.v3;
+using ChatyChaty.ControllerHubSchema.v1;
+using System.Net;
 
 namespace XIntegrationTest
 {
     public class MessageTest : IntegrationTestBase
     {
         [Fact]
-        public async Task CreateChat()
+        public async Task<UserProfileResponse> CreateChat()
         {
             //Arrange
             var user2CreationResponse = await client.CreateAccount("user2", "A name", "veryGoodPassword123");
-            var user1CreationResponse = await client.CreateAccount("user1", "A name", "veryGoodPassword123");
+            //var user1CreationResponse = await client.CreateAccount("user1", "A name", "veryGoodPassword123");
             var user3CreationResponse = await client.CreateAccount("user3", "A name", "veryGoodPassword123");
-            client.Authenticate(user3CreationResponse.Data.Token);
+            client.Authenticate(user3CreationResponse.Token);
             //Act
-            using HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Get, "api/v3/Profile/User");
-            requestMessage.Headers.Add("UserName", user2CreationResponse.Data.Profile.Username);
-            var response = await client.SendAsync(requestMessage);
+            var response = await client.GetAsync($"api/v1/Profile/User?UserName={user2CreationResponse.Profile.Username}");
             //Assert
-            Response<UserProfileResponseBase> result;
-            try
-            {
-                 result = await response.Content.ReadAsAsync<Response<UserProfileResponseBase>>();
-            }
-            catch (UnsupportedMediaTypeException)
+
+            var result = await response.Content.ReadAsAsync<UserProfileResponse>();
+
+
+            if (HttpStatusCode.OK != response.StatusCode)
             {
                 var responseAsString = await response.Content.ReadAsStringAsync();
-                throw new Exception($"Unsupported type reponse, The response as string : {responseAsString}");
+                throw new Exception($"Not Ok 200, The response as string : {responseAsString}");
             }
 
-            Assert.True(result.Success, $"response as string : { await response.Content.ReadAsStringAsync()}");
-            Assert.NotNull(result.Data.ChatId);
-            Assert.NotNull(result.Data.ChatId);
-            Assert.Equal(user2CreationResponse.Data.Profile.Username, result.Data.Profile.Username);
+            Assert.NotNull(result.ChatId);
+            Assert.Equal(user2CreationResponse.Profile.Username, result.Profile.Username);
+            return result;
         }
 
         [Fact]
@@ -48,32 +45,30 @@ namespace XIntegrationTest
             //Arrange
             var user1CreationResponse = await client.CreateAccount("user3", "A name", "veryGoodPassword123");
             var user2CreationResponse = await client.CreateAccount("user4", "A name", "veryGoodPassword123");
-            client.Authenticate(user1CreationResponse.Data.Token);
-            using HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Get, "api/v3/Profile/User");
-            requestMessage.Headers.Add("UserName", user2CreationResponse.Data.Profile.Username);
-            var chatResposne = await (await client.SendAsync(requestMessage)).Content.ReadAsAsync<Response<UserProfileResponseBase>>();
-            var chatId = chatResposne.Data.ChatId;
+            client.Authenticate(user1CreationResponse.Token);
+
+            var chatHttpResposne = await client.GetAsync($"api/v1/Profile/User?UserName={user2CreationResponse.Profile.Username}");
+            var chatResposne = await chatHttpResposne.Content.ReadAsAsync<UserProfileResponse>();
+
+            var chatId = chatResposne.ChatId;
             var messageBody = "hi";
             //Act
-            var response = await client.PostAsJsonAsync("api/v3/Message/Message",
+            var response = await client.PostAsJsonAsync("api/v1/Message/Message",
                 new SendMessageSchema { Body = messageBody, ChatId = chatId });
-
             //Assert
-            Response<MessageInfoReponseBase> result;
-            try
-            {
-                result = await response.Content.ReadAsAsync<Response<MessageInfoReponseBase>>();
-            }
-            catch (UnsupportedMediaTypeException)
+
+            var result = await response.Content.ReadAsAsync<MessageInfoReponse>();
+
+
+            if (HttpStatusCode.OK != response.StatusCode)
             {
                 var responseAsString = await response.Content.ReadAsStringAsync();
-                throw new Exception($"Unsupported type response, The response as string : {responseAsString}");
+                throw new Exception($"Not Ok 200, The response as string : {responseAsString}");
             }
 
-            Assert.True(result.Success, $"response as string : { await response.Content.ReadAsStringAsync()}");
-            Assert.False(result.Data.Delivered);
-            Assert.Equal(messageBody, result.Data.Body);
-            Assert.Equal(chatId, result.Data.ChatId);
+            Assert.False(result.Delivered);
+            Assert.Equal(messageBody, result.Body);
+            Assert.Equal(chatId, result.ChatId);
         }
     }
 }

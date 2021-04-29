@@ -4,7 +4,7 @@ using ChatyChaty.Domain.Model.Entity;
 using ChatyChaty.Domain.Model.MessagingModel;
 using ChatyChaty.Domain.Services.AccountServices;
 using ChatyChaty.Domain.Services.MessageServices;
-using ChatyChaty.Hubs.v3;
+using ChatyChaty.Hubs.v1;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -40,7 +40,7 @@ namespace ChatyChaty.Domain.Services.NotficationServices.Handler
             foreach (var (userId, messageId) in request.UserAndMessageId)
             {
 
-                var message = await messageRepository.GetMessageAsync(messageId);
+                var message = await messageRepository.GetAsync(messageId);
 
                 bool successful = hubHelper.TrySendMessageUpdate(userId, new List<Message> { message});
                 if (successful == false)

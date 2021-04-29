@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace XIntegrationTest
 {
-    public class SqliteInMemory : IDisposable
+    public sealed class SqliteInMemory : IDisposable
     {
         public DbConnection Connection { get; }
 

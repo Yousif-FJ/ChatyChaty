@@ -1,4 +1,4 @@
-﻿using ChatyChaty.ControllerHubSchema.v3;
+﻿using ChatyChaty.ControllerHubSchema.v1;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System;
@@ -12,9 +12,10 @@ namespace ChatyChaty.ValidationAttribute
     {
         public async override Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            if (!context.ModelState.IsValid)
+            if (context.ModelState.IsValid == false)
             {
-                context.Result = new BadRequestObjectResult(new Response<object>(context.ModelState));
+                var errors = context.ModelState.Values.SelectMany(v => v.Errors.Select(b => b.ErrorMessage));
+                context.Result = new BadRequestObjectResult(new ErrorResponse(errors));
             }
             else
             {
