@@ -1,7 +1,7 @@
 ﻿using ChatyChaty.Domain.InfastructureInterfaces;
 using ChatyChaty.Domain.Model.AccountModel;
 using ChatyChaty.Domain.Model.Entity;
-using ChatyChaty.Domain.Services.NotficationServices.Handler;
+using ChatyChaty.Domain.Services.NotficationRequests;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;

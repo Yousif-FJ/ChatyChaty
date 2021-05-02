@@ -1,10 +1,11 @@
-﻿using ChatyChaty.Domain.Model.Entity;
+﻿using ChatyChaty.ControllerHubSchema.v1;
+using ChatyChaty.Domain.Model.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ChatyChaty.ControllerHubSchema.v1
+namespace ChatyChaty.ModelExtensions
 {
     public static class MessagesExtension
     {
@@ -16,7 +17,7 @@ namespace ChatyChaty.ControllerHubSchema.v1
                 message.ConversationId.Value,
                 message.Id.Value,
                 message.Sender.UserName,
-                message.SenderId == userId ? message.Delivered : (bool?)null
+                message.SenderId == userId ? message.Delivered : null
             ));
         }
     }

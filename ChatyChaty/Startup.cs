@@ -3,24 +3,21 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Authorization;
 using ChatyChaty.Hubs.v1;
 using ChatyChaty.Domain.Services.AccountServices;
 using ChatyChaty.Domain.Services.AuthenticationManager;
 using ChatyChaty.Domain.Services.MessageServices;
-using ChatyChaty.Domain.Services.NotficationServices.Handler;
-using ChatyChaty.Domain.Model.Entity;
-using ChatyChaty.Infrastructure.Database;
 using ChatyChaty.Infrastructure.StartupConfiguration;
 using ChatyChaty.StartupConfiguration;
+using ChatyChaty.StartupConfiguration.ControllersCustomAttributes;
+using ChatyChaty.Domain.Services.NotficationRequests;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
-using ChatyChaty.ValidationAttribute;
 
 namespace ChatyChaty
 {
@@ -39,9 +36,6 @@ namespace ChatyChaty
 
             //register classes in DI 
 
-            services.AddIdentity<AppUser, Role>()
-               .AddEntityFrameworkStores<ChatyChatyContext>();
-
             services.AddScoped<IAccountManager, AccountManager>();
 
             services.AddScoped<IHubHelper,HubHelper>();
@@ -56,7 +50,6 @@ namespace ChatyChaty
 
             services.AddInfrastructureClasses(Configuration);
 
-            //add MediatR 
             services.AddMediatR(Assembly.GetExecutingAssembly(), typeof(UsersGotChatUpdateAsync).Assembly);
 
             //configure MVC 
@@ -69,29 +62,11 @@ namespace ChatyChaty
                 option.Filters.Add(typeof(CustomModelValidationResponseAttribute));
             });
 
-            //configure DBcontext 
 
             services.CustomConfigureDbContext(Configuration);
 
-            //configure identity 
+            services.CustomConfigureIdentity(Configuration);
 
-            services.Configure<IdentityOptions>(options =>
-            {
-                // Password settings.
-                options.Password.RequireDigit = true;
-                options.Password.RequireLowercase = true;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireUppercase = false;
-                options.Password.RequiredLength = 6;
-                options.Password.RequiredUniqueChars = 1;
-
-                // User settings.
-                options.User.AllowedUserNameCharacters =
-                "abcdefghijklmnopqrstuvwxyz0123456789_";
-            });
-
-
-            //configure BearerJWT using extension method 
             services.CustomConfigureJwtAuthentication(Configuration);
 
             services.AddAuthorization(options =>
@@ -101,11 +76,8 @@ namespace ChatyChaty
                     .Build();
             });
 
-
-            //configure swagger using extension method 
             services.CustomConfigureSwagger();
 
-            //configure custom health check
             services.CustomConfigureHealthCheck();
         }
 

@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
-using ChatyChaty.ValidationAttribute;
 using ChatyChaty.ControllerHubSchema.v1;
 using ChatyChaty.Domain.Services.AuthenticationManager;
 
@@ -42,7 +41,7 @@ namespace ChatyChaty.Controllers.v1
                 return BadRequest(new ErrorResponse(result.Errors));
             }
 
-            ProfileResponse profile = new ProfileResponse(result.Profile.Username, result.Profile.DisplayName, result.Profile.PhotoURL);
+            ProfileResponse profile = new(result.Profile.Username, result.Profile.DisplayName, result.Profile.PhotoURL);
 
             var response = new AuthResponse(result.Token, profile);
 
@@ -67,7 +66,7 @@ namespace ChatyChaty.Controllers.v1
                 return BadRequest(new ErrorResponse(authenticationResult.Errors));
             }
 
-            ProfileResponse profile = new ProfileResponse(
+            ProfileResponse profile = new(
                 authenticationResult.Profile.Username,
                 authenticationResult.Profile.DisplayName,
                 authenticationResult.Profile.PhotoURL

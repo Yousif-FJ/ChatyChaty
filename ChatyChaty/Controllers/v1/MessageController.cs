@@ -12,7 +12,7 @@ using ChatyChaty.Domain.ApplicationExceptions;
 using ChatyChaty.Domain.Model.Entity;
 using ChatyChaty.Domain.Model.MessagingModel;
 using ChatyChaty.Domain.Services.MessageServices;
-using ChatyChaty.ValidationAttribute;
+using ChatyChaty.ModelExtensions;
 
 namespace ChatyChaty.Controllers.v1
 {

@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using ChatyChaty.ControllerHubSchema.v1.Profile.CustomValidationAttributes;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using WebApplication1.ValidationAttributes;
 
 namespace ChatyChaty.ControllerHubSchema.v1
 {

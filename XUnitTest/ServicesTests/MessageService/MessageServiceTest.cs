@@ -1,6 +1,6 @@
 ﻿using ChatyChaty.Domain.Model.Entity;
 using ChatyChaty.Domain.Services.MessageServices;
-using ChatyChaty.Domain.Services.NotficationServices.Handler;
+using ChatyChaty.Domain.Services.NotficationRequests;
 using ChatyChaty.Infrastructure.Database;
 using ChatyChaty.Infrastructure.Repositories.ChatRepository;
 using ChatyChaty.Infrastructure.Repositories.MessageRepository;

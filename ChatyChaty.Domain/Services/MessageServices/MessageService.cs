@@ -2,7 +2,7 @@
 using ChatyChaty.Domain.Model.AccountModel;
 using ChatyChaty.Domain.Model.Entity;
 using ChatyChaty.Domain.Model.MessagingModel;
-using ChatyChaty.Domain.Services.NotficationServices.Handler;
+using ChatyChaty.Domain.Services.NotficationRequests;
 using MediatR;
 using System;
 using System.Collections.Generic;

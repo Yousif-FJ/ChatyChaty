@@ -5,14 +5,13 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using ChatyChaty.ControllerHubSchema.v1;
 using ChatyChaty.Domain.Model.Entity;
 using ChatyChaty.Domain.Services.AccountServices;
 using ChatyChaty.Domain.Services.MessageServices;
-using ChatyChaty.ValidationAttribute;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 
 namespace ChatyChaty.Controllers.v1
 {
@@ -99,7 +98,6 @@ namespace ChatyChaty.Controllers.v1
                 new UserProfileResponse(chat.ChatId.Value,
                     new ProfileResponse(chat.Username, chat.DisplayName, chat.PhotoURL
                     )));
-               
             };
 
             return Ok(chatListResponse);

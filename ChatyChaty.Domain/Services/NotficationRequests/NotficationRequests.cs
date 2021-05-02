@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ChatyChaty.Domain.Services.NotficationServices.Handler
+namespace ChatyChaty.Domain.Services.NotficationRequests
 {
     /// <summary>
     /// Interface that handles notification events
@@ -17,17 +17,17 @@ namespace ChatyChaty.Domain.Services.NotficationServices.Handler
 
         public UsersGotChatUpdateAsync(params (UserId receiverId, ConversationId chatId)[] invokerAndReceiverIds)
         {
-            this.InvokerAndReceiverIds = invokerAndReceiverIds;
+            InvokerAndReceiverIds = invokerAndReceiverIds;
         }
     }
 
-    public class UserGotNewMessageAsync: IRequest
+    public class UserGotNewMessageAsync : IRequest
     {
         public readonly (UserId userId, MessageId messageId)[] UserAndMessageId;
 
         public UserGotNewMessageAsync(params (UserId userId, MessageId messageId)[] userAndMessageId)
         {
-            this.UserAndMessageId = userAndMessageId;
+            UserAndMessageId = userAndMessageId;
         }
     }
 
@@ -37,7 +37,7 @@ namespace ChatyChaty.Domain.Services.NotficationServices.Handler
 
         public UsersGotMessageStatusUpdateAsync(params (UserId receieverId, ConversationId chatId, MessageId messageId)[] messageInfo)
         {
-            this.MessageInfo = messageInfo;
+            MessageInfo = messageInfo;
         }
     }
 
@@ -47,7 +47,7 @@ namespace ChatyChaty.Domain.Services.NotficationServices.Handler
 
         public UserUpdatedTheirProfileAsync(UserId usersId)
         {
-            this.UserId = usersId;
+            UserId = usersId;
         }
     }
 }

@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace WebApplication1.ValidationAttributes
+namespace ChatyChaty.ControllerHubSchema.v1.Profile.CustomValidationAttributes
 {
     public class MaxFileSizeAttribute : ValidationAttribute
     {
@@ -15,7 +15,7 @@ namespace WebApplication1.ValidationAttributes
         {
             get
             {
-               return BytesToString(_maxFileSize);
+                return BytesToString(_maxFileSize);
             }
         }
         public MaxFileSizeAttribute(int maxFileSizeBytes)
@@ -49,7 +49,7 @@ namespace WebApplication1.ValidationAttributes
             int bytes = Math.Abs(byteCount);
             int place = Convert.ToInt32(Math.Floor(Math.Log(bytes, 1024)));
             double num = Math.Round(bytes / Math.Pow(1024, place), 1);
-            return $"{(Math.Sign(byteCount) * num)}{suf[place]}";
+            return $"{Math.Sign(byteCount) * num}{suf[place]}";
         }
 
         public string ErrorM()
