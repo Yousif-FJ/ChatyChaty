@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using ChatyChaty.ControllerHubSchema.v1;
 using ChatyChaty.Domain.ApplicationExceptions;
 using ChatyChaty.Domain.Model.Entity;
 using ChatyChaty.Domain.Model.MessagingModel;
 using ChatyChaty.Domain.Services.MessageServices;
 using ChatyChaty.ModelExtensions;
+using ChatyChaty.HttpShemas.v1.Message;
+using ChatyChaty.HttpShemas.v1.Error;
 
 namespace ChatyChaty.Controllers.v1
 {

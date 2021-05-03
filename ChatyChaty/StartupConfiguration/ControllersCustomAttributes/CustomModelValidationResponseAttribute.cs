@@ -1,4 +1,4 @@
-﻿using ChatyChaty.ControllerHubSchema.v1;
+﻿using ChatyChaty.HttpShemas.v1.Error;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System;

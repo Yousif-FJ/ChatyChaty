@@ -6,8 +6,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
-using ChatyChaty.ControllerHubSchema.v1;
 using ChatyChaty.Domain.Services.AuthenticationManager;
+using ChatyChaty.HttpShemas.v1.Authentication;
+using ChatyChaty.HttpShemas.v1.Error;
+using ChatyChaty.HttpShemas.v1.Profile;
 
 namespace ChatyChaty.Controllers.v1
 {

@@ -6,8 +6,9 @@ using Xunit;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Mvc.Testing;
-using ChatyChaty.ControllerHubSchema.v1;
 using System.Net;
+using ChatyChaty.HttpShemas.v1.Message;
+using ChatyChaty.HttpShemas.v1.Profile;
 
 namespace XIntegrationTest
 {

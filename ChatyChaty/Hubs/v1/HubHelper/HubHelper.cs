@@ -1,8 +1,9 @@
-﻿using ChatyChaty.ControllerHubSchema.v1;
-using ChatyChaty.Domain.Model.AccountModel;
+﻿using ChatyChaty.Domain.Model.AccountModel;
 using ChatyChaty.Domain.Model.Entity;
 using ChatyChaty.Domain.Services.AccountServices;
 using ChatyChaty.Domain.Services.MessageServices;
+using ChatyChaty.HttpShemas.v1.Message;
+using ChatyChaty.HttpShemas.v1.Profile;
 using ChatyChaty.ModelExtensions;
 using Microsoft.AspNetCore.SignalR;
 using System;

@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ChatyChaty.ControllerHubSchema.v1.Profile.CustomValidationAttributes
+namespace ChatyChaty.HttpShemas.v1.Profile.CustomValidationAttributes
 {
     public class AlowPictureAttribute : ValidationAttribute
     {

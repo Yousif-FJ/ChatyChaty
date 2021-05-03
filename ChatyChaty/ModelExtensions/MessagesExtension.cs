@@ -1,5 +1,5 @@
-﻿using ChatyChaty.ControllerHubSchema.v1;
-using ChatyChaty.Domain.Model.Entity;
+﻿using ChatyChaty.Domain.Model.Entity;
+using ChatyChaty.HttpShemas.v1.Message;
 using System;
 using System.Collections.Generic;
 using System.Linq;

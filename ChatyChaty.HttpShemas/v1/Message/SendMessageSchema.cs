@@ -4,9 +4,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ChatyChaty.ControllerHubSchema.v1
+namespace ChatyChaty.HttpShemas.v1.Message
 {
-    public class SendMessageSchema 
+    public class SendMessageSchema
     {
         [Required]
         public string ChatId { get; set; }

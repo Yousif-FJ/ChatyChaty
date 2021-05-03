@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace ChatyChaty.ControllerHubSchema.v1
+namespace ChatyChaty.HttpShemas.v1.Error
 {
     public class ErrorResponse
     {

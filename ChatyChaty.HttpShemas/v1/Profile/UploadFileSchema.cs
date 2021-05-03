@@ -1,4 +1,4 @@
-﻿using ChatyChaty.ControllerHubSchema.v1.Profile.CustomValidationAttributes;
+﻿using ChatyChaty.HttpShemas.v1.Profile.CustomValidationAttributes;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ChatyChaty.ControllerHubSchema.v1
+namespace ChatyChaty.HttpShemas.v1.Profile
 {
     public class UploadFileSchema
     {
