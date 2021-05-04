@@ -52,9 +52,8 @@ namespace ChatyChaty
 
             services.AddMediatR(Assembly.GetExecutingAssembly(), typeof(UsersGotChatUpdateAsync).Assembly);
 
-            //configure MVC 
-            //TODO- remove views
-            services.AddControllersWithViews(option =>
+
+            services.AddControllers(option =>
             {
                 option.Filters.Add(new ProducesAttribute("application/json"));
                 option.Filters.Add(new ConsumesAttribute("application/json"));
@@ -68,13 +67,6 @@ namespace ChatyChaty
             services.CustomConfigureIdentity(Configuration);
 
             services.CustomConfigureJwtAuthentication(Configuration);
-
-            services.AddAuthorization(options =>
-            {
-                options.FallbackPolicy = new AuthorizationPolicyBuilder()
-                    .RequireAuthenticatedUser()
-                    .Build();
-            });
 
             services.CustomConfigureSwagger();
 
@@ -96,17 +88,20 @@ namespace ChatyChaty
 
             app.UseRouting();
 
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
+
             app.UseAuthentication();
 
             app.UseAuthorization();
-
-            app.UseStaticFiles();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHealthChecks("/health", new HealthCheckOptions {
                     ResponseWriter = HealthCheckConfigurationExtension.CustomHealthCheckResponseWriter, AllowCachingResponses = true });
+
                 endpoints.MapHub<MainHub>("/v1/chathub");
+
                 endpoints.MapControllers();
             });
         }

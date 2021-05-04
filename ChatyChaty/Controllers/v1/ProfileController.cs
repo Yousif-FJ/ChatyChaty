@@ -16,6 +16,7 @@ using ChatyChaty.HttpShemas.v1.Error;
 
 namespace ChatyChaty.Controllers.v1
 {
+    [Authorize]
     [ApiExplorerSettings(GroupName = "v1")]
     [Route("api/v1/[controller]")]
     [ApiController]
