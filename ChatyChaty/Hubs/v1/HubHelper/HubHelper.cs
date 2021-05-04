@@ -1,4 +1,5 @@
-﻿using ChatyChaty.Domain.Model.AccountModel;
+﻿using AsyncAwaitBestPractices;
+using ChatyChaty.Domain.Model.AccountModel;
 using ChatyChaty.Domain.Model.Entity;
 using ChatyChaty.Domain.Services.AccountServices;
 using ChatyChaty.Domain.Services.MessageServices;
@@ -45,7 +46,8 @@ namespace ChatyChaty.Hubs.v1
                     chatInfo.PhotoURL)
             );
 
-            _ = hubContext.Clients.User(receiverId.ToString()).UpdateChat(response);
+            hubContext.Clients.User(receiverId.ToString()).UpdateChat(response).SafeFireAndForget();
+
             return true;
         }
 
@@ -58,7 +60,7 @@ namespace ChatyChaty.Hubs.v1
 
             var response =  new MessageStatusResponse(messageId.Value, chatId.Value, true);
 
-            _ = hubContext.Clients.User(receiverId.ToString()).UpdateMessageStatus(response);
+            hubContext.Clients.User(receiverId.ToString()).UpdateMessageStatus(response).SafeFireAndForget();
 
             return true;
         }
@@ -81,7 +83,7 @@ namespace ChatyChaty.Hubs.v1
                 IEnumerable<MessageInfoReponse> response = messages.ToMessageInfoResponse(receiverId);
 
                 //send response to clients
-                _ = hubContext.Clients.User(receiverId.ToString()).UpdateMessages(response);
+                hubContext.Clients.User(receiverId.ToString()).UpdateMessages(response).SafeFireAndForget();
             }
 
             return true;

@@ -20,7 +20,7 @@ namespace XUnitTest.MessageRepositoryTests
             //Act
             var result = await repository.GetForChatAsync(chat.Id);
             //Assert
-            Assert.Equal(1,result.Count);
+            Assert.Single(result);
             Assert.Equal(message.Body, result.FirstOrDefault().Body);
             Assert.Equal(message.Id, result.FirstOrDefault().Id);
             Assert.Equal(message.ConversationId, result.FirstOrDefault().ConversationId);
@@ -38,7 +38,7 @@ namespace XUnitTest.MessageRepositoryTests
             //Act
             var result = await repository.GetForChatAsync(chat1.Id);
             //Assert
-            Assert.Equal(1, result.Count);
+            Assert.Single(result);
             Assert.Equal(message1.Id, result.FirstOrDefault().Id);
         }
 
