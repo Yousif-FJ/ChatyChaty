@@ -9,8 +9,8 @@ namespace ChatyChaty.Hubs.v1
 {
     public interface IHubHelper
     {
-        public bool TrySendMessageUpdate(UserId receiverId, IEnumerable<Message> messages);
-        public bool TrySendChatUpdate(UserId receiverId, ProfileAccountModel chatInfo);
-        public bool TrySendMessageStatusUpdate(UserId userId, ConversationId chatId, MessageId messageId);
+        public Task<bool> TrySendMessageUpdate(UserId receiverId, IEnumerable<Message> messages);
+        public Task<bool> TrySendChatUpdate(UserId receiverId, ProfileAccountModel chatInfo);
+        public Task<bool> TrySendMessageStatusUpdate(UserId userId, ConversationId chatId, MessageId messageId);
     }
 }

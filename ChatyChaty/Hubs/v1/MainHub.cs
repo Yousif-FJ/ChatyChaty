@@ -1,5 +1,4 @@
-﻿using ChatyChaty.ControllerHubSchema.v1;
-using ChatyChaty.Domain.Model.Entity;
+﻿using ChatyChaty.Domain.Model.Entity;
 using ChatyChaty.Domain.Services.MessageServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;

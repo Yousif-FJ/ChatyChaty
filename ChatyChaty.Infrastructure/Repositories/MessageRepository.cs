@@ -28,14 +28,14 @@ namespace ChatyChaty.Infrastructure.Repositories.MessageRepository
             return DBMessage.Entity;
         }
 
-        public async Task<Message> GetAsync(MessageId Id)
+        public Task<Message> GetAsync(MessageId Id)
         {
-            return await dBContext.Messages.FindAsync(Id);
+            return dBContext.Messages.Include(m => m.Sender).FirstOrDefaultAsync(m => m.Id == Id);
         }
 
-        public async Task<IList<Message>> GetForChatAsync(ConversationId conversationId, int count = 100)
+        public Task<List<Message>> GetForChatAsync(ConversationId conversationId, int count = 100)
         {
-            return await dBContext.Messages
+            return dBContext.Messages
                 .Where(m => m.ConversationId == conversationId)
                 .Include(m => m.Sender)
                 .AsSplitQuery()
@@ -43,16 +43,16 @@ namespace ChatyChaty.Infrastructure.Repositories.MessageRepository
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Message>> GetAllAsync(UserId userId)
+        public  Task<List<Message>> GetAllAsync(UserId userId)
         {
-            return await dBContext.Messages
+            return dBContext.Messages
             .Where(m => m.Conversation.FirstUserId == userId || m.Conversation.SecondUserId == userId)
             .Include(m => m.Sender)
             .AsSplitQuery()
             .ToListAsync();
         }
 
-        public async Task<IEnumerable<Message>> GetNewAsync(MessageId messageId, UserId userId)
+        public async Task<List<Message>> GetNewAsync(MessageId messageId, UserId userId)
         {
             var message = await GetAsync(messageId);
 

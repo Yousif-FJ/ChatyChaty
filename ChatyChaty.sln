@@ -13,8 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatyChaty.Domain", "ChatyC
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatyChaty.Infrastructure", "ChatyChaty.Infrastructure\ChatyChaty.Infrastructure.csproj", "{C4339AB4-CE5C-430D-8B94-F85199C23510}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatyChatyClient", "ChatyChatyClient\ChatyChatyClient.csproj", "{1018EA77-AC12-4CFD-BA03-68B753D173B4}"
-EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatyChaty.HttpShemas", "ChatyChaty.HttpShemas\ChatyChaty.HttpShemas.csproj", "{C48FF066-E282-4DF3-9345-33626F20BFE6}"
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Client", "Client", "{0D7DEE0C-D768-419F-BBD3-95A51E787D03}"
 EndProject
 Global
@@ -43,6 +42,10 @@ Global
 		{C4339AB4-CE5C-430D-8B94-F85199C23510}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C4339AB4-CE5C-430D-8B94-F85199C23510}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C4339AB4-CE5C-430D-8B94-F85199C23510}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C48FF066-E282-4DF3-9345-33626F20BFE6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C48FF066-E282-4DF3-9345-33626F20BFE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C48FF066-E282-4DF3-9345-33626F20BFE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C48FF066-E282-4DF3-9345-33626F20BFE6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1018EA77-AC12-4CFD-BA03-68B753D173B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1018EA77-AC12-4CFD-BA03-68B753D173B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1018EA77-AC12-4CFD-BA03-68B753D173B4}.Release|Any CPU.ActiveCfg = Release|Any CPU

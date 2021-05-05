@@ -1,6 +1,7 @@
 ﻿using ChatyChaty.Domain.Model.Entity;
 using ChatyChaty.Domain.Services.MessageServices;
-using ChatyChaty.Domain.Services.NotficationServices.Handler;
+using ChatyChaty.Domain.Services.NotficationRequests;
+using ChatyChaty.Domain.Services.ScopeServices;
 using ChatyChaty.Infrastructure.Database;
 using ChatyChaty.Infrastructure.Repositories.ChatRepository;
 using ChatyChaty.Infrastructure.Repositories.MessageRepository;
@@ -8,6 +9,7 @@ using ChatyChaty.Infrastructure.Repositories.UserRepository;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -29,8 +31,11 @@ namespace XUnitTest.Services
             var messageRepository = new MessageRepository(dbContext);
             var chatRepository = new ChatRepository(dbContext);
 
-            var notificationHandlerMock = new Mock<IMediator>() ;
-            messageService = new MessageService(messageRepository, chatRepository, notificationHandlerMock.Object);
+            var loggerMock = new Mock<ILogger<FireAndForgetService>>();
+            var scopeFactoryMock = new Mock<IServiceScopeFactory>();
+
+            var fireAndForegetMock = new Mock<FireAndForgetService>(loggerMock.Object, scopeFactoryMock.Object);
+            messageService = new MessageService(messageRepository, chatRepository, fireAndForegetMock.Object);
         }
 
 

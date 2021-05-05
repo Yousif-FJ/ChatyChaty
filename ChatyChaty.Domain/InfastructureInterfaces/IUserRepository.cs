@@ -8,7 +8,7 @@ namespace ChatyChaty.Domain.InfastructureInterfaces
 {
     public interface IUserRepository
     {
-        Task<AppUser> GetAsync(UserId Id);
+        ValueTask<AppUser> GetAsync(UserId Id);
         Task<AppUser> UpdateAsync(AppUser user);
     }
 }

@@ -18,15 +18,15 @@ namespace ChatyChaty.Infrastructure.Repositories.ChatRepository
             dBContext = DBContext;
         }
 
-        public async Task<Conversation> GetAsync(ConversationId ConversationId)
+        public Task<Conversation> GetAsync(ConversationId ConversationId)
         {
-            return await dBContext.Conversations
+            return dBContext.Conversations
                 .FirstOrDefaultAsync(c => c.Id == ConversationId);
         }
 
-        public async Task<IEnumerable<Conversation>> GetWithUsersAsync(UserId UserId)
+        public Task<List<Conversation>> GetWithUsersAsync(UserId UserId)
         {
-            return await dBContext.Conversations
+            return dBContext.Conversations
                 .Where(c => c.FirstUserId == UserId || c.SecondUserId == UserId)
                 .Include(c => c.FirstUser).Include(c => c.SecondUser)
                 .AsSplitQuery()
@@ -46,16 +46,16 @@ namespace ChatyChaty.Infrastructure.Repositories.ChatRepository
         }
 
 
-        public async Task<IEnumerable<Conversation>> GetAllAsync(UserId userId)
+        public Task<List<Conversation>> GetAllAsync(UserId userId)
         {
-            return await dBContext.Conversations
+            return dBContext.Conversations
                .Where(c => c.FirstUserId == userId || c.SecondUserId == userId)
                .ToListAsync();
         }
 
-        public async Task<Conversation> GetAsync(UserId user1Id, UserId user2Id)
+        public Task<Conversation> GetAsync(UserId user1Id, UserId user2Id)
         {
-            var conversation = await dBContext.Conversations.FirstOrDefaultAsync(
+            var conversation = dBContext.Conversations.FirstOrDefaultAsync(
                 c => (c.FirstUserId == user1Id && c.SecondUserId == user2Id) ||
                      (c.FirstUserId == user2Id && c.SecondUserId == user1Id)
                         );

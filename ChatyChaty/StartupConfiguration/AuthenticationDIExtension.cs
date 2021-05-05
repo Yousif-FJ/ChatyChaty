@@ -1,4 +1,4 @@
-﻿using ChatyChaty.ControllerHubSchema.v1;
+﻿using ChatyChaty.HttpShemas.v1.Error;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;

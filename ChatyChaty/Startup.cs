@@ -3,25 +3,22 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Authorization;
 using ChatyChaty.Hubs.v1;
 using ChatyChaty.Domain.Services.AccountServices;
 using ChatyChaty.Domain.Services.AuthenticationManager;
 using ChatyChaty.Domain.Services.MessageServices;
-using ChatyChaty.Domain.Services.NotficationServices.Handler;
-using ChatyChaty.Domain.Model.Entity;
-using ChatyChaty.Infrastructure.Database;
 using ChatyChaty.Infrastructure.StartupConfiguration;
 using ChatyChaty.StartupConfiguration;
+using ChatyChaty.StartupConfiguration.ControllersCustomAttributes;
+using ChatyChaty.Domain.Services.NotficationRequests;
+using ChatyChaty.Domain.Services.ScopeServices;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
-using ChatyChaty.ValidationAttribute;
-using Microsoft.AspNetCore.Routing.Patterns;
 
 namespace ChatyChaty
 {
@@ -40,14 +37,13 @@ namespace ChatyChaty
 
             //register classes in DI 
 
-            services.AddIdentity<AppUser, Role>()
-               .AddEntityFrameworkStores<ChatyChatyContext>();
-
             services.AddScoped<IAccountManager, AccountManager>();
 
             services.AddScoped<IHubHelper,HubHelper>();
 
             services.AddSingleton<IHubSessions,MemoryHubSessions>();
+
+            services.AddSingleton<IFireAndForgetService,FireAndForgetService>();
 
             services.AddScoped<IAuthenticationManager, AuthenticationManager>();
 
@@ -57,12 +53,10 @@ namespace ChatyChaty
 
             services.AddInfrastructureClasses(Configuration);
 
-            //add MediatR 
             services.AddMediatR(Assembly.GetExecutingAssembly(), typeof(UsersGotChatUpdateAsync).Assembly);
 
-            //configure MVC 
-            //TODO- remove views
-            services.AddControllersWithViews(option =>
+
+            services.AddControllers(option =>
             {
                 option.Filters.Add(new ProducesAttribute("application/json"));
                 option.Filters.Add(new ConsumesAttribute("application/json"));
@@ -70,43 +64,15 @@ namespace ChatyChaty
                 option.Filters.Add(typeof(CustomModelValidationResponseAttribute));
             });
 
-            //configure DBcontext 
 
             services.CustomConfigureDbContext(Configuration);
 
-            //configure identity 
+            services.CustomConfigureIdentity(Configuration);
 
-            services.Configure<IdentityOptions>(options =>
-            {
-                // Password settings.
-                options.Password.RequireDigit = true;
-                options.Password.RequireLowercase = true;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireUppercase = false;
-                options.Password.RequiredLength = 6;
-                options.Password.RequiredUniqueChars = 1;
-
-                // User settings.
-                options.User.AllowedUserNameCharacters =
-                "abcdefghijklmnopqrstuvwxyz0123456789_";
-            });
-
-
-            //configure BearerJWT using extension method 
             services.CustomConfigureJwtAuthentication(Configuration);
 
-            services.AddAuthorization(options =>
-            {
-                options.FallbackPolicy = new AuthorizationPolicyBuilder()
-                    .RequireAuthenticatedUser()
-                    .Build();
-            });
-
-
-            //configure swagger using extension method 
             services.CustomConfigureSwagger();
 
-            //configure custom health check
             services.CustomConfigureHealthCheck();
         }
 
@@ -125,19 +91,22 @@ namespace ChatyChaty
 
             app.UseRouting();
 
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
+
             app.UseAuthentication();
 
             app.UseAuthorization();
 
             app.UseBlazorFrameworkFiles();
 
-            app.UseStaticFiles();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHealthChecks("/health", new HealthCheckOptions {
                     ResponseWriter = HealthCheckConfigurationExtension.CustomHealthCheckResponseWriter, AllowCachingResponses = true });
+
                 endpoints.MapHub<MainHub>("/v1/chathub");
+
                 endpoints.MapControllers();
                 endpoints.MapFallbackToFile("/client/{param?}", "index.html");
             });

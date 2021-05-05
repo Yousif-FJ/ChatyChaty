@@ -1,0 +1,39 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+    <title>SignalR Testing Client</title>
+</head>
+<body>
+    <div class="container">
+
+
+        <h2>Authentication</h2>
+        <p>This client is just to test SignalR actions</p>
+        <div class="form-group mt-3">
+            <label>JWT Token (get the jwt token from authentication controller)</label>
+            <input class="form-control" type="text" id="Token" />
+        </div>
+        <button id="authenticate-and-connect-button" class="btn btn-primary" type="button" onclick="Start()">Authenticate and connect</button>
+
+
+        <div id="main-controller-container" hidden="hidden">
+
+            <hr />
+            <h2>Response</h2>
+            <div>
+                <h6 id="listeningMethodList">List of methods listening to: </h6>
+                <ul id="messagesList"></ul>
+            </div>
+        </div>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/3.1.6/signalr.min.js"></script>
+        <script src="/js/SignalRTestClient/Script.js"></script>
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
+    </div>
+
+</body>
+</html>

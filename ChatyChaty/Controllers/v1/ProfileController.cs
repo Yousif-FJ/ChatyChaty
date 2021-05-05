@@ -5,17 +5,18 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using ChatyChaty.ControllerHubSchema.v1;
-using ChatyChaty.Domain.Model.Entity;
-using ChatyChaty.Domain.Services.AccountServices;
-using ChatyChaty.Domain.Services.MessageServices;
-using ChatyChaty.ValidationAttribute;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ChatyChaty.Domain.Model.Entity;
+using ChatyChaty.Domain.Services.AccountServices;
+using ChatyChaty.Domain.Services.MessageServices;
+using ChatyChaty.HttpShemas.v1.Profile;
+using ChatyChaty.HttpShemas.v1.Error;
 
 namespace ChatyChaty.Controllers.v1
 {
+    [Authorize]
     [ApiExplorerSettings(GroupName = "v1")]
     [Route("api/v1/[controller]")]
     [ApiController]
@@ -50,7 +51,6 @@ namespace ChatyChaty.Controllers.v1
             }
 
             return Ok(result.URL);
-
         }
 
 
@@ -99,7 +99,6 @@ namespace ChatyChaty.Controllers.v1
                 new UserProfileResponse(chat.ChatId.Value,
                     new ProfileResponse(chat.Username, chat.DisplayName, chat.PhotoURL
                     )));
-               
             };
 
             return Ok(chatListResponse);

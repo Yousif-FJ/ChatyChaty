@@ -1,4 +1,4 @@
-﻿using ChatyChaty.ControllerHubSchema.v1;
+﻿using ChatyChaty.HttpShemas.v1.Authentication;
 using System;
 using System.Collections.Generic;
 using System.Linq;

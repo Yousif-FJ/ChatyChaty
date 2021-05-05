@@ -16,9 +16,9 @@ namespace ChatyChaty.Infrastructure.Repositories.UserRepository
             dBContext = DBContext;
         }
 
-        public async Task<AppUser> GetAsync(UserId Id)
+        public ValueTask<AppUser> GetAsync(UserId Id)
         {
-            return await dBContext.Users.FindAsync(Id);
+            return dBContext.Users.FindAsync(Id);
         }
 
         public async Task<AppUser> UpdateAsync(AppUser user)

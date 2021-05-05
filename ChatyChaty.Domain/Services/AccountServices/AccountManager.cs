@@ -1,7 +1,8 @@
 ﻿using ChatyChaty.Domain.InfastructureInterfaces;
 using ChatyChaty.Domain.Model.AccountModel;
 using ChatyChaty.Domain.Model.Entity;
-using ChatyChaty.Domain.Services.NotficationServices.Handler;
+using ChatyChaty.Domain.Services.NotficationRequests;
+using ChatyChaty.Domain.Services.ScopeServices;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
@@ -24,7 +25,7 @@ namespace ChatyChaty.Domain.Services.AccountServices
         private readonly IChatRepository chatRepository;
         private readonly IPictureProvider pictureProvider;
         private readonly ILogger<AccountManager> logger;
-        private readonly IMediator mediator;
+        private readonly IFireAndForgetService fireAndForgetService;
 
         public AccountManager(
             UserManager<AppUser> userManager,
@@ -32,7 +33,7 @@ namespace ChatyChaty.Domain.Services.AccountServices
             IChatRepository chatRepository,
             IPictureProvider pictureProvider,
             ILogger<AccountManager> logger,
-            IMediator mediator
+            IFireAndForgetService fireAndForgetService
             )
         {
             this.userManager = userManager;
@@ -40,7 +41,7 @@ namespace ChatyChaty.Domain.Services.AccountServices
             this.chatRepository = chatRepository;
             this.pictureProvider = pictureProvider;
             this.logger = logger;
-            this.mediator = mediator;
+            this.fireAndForgetService = fireAndForgetService;
         }
 
         /// <summary>
@@ -83,7 +84,8 @@ namespace ChatyChaty.Domain.Services.AccountServices
                 conversation = await chatRepository.AddAsync(conversation); 
             }
 
-            await mediator.Send(new UsersGotChatUpdateAsync((receiver.Id, conversation.Id)));
+            fireAndForgetService.FireAsync<IMediator>(mediator
+                => mediator.Send(new UsersGotChatUpdateAsync((receiver.Id, conversation.Id))));
 
             return new NewConversationModel
             {
@@ -170,7 +172,9 @@ namespace ChatyChaty.Domain.Services.AccountServices
             }
 
             var setPhotoResult = await pictureProvider.ChangePhoto(user.Id, user.UserName, fileName, file);
-            await mediator.Send(new UserUpdatedTheirProfileAsync(userId));
+
+            fireAndForgetService.FireAsync<IMediator>(mediator => mediator.Send(new UserUpdatedTheirProfileAsync(userId)));
+             
             return setPhotoResult;
         }
 
@@ -190,7 +194,7 @@ namespace ChatyChaty.Domain.Services.AccountServices
 
             await userRepository.UpdateAsync(user);
 
-            await mediator.Send(new UserUpdatedTheirProfileAsync(userId));
+            fireAndForgetService.FireAsync<IMediator>(mediator => mediator.Send(new UserUpdatedTheirProfileAsync(userId)));
 
             return user.DisplayName;
         }

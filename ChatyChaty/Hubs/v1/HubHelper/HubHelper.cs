@@ -1,8 +1,10 @@
-﻿using ChatyChaty.ControllerHubSchema.v1;
-using ChatyChaty.Domain.Model.AccountModel;
+﻿using ChatyChaty.Domain.Model.AccountModel;
 using ChatyChaty.Domain.Model.Entity;
 using ChatyChaty.Domain.Services.AccountServices;
 using ChatyChaty.Domain.Services.MessageServices;
+using ChatyChaty.HttpShemas.v1.Message;
+using ChatyChaty.HttpShemas.v1.Profile;
+using ChatyChaty.ModelExtensions;
 using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
@@ -28,7 +30,7 @@ namespace ChatyChaty.Hubs.v1
             this.hubClients = hubClients;
         }
 
-        public bool TrySendChatUpdate(UserId receiverId, ProfileAccountModel chatInfo)
+        public async Task<bool> TrySendChatUpdate(UserId receiverId, ProfileAccountModel chatInfo)
         {
             if (hubClients.IsClientConnected(receiverId) == false)
             {
@@ -43,11 +45,12 @@ namespace ChatyChaty.Hubs.v1
                     chatInfo.PhotoURL)
             );
 
-            _ = hubContext.Clients.User(receiverId.ToString()).UpdateChat(response);
+            await hubContext.Clients.User(receiverId.ToString()).UpdateChat(response);
+
             return true;
         }
 
-        public bool TrySendMessageStatusUpdate(UserId receiverId, ConversationId chatId, MessageId messageId)
+        public async Task<bool> TrySendMessageStatusUpdate(UserId receiverId, ConversationId chatId, MessageId messageId)
         {
             if (hubClients.IsClientConnected(receiverId) == false)
             {
@@ -56,7 +59,7 @@ namespace ChatyChaty.Hubs.v1
 
             var response =  new MessageStatusResponse(messageId.Value, chatId.Value, true);
 
-            _ = hubContext.Clients.User(receiverId.ToString()).UpdateMessageStatus(response);
+            await hubContext.Clients.User(receiverId.ToString()).UpdateMessageStatus(response);
 
             return true;
         }
@@ -67,7 +70,7 @@ namespace ChatyChaty.Hubs.v1
         /// <param name="receiverId"></param>
         /// <param name="messages"></param>
         /// <returns></returns>
-        public bool TrySendMessageUpdate(UserId receiverId, IEnumerable<Message> messages)
+        public async Task<bool> TrySendMessageUpdate(UserId receiverId, IEnumerable<Message> messages)
         {
             if (hubClients.IsClientConnected(receiverId) == false)
             {
@@ -79,7 +82,7 @@ namespace ChatyChaty.Hubs.v1
                 IEnumerable<MessageInfoReponse> response = messages.ToMessageInfoResponse(receiverId);
 
                 //send response to clients
-                _ = hubContext.Clients.User(receiverId.ToString()).UpdateMessages(response);
+                await hubContext.Clients.User(receiverId.ToString()).UpdateMessages(response);
             }
 
             return true;
