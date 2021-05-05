@@ -17,6 +17,7 @@ using ChatyChaty.Infrastructure.StartupConfiguration;
 using ChatyChaty.StartupConfiguration;
 using ChatyChaty.StartupConfiguration.ControllersCustomAttributes;
 using ChatyChaty.Domain.Services.NotficationRequests;
+using ChatyChaty.Domain.Services.ScopeServices;
 using MediatR;
 
 namespace ChatyChaty
@@ -41,6 +42,8 @@ namespace ChatyChaty
             services.AddScoped<IHubHelper,HubHelper>();
 
             services.AddSingleton<IHubSessions,MemoryHubSessions>();
+
+            services.AddSingleton<IFireAndForgetService,FireAndForgetService>();
 
             services.AddScoped<IAuthenticationManager, AuthenticationManager>();
 

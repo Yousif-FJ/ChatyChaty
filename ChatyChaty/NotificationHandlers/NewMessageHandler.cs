@@ -26,7 +26,8 @@ namespace ChatyChaty.NotificationHandlers
 
                 var message = await messageRepository.GetAsync(messageId);
 
-                bool successful = hubHelper.TrySendMessageUpdate(userId, new List<Message> { message });
+
+                bool successful = await hubHelper.TrySendMessageUpdate(userId, new List<Message> { message });
                 if (successful == false)
                 {
                 }

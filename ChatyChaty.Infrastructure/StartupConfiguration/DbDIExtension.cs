@@ -13,7 +13,7 @@ namespace ChatyChaty.Infrastructure.StartupConfiguration
     {
         public static void CustomConfigureDbContext(this IServiceCollection services, IConfiguration Configuration)
         {
-            services.AddDbContextPool<ChatyChatyContext>(optionsBuilder =>
+            services.AddDbContext<ChatyChatyContext>(optionsBuilder =>
             {
                 string databaseUrl = Configuration["DATABASE_URL"];
                 if (databaseUrl == null)

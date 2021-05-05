@@ -22,7 +22,7 @@ namespace ChatyChaty.NotificationHandlers
             IEnumerable<ProfileAccountModel> chats = await accountManager.GetConversations(request.UserId);
             foreach (var chat in chats)
             {
-                var successful = hubHelper.TrySendChatUpdate(chat.UserId, chat);
+                var successful = await hubHelper.TrySendChatUpdate(chat.UserId, chat);
                 if (successful == false)
                 {
                 }

@@ -11,7 +11,7 @@ namespace ChatyChaty.Domain.InfastructureInterfaces
     /// </summary>
     public interface IMessageRepository
     {
-        ValueTask<Message> GetAsync(MessageId Id);
+        Task<Message> GetAsync(MessageId Id);
         Task<List<Message>> GetAllAsync(UserId userId);
         Task<List<Message>> GetNewAsync(MessageId messageId, UserId userId);
         Task<List<Message>> GetForChatAsync(ConversationId conversationId, int count = 100);

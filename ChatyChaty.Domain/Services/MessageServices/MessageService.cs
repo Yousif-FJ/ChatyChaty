@@ -3,11 +3,13 @@ using ChatyChaty.Domain.Model.AccountModel;
 using ChatyChaty.Domain.Model.Entity;
 using ChatyChaty.Domain.Model.MessagingModel;
 using ChatyChaty.Domain.Services.NotficationRequests;
+using ChatyChaty.Domain.Services.ScopeServices;
 using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 
 namespace ChatyChaty.Domain.Services.MessageServices
 {
@@ -18,16 +20,17 @@ namespace ChatyChaty.Domain.Services.MessageServices
     {
         private readonly IMessageRepository messageRepository;
         private readonly IChatRepository chatRepository;
-        private readonly IMediator mediator;
+        private readonly IFireAndForgetService fireAndForget;
 
         public MessageService(
             IMessageRepository messageRepository,
             IChatRepository chatRepository,
-            IMediator mediator)
+            IFireAndForgetService fireAndForget
+            )
         {
             this.messageRepository = messageRepository;
-            this.mediator = mediator;
             this.chatRepository = chatRepository;
+            this.fireAndForget = fireAndForget;
         }
 
         /// <summary>
@@ -75,10 +78,11 @@ namespace ChatyChaty.Domain.Services.MessageServices
             }
 
             var message = new Message(MessageBody, conversation.Id, senderId);
+
             await messageRepository.AddAsync(message);
 
-            await mediator.Send(new UserGotNewMessageAsync((receiverId, message.Id)));
-
+            fireAndForget.FireAsync<IMediator>(mediator => mediator.Send(new UserGotNewMessageAsync((receiverId, message.Id))));
+            
             return new SendMessageModel { Message = message };
         }
 
@@ -112,7 +116,8 @@ namespace ChatyChaty.Domain.Services.MessageServices
             }
             await messageRepository.UpdateRangeAsync(markMessages);
 
-            await mediator.Send(new UsersGotMessageStatusUpdateAsync(markMessages.Select(m => (m.SenderId,m.ConversationId, m.Id)).ToArray()));
+            fireAndForget.FireAsync<IMediator>(mediator =>
+                mediator.Send(new UsersGotMessageStatusUpdateAsync(markMessages.Select(m => (m.SenderId, m.ConversationId, m.Id)).ToArray())));
 
             return new GetMessagesModel { Messages = newMessages };
         }

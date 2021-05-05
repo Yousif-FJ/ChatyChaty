@@ -14,17 +14,15 @@ namespace ChatyChaty.NotificationHandlers
         {
         }
 
-        protected override Task Handle(UsersGotMessageStatusUpdateAsync request, CancellationToken cancellationToken)
+        protected override async Task Handle(UsersGotMessageStatusUpdateAsync request, CancellationToken cancellationToken)
         {
             foreach (var (receieverId, chatId, messageId) in request.MessageInfo)
             {
-                var sentSuccessfully = hubHelper.TrySendMessageStatusUpdate(receieverId, chatId, messageId);
+                var sentSuccessfully = await hubHelper.TrySendMessageStatusUpdate(receieverId, chatId, messageId);
                 if (sentSuccessfully == false)
                 {
                 }
             }
-
-            return Task.CompletedTask;
         }
     }
 }

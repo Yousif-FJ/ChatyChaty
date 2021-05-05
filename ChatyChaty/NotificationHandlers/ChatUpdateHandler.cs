@@ -23,7 +23,7 @@ namespace ChatyChaty.NotificationHandlers
             foreach (var (receiverId, chatId) in request.InvokerAndReceiverIds)
             {
                 var chat = await accountManager.GetConversation(chatId, receiverId);
-                bool successful = hubHelper.TrySendChatUpdate(receiverId, chat);
+                bool successful = await hubHelper.TrySendChatUpdate(receiverId, chat);
                 if (successful == false)
                 {
                 }

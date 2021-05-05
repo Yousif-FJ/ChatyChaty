@@ -28,9 +28,9 @@ namespace ChatyChaty.Infrastructure.Repositories.MessageRepository
             return DBMessage.Entity;
         }
 
-        public ValueTask<Message> GetAsync(MessageId Id)
+        public Task<Message> GetAsync(MessageId Id)
         {
-            return dBContext.Messages.FindAsync(Id);
+            return dBContext.Messages.Include(m => m.Sender).FirstOrDefaultAsync(m => m.Id == Id);
         }
 
         public Task<List<Message>> GetForChatAsync(ConversationId conversationId, int count = 100)
