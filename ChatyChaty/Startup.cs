@@ -19,6 +19,7 @@ using ChatyChaty.StartupConfiguration.ControllersCustomAttributes;
 using ChatyChaty.Domain.Services.NotficationRequests;
 using ChatyChaty.Domain.Services.ScopeServices;
 using MediatR;
+using System.Collections.Generic;
 
 namespace ChatyChaty
 {
@@ -54,7 +55,6 @@ namespace ChatyChaty
             services.AddInfrastructureClasses(Configuration);
 
             services.AddMediatR(Assembly.GetExecutingAssembly(), typeof(UsersGotChatUpdateAsync).Assembly);
-
 
             services.AddControllers(option =>
             {
@@ -92,6 +92,7 @@ namespace ChatyChaty
             app.UseRouting();
 
             app.UseDefaultFiles();
+
             app.UseStaticFiles();
 
             app.UseAuthentication();
