@@ -4,14 +4,15 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ChatyChatyClient.HttpSchemas.Authentication
+namespace ChatyChatyClient.ViewModel
 {
-    public class ChangePasswordSchema
+    public class LoginViewModel
     {
         [Required]
-        public string CurrentPassword { get; set; }
+        [MaxLength(32)]
+        public string Username { get; set; }
         [Required]
         [MaxLength(64)]
-        public string NewPassword { get; set; }
+        public string Password { get; set; }
     }
 }

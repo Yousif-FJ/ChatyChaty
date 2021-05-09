@@ -8,6 +8,11 @@ namespace ChatyChaty.HttpShemas.v1.Error
 {
     public class ErrorResponse
     {
+        public ErrorResponse()
+        {
+            Errors = new List<string>();
+        }
+
         public ErrorResponse(string error)
         {
             if (string.IsNullOrWhiteSpace(error))
@@ -22,7 +27,7 @@ namespace ChatyChaty.HttpShemas.v1.Error
             Errors = errors ?? throw new ArgumentNullException(nameof(errors));
         }
 
-        public IEnumerable<string> Errors { get; }
+        public IEnumerable<string> Errors { get; init; }
 
 
         public string ToJson()

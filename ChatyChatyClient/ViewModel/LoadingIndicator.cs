@@ -5,7 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
-namespace ChatyChatyClient.Entities
+namespace ChatyChatyClient.ViewModel
 {
     public class LoadingIndicator : INotifyPropertyChanged
     {
@@ -16,9 +16,9 @@ namespace ChatyChatyClient.Entities
             get => IsVisible;
             private set
             {
-                if (value != this.IsVisible)
+                if (value != IsVisible)
                 {
-                    this.IsVisible = value;
+                    IsVisible = value;
                     NotifyPropertyChanged();
                 }
             }
@@ -35,7 +35,7 @@ namespace ChatyChatyClient.Entities
 
 
         public event PropertyChangedEventHandler PropertyChanged;
-        private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
+        private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

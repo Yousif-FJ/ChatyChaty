@@ -9,14 +9,15 @@
 
 <div class="m-1">
     <h4 class="my-3 fw-bold">Login</h4>
-    <form>
+    <EditForm OnValidSubmit="@Login" Model="@loginModel" >
+        <DataAnnotationsValidator />
         <div class="mb-3">
             <label for="exampleInputEmail1" class="form-label">Username</label>
-            <input @bind="Username" class="form-control" type="text">
+            <InputText @bind-Value="loginModel.Username" class="form-control" type="text"/>
         </div>
         <div class="mb-3">
-            <label for="exampleInputPassword1" class="form-label">Password</label>
-            <input @bind="Password" class="form-control" type="password">
+            <label class="form-label">Password</label>
+            <InputText @bind-Value="loginModel.Password" class="form-control" type="password"/>
         </div>
         @if (Error is not null)
         {
@@ -24,9 +25,10 @@
                 @Error
             </div>
         }
-        <button @onclick="Login" disabled="@DisableLoginButton" type="button" class="btn btn-primary">
+        <ValidationSummary />
+        <button disabled="@DisableLoginButton" type="submit" class="btn btn-primary">
             Login
         </button>
-    </form>
+    </EditForm>
 </div>
 

@@ -8,18 +8,19 @@
 
 <div class="m-1">
     <h4 class="my-3 fw-bold">SignUp</h4>
-    <form>
+    <EditForm OnValidSubmit="@SignUp" Model="@signUpViewModel">
+        <DataAnnotationsValidator />
         <div class="mb-3">
             <label for="exampleInputEmail1" class="form-label">Username</label>
-            <input @bind="Username" class="form-control" type="text">
+            <InputText @bind-Value="signUpViewModel.Username" class="form-control" type="text" />
         </div>
         <div class="mb-3">
-            <label for="exampleInputPassword1" class="form-label">Password</label>
-            <input @bind="Password" class="form-control" type="password">
+            <label class="form-label">Password</label>
+            <InputText @bind-Value="signUpViewModel.Password" class="form-control" type="password" />
         </div>
         <div class="mb-3">
-            <label for="exampleInputEmail1" class="form-label">Display name</label>
-            <input @bind="DisplayName" class="form-control" type="text">
+            <label class="form-label">Display name</label>
+            <InputText @bind-Value="signUpViewModel.DisplayName" class="form-control" type="text" />
         </div>
         @if (Error is not null)
         {
@@ -27,6 +28,9 @@
                 @Error
             </div>
         }
-        <button @onclick="SignUp" disabled="@DisableLoginButton" type="button" class="btn btn-primary">SignUp</button>
-    </form>
+        <ValidationSummary />
+        <button disabled="@DisableLoginButton" type="submit" class="btn btn-primary">
+            SignUp
+        </button>
+    </EditForm>
 </div>

@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
-using ChatyChatyClient.Entities;
 using ChatyChatyClient.Actions.Request.Authentication;
+using ChatyChatyClient.ViewModel;
 
 namespace ChatyChatyClient.Pages.Authentication
 {
@@ -16,9 +16,7 @@ namespace ChatyChatyClient.Pages.Authentication
         [Inject]
         private NavigationManager NavigationManager { get; set; }
 
-#pragma warning disable IDE0044 // Add readonly modifier
-        private string Username;
-        private string Password;
+        private readonly LoginViewModel loginModel = new();
         private string Error;
 
         [CascadingParameter]
@@ -28,7 +26,7 @@ namespace ChatyChatyClient.Pages.Authentication
         public async Task Login()
         {
             DisableButton();
-            var result = await MediatR.Send(new LoginRequest(Username, Password));
+            var result = await MediatR.Send(new LoginRequest(loginModel.Username, loginModel.Password));
             if (result.IsSuccessful == false)
             {
                 Error = result.Error;

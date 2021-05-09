@@ -4,9 +4,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ChatyChatyClient.HttpSchemas.Authentication
+namespace ChatyChatyClient.ViewModel
 {
-    public class LoginAccountSchema
+    public class SignUpViewModel
     {
         [Required]
         [MaxLength(32)]
@@ -14,5 +14,8 @@ namespace ChatyChatyClient.HttpSchemas.Authentication
         [Required]
         [MaxLength(64)]
         public string Password { get; set; }
+        [Required]
+        [MaxLength(32)]
+        public string DisplayName { get; set; }
     }
 }

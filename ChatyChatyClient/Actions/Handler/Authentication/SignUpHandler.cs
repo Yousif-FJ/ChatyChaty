@@ -4,31 +4,31 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using ChatyChaty.HttpShemas.v1.Authentication;
+using ChatyChaty.HttpShemas.v1.Error;
 using ChatyChatyClient.Actions.Request.Authentication;
 using ChatyChatyClient.Entities;
-using ChatyChatyClient.HttpSchemas;
-using ChatyChatyClient.HttpSchemas.Authentication;
 using ChatyChatyClient.Repository;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace ChatyChatyClient.Actions.Handler.Authentication
 {
     public class SignUpHandler : AuthenticationActionHandlerBase, IRequestHandler<SignUpRequest, AuthenticationResult>
     {
-        private static readonly string SignupURL = "/api/v3/Authentication/NewAccount";
+        private static readonly string SignupURL = "/api/v1/Authentication/NewAccount";
 
-        public SignUpHandler(HttpClient httpClient, IAuthenticationRepository authenticationRepository, IProfileRepository profileRepository)
-            : base(httpClient, authenticationRepository, profileRepository) { }
+        public SignUpHandler(HttpClient httpClient,
+            IAuthenticationRepository authenticationRepository,
+            IProfileRepository profileRepository,
+            ILogger<SignUpHandler> logger)
+            : base(httpClient, authenticationRepository, profileRepository, logger) { }
 
         public async Task<AuthenticationResult> Handle(SignUpRequest request, CancellationToken cancellationToken)
         {
-            if (IsInvalidInput(request, out string error))
-            {
-                return new AuthenticationResult(false, error);
-            }
-
             var signUpInfo = new CreateAccountSchema() { Password = request.Password, Username = request.Username, DisplayName = request.DisplayName };
             var httpResponse = await httpClient.PostAsJsonAsync(SignupURL, signUpInfo, cancellationToken);
 
@@ -44,8 +44,9 @@ namespace ChatyChatyClient.Actions.Handler.Authentication
 
                 response = await httpResponse.Content.ReadFromJsonAsync<AuthResponse>(cancellationToken: cancellationToken);
             }
-            catch (NotSupportedException)
+            catch (Exception e) when (e is NotSupportedException || e is JsonException)
             {
+                logger.LogError(e, "Error while reading Response");
                 return new AuthenticationResult(false, "Error at the server");
             }
 
@@ -58,27 +59,6 @@ namespace ChatyChatyClient.Actions.Handler.Authentication
              ));
 
             return new AuthenticationResult(true, null);
-        }
-
-        private static bool IsInvalidInput(SignUpRequest request, out string errors)
-        {
-            if (string.IsNullOrWhiteSpace(request.Username))
-            {
-                errors = $"{nameof(request.Username)} can't be empty";
-                return true;
-            }
-            if (string.IsNullOrWhiteSpace(request.Password))
-            {
-                errors = $"{nameof(request.Password)} can't be empty";
-                return true;
-            }
-            if (string.IsNullOrWhiteSpace(request.DisplayName))
-            {
-                errors = $"{nameof(request.DisplayName)} can't be empty";
-                return true;
-            }
-            errors = default;
-            return false;
         }
     }
 }
