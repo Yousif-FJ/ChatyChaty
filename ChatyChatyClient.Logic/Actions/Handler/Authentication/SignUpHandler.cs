@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using ChatyChaty.HttpShemas.v1.Authentication;
 using ChatyChaty.HttpShemas.v1.Error;
 using ChatyChatyClient.Logic.Actions.Request.Authentication;
+using ChatyChatyClient.Logic.AppExceptions;
 using ChatyChatyClient.Logic.Entities;
 using ChatyChatyClient.Logic.Repository.Interfaces;
 using MediatR;
@@ -19,7 +20,7 @@ namespace ChatyChatyClient.Logic.Actions.Handler.Authentication
 {
     public class SignUpHandler : AuthenticationActionHandlerBase, IRequestHandler<SignUpRequest, AuthenticationResult>
     {
-        private static readonly string SignupURL = "/api/v1/Authentication/NewAccount";
+        private const string SignupURL = "/api/v1/Authentication/NewAccount";
 
         public SignUpHandler(HttpClient httpClient,
             IAuthenticationRepository authenticationRepository,
@@ -36,18 +37,11 @@ namespace ChatyChatyClient.Logic.Actions.Handler.Authentication
             AuthResponse response;
             try
             {
-                if (httpResponse.StatusCode != HttpStatusCode.OK)
-                {
-                    var errorResponse = await httpResponse.Content.ReadFromJsonAsync<ErrorResponse>(cancellationToken: cancellationToken);
-                    return new AuthenticationResult(false, errorResponse.Errors.FirstOrDefault());
-                }
-
-                response = await httpResponse.Content.ReadFromJsonAsync<AuthResponse>(cancellationToken: cancellationToken);
+                response = await httpResponse.ReadApplicatoinResponse<AuthResponse>(cancellationToken);
             }
-            catch (Exception e) when (e is NotSupportedException || e is JsonException)
+            catch (ErrorResponseException e)
             {
-                logger.LogError(e, "Error while reading Response");
-                return new AuthenticationResult(false, "Error at the server");
+                return new AuthenticationResult(false, e.Message);
             }
 
             await authenticationRepository.SetToken(response.Token);

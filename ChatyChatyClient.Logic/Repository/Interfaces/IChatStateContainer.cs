@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace ChatyChatyClient.Logic.Repository.Interfaces
 {
-    public interface IProfileRepository
+    public interface IChatStateContainer
     {
-        public ValueTask Set(UserProfile profile);
-        public ValueTask<UserProfile> Get();
-        public ValueTask Update(UserProfile profile);
+        IList<Chat> GetChats();
+        void SetChats(IList<Chat> chats);
+        void UpdateChat(Chat chat);
     }
 }

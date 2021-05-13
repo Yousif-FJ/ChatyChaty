@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using ChatyChaty.HttpShemas.v1.Authentication;
 using ChatyChaty.HttpShemas.v1.Error;
 using ChatyChatyClient.Logic.Actions.Request.Authentication;
+using ChatyChatyClient.Logic.AppExceptions;
 using ChatyChatyClient.Logic.Entities;
 using ChatyChatyClient.Logic.Repository.Interfaces;
 using MediatR;
@@ -19,7 +20,7 @@ namespace ChatyChatyClient.Logic.Actions.Handler.Authentication
 {
     public class LoginHandler : AuthenticationActionHandlerBase, IRequestHandler<LoginRequest, AuthenticationResult>
     {
-        private static readonly string LoginURL = "/api/v1/Authentication/Account";
+        private const string LoginURL = "/api/v1/Authentication/Account";
 
         public LoginHandler(HttpClient httpClient,
             IAuthenticationRepository authenticationRepository,
@@ -32,21 +33,15 @@ namespace ChatyChatyClient.Logic.Actions.Handler.Authentication
             var loginInfo = new LoginAccountSchema() { Password = request.Password, Username = request.Username };
             var httpResponse = await httpClient.PostAsJsonAsync(LoginURL, loginInfo, cancellationToken);
 
+
             AuthResponse response;
             try
             {
-                if (httpResponse.StatusCode != HttpStatusCode.OK)
-                {
-                    var errorResponse = await httpResponse.Content.ReadFromJsonAsync<ErrorResponse>(cancellationToken: cancellationToken);
-                    return new AuthenticationResult(false, errorResponse.Errors.First());
-                }
-
-                response = await httpResponse.Content.ReadFromJsonAsync<AuthResponse>(cancellationToken: cancellationToken);
+                response = await httpResponse.ReadApplicatoinResponse<AuthResponse>(cancellationToken);
             }
-            catch (Exception e) when (e is NotSupportedException || e is JsonException)
+            catch (ErrorResponseException e)
             {
-                logger.LogError(e, "Error while reading Response");
-                return new AuthenticationResult(false, "Error at the server");
+                return new AuthenticationResult(false, e.Message);
             }
 
 

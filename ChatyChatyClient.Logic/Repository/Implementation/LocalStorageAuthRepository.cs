@@ -16,19 +16,19 @@ namespace ChatyChatyClient.Logic.Repository.Implementation
             this.localStorage = localStorage;
         }
 
-        public async Task<string> GetToken()
+        public ValueTask<string> GetToken()
         {
-            return await localStorage.GetItemAsStringAsync(tokenKey);
+            return localStorage.GetItemAsStringAsync(tokenKey);
         }
 
-        public async Task RemoveToken()
+        public ValueTask RemoveToken()
         {
-            await localStorage.RemoveItemAsync(tokenKey);
+            return localStorage.RemoveItemAsync(tokenKey);
         }
 
-        public async Task SetToken(string value)
+        public ValueTask SetToken(string value)
         {
-            await localStorage.SetItemAsync(tokenKey, value);
+            return localStorage.SetItemAsync(tokenKey, value);
         }
     }
 }

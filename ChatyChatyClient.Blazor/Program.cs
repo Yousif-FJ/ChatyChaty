@@ -34,6 +34,8 @@ namespace ChatyChatyClient.Blazor
             builder.Services.AddScoped<IAuthenticationRepository, LocalStorageAuthRepository>();
             builder.Services.AddScoped<IProfileRepository, LocalStorageProfileRepository>();
 
+            builder.Services.AddSingleton<IChatStateContainer, ChatMemoryStateContainer>();
+
             await builder.Build().RunAsync();
         }
     }

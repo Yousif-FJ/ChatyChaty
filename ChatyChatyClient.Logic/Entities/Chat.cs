@@ -7,9 +7,14 @@ namespace ChatyChatyClient.Logic.Entities
 {
     public class Chat
     {
-        public Guid Id { get; set; }
-        public string ImgLink { get; set; }
-        public string ReceiverName { get; set; }
+        public Chat(string id, UserProfile profile)
+        {
+            Id = id;
+            Profile = profile;
+        }
+
+        public string Id { get; }
+        public UserProfile Profile { get; set; }
         public bool IsThereNewMessage { get; set; }
     }
 }

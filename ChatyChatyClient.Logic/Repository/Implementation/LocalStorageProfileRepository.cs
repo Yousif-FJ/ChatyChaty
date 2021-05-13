@@ -17,19 +17,19 @@ namespace ChatyChatyClient.Logic.Repository.Implementation
             this.localStorage = localStorage;
         }
 
-        public async Task<UserProfile> Get()
+        public ValueTask<UserProfile> Get()
         {
-            return await localStorage.GetItemAsync<UserProfile>(profileKey);
+            return localStorage.GetItemAsync<UserProfile>(profileKey);
         }
 
-        public async Task Set(UserProfile profile)
+        public ValueTask Set(UserProfile profile)
         {
-            await localStorage.SetItemAsync(profileKey, profile);
+            return localStorage.SetItemAsync(profileKey, profile);
         }
 
-        public async Task Update(UserProfile profile)
+        public ValueTask Update(UserProfile profile)
         {
-            await localStorage.SetItemAsync(profileKey, profile);
+            return localStorage.SetItemAsync(profileKey, profile);
         }
     }
 }
