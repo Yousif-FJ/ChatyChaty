@@ -9,30 +9,45 @@
         <div class="collapse navbar-collapse" id="navbarNavDarkDropdown">
             <ul class="navbar-nav">
 
-                <li><a class="nav-link" >Action</a></li>
-                <li><a class="nav-link" >Another action</a></li>
-                <li><a class="nav-link" >Something else here</a></li>
+                <li><a class="nav-link">Action</a></li>
+                <li><a class="nav-link">Another action</a></li>
+                <li><a class="nav-link">Something else here</a></li>
             </ul>
         </div>
     </div>
 </nav>
 
 <div class="list-group">
-    @for (int i = 0; i < 10; i++)
+    @if (ViewModel.Chats.Count == 0 && LoadingIndicator.Value == false)
     {
-    <div>
-        <a class="list-group-item list-group-item-action">
-            <div class="d-flex justify-content-between align-items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="42" height="42" fill="currentColor" class="bi bi-person-circle m-1" viewBox="0 0 16 16">
-                    <path d="M13.468 12.37C12.758 11.226 11.195 10 8 10s-4.757 1.225-5.468 2.37A6.987 6.987 0 0 0 8 15a6.987 6.987 0 0 0 5.468-2.63z" />
-                    <path fill-rule="evenodd" d="M8 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
-                    <path fill-rule="evenodd" d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zM0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8z" />
-                </svg>
-                <p style="margin: auto 4px" >person name</p>
-                <span class="badge bg-primary rounded-pill ms-auto">14</span>
-            </div>
-        </a>
-    </div>
+        <h2>No chats, start a new chat.</h2>
+    }
+    @foreach (var chat in ViewModel.Chats)
+    {
+        <div>
+            <a class="list-group-item list-group-item-action">
+                <div class="d-flex align-items-center">
+                    @if (chat.Profile.PhotoURL is null)
+                    {
+                        <svg xmlns="http://www.w3.org/2000/svg" width="42" height="42" fill="currentColor" class="bi bi-person-circle m-1" viewBox="0 0 16 16">
+                            <path d="M13.468 12.37C12.758 11.226 11.195 10 8 10s-4.757 1.225-5.468 2.37A6.987 6.987 0 0 0 8 15a6.987 6.987 0 0 0 5.468-2.63z" />
+                            <path fill-rule="evenodd" d="M8 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
+                            <path fill-rule="evenodd" d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zM0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8z" />
+                        </svg>
+                    }
+                    else
+                    {
+                        <img width="42" style="border-radius: 50%;" height="42" src="@chat.Profile.PhotoURL" />
+                    }
+
+                    <p class="mx-3 my-auto">@chat.Profile.DisplayName</p>
+                    @if (chat.IsThereNewMessage)
+                    {
+                        <p class="my-auto ms-auto"><span class="badge bg-primary">New</span></p>
+                    }
+                </div>
+            </a>
+        </div>
     }
 </div>
 

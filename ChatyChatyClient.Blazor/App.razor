@@ -1,6 +1,24 @@
 <Router AppAssembly="@typeof(Program).Assembly">
     <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+        <CascadingAuthenticationState>
+            <AuthorizeView>
+                <Authorized>
+                    <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+                </Authorized>
+                <NotAuthorized>
+                    <LayoutView Layout="@typeof(MainLayout)">
+                        @if (routeData.PageType == typeof(SignUpPage))
+                        {
+                            <SignUpPage />
+                        }
+                        else
+                        {
+                            <LoginPage />
+                        }
+                    </LayoutView>
+                </NotAuthorized>
+            </AuthorizeView>
+        </CascadingAuthenticationState>
     </Found>
     <NotFound>
         <LayoutView Layout="@typeof(MainLayout)">

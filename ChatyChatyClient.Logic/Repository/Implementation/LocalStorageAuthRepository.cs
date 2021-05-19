@@ -16,6 +16,11 @@ namespace ChatyChatyClient.Logic.Repository.Implementation
             this.localStorage = localStorage;
         }
 
+        public ValueTask<bool> IsAuthenticated()
+        {
+            return localStorage.ContainKeyAsync(tokenKey);
+        }
+
         public ValueTask<string> GetToken()
         {
             return localStorage.GetItemAsStringAsync(tokenKey);

@@ -9,10 +9,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MediatR;
 using Blazored.LocalStorage;
-using System.Net.Http.Headers;
 using ChatyChatyClient.Logic.Repository.Interfaces;
 using ChatyChatyClient.Logic.Repository.Implementation;
 using ChatyChatyClient.Logic.Actions.Handler.Authentication;
+using ChatyChatyClient.Logic.StartupConfig;
+using Microsoft.AspNetCore.Components.Authorization;
+using ChatyChatyClient.Blazor.StartUpConfiguratoin;
 
 namespace ChatyChatyClient.Blazor
 {
@@ -23,17 +25,29 @@ namespace ChatyChatyClient.Blazor
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("#app");
 
-            builder.Services.AddScoped(sp => new HttpClient
-            {
-                BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
-            });
 
-            builder.Services.AddBlazoredLocalStorage();
+            //http client stuff
+            builder.Services.AddHttpClient("ServerAPI",
+                    client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress))
+                .AddHttpMessageHandler<AddAuthTokenToHttpClient>();
+
+            builder.Services.AddTransient<AddAuthTokenToHttpClient>();
+            builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>()
+                .CreateClient("ServerAPI"));
+
+
             builder.Services.AddMediatR(typeof(LoginHandler));
 
+            //repository stuff
             builder.Services.AddScoped<IAuthenticationRepository, LocalStorageAuthRepository>();
             builder.Services.AddScoped<IProfileRepository, LocalStorageProfileRepository>();
+            builder.Services.AddBlazoredLocalStorage();
 
+            //authentication stuff
+            builder.Services.AddAuthorizationCore();
+            builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
+
+            //state containers
             builder.Services.AddSingleton<IChatStateContainer, ChatMemoryStateContainer>();
 
             await builder.Build().RunAsync();

@@ -7,6 +7,7 @@ namespace ChatyChatyClient.Logic.Repository.Interfaces
 {
     public interface IAuthenticationRepository
     {
+        public ValueTask<bool> IsAuthenticated();
         public ValueTask<string> GetToken();
         public ValueTask SetToken(string value);
         public ValueTask RemoveToken();

@@ -1,4 +1,5 @@
 ﻿@page "/client/login"
+@inherits AuthBase
 
 <nav class="navbar navbar-dark bg-dark">
     <div class="container-fluid">
@@ -9,15 +10,15 @@
 
 <div class="m-1">
     <h4 class="my-3 fw-bold">Login</h4>
-    <EditForm OnValidSubmit="@Login" Model="@loginModel" >
+    <EditForm OnValidSubmit="@Login" Model="@loginModel">
         <DataAnnotationsValidator />
         <div class="mb-3">
             <label for="exampleInputEmail1" class="form-label">Username</label>
-            <InputText @bind-Value="loginModel.Username" class="form-control" type="text"/>
+            <InputText @bind-Value="loginModel.Username" class="form-control" type="text" />
         </div>
         <div class="mb-3">
             <label class="form-label">Password</label>
-            <InputText @bind-Value="loginModel.Password" class="form-control" type="password"/>
+            <InputText @bind-Value="loginModel.Password" class="form-control" type="password" />
         </div>
         @if (Error is not null)
         {
@@ -31,4 +32,5 @@
         </button>
     </EditForm>
 </div>
+
 

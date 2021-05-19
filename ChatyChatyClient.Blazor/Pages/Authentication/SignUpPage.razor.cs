@@ -10,21 +10,9 @@ using System.Threading.Tasks;
 
 namespace ChatyChatyClient.Blazor.Pages.Authentication
 {
-    public partial class SignUpPage
+    public partial class SignUpPage: AuthBase
     {
-        [Inject]
-        private IMediator MediatR { get; set; }
-        [Inject]
-        private NavigationManager NavigationManager { get; set; }
-
-
         private readonly SignUpViewModel signUpViewModel = new();
-        private string Error;
-
-        [CascadingParameter]
-        public LoadingIndicator LoadingIndicator { get; set; }
-        private bool DisableLoginButton;
-
         public async Task SignUp()
         {
             DisableButton();
@@ -35,20 +23,9 @@ namespace ChatyChatyClient.Blazor.Pages.Authentication
                 EnableButton();
                 return;
             }
-
+            EnableButton();
+            CustomAuthStateProvider.UpdateAuthState();
             NavigationManager.NavigateTo("/client");
-        }
-
-        private void DisableButton()
-        {
-            LoadingIndicator.Show();
-            DisableLoginButton = true;
-        }
-
-        private void EnableButton()
-        {
-            DisableLoginButton = false;
-            LoadingIndicator.Hide();
         }
     }
 }

@@ -6,22 +6,14 @@ using System.Threading.Tasks;
 using MediatR;
 using ChatyChatyClient.Logic.Actions.Request.Authentication;
 using ChatyChatyClient.Blazor.ViewModel;
+using Microsoft.AspNetCore.Components.Authorization;
+using ChatyChatyClient.Blazor.StartUpConfiguratoin;
 
 namespace ChatyChatyClient.Blazor.Pages.Authentication
 {
-    public partial class LoginPage
+    public partial class LoginPage : AuthBase
     {
-        [Inject]
-        private IMediator MediatR { get; set; }
-        [Inject]
-        private NavigationManager NavigationManager { get; set; }
-
         private readonly LoginViewModel loginModel = new();
-        private string Error;
-
-        [CascadingParameter]
-        protected LoadingIndicator LoadingIndicator { get; set; }
-        private bool DisableLoginButton;
 
         public async Task Login()
         {
@@ -33,20 +25,9 @@ namespace ChatyChatyClient.Blazor.Pages.Authentication
                 EnableButton();
                 return;
             }
-
+            EnableButton();
+            CustomAuthStateProvider.UpdateAuthState();
             NavigationManager.NavigateTo("/client");
-        }
-
-        private void DisableButton()
-        {
-            LoadingIndicator.Show();
-            DisableLoginButton = true;
-        }
-
-        private void EnableButton()
-        {
-            DisableLoginButton = false;
-            LoadingIndicator.Hide();
         }
     }
 }
