@@ -18,7 +18,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ChatyChatyClient.Logic.Actions.Handler.Authentication
 {
-    public class SignUpHandler : AuthenticationActionHandlerBase, IRequestHandler<SignUpRequest, AuthenticationResult>
+    public class SignUpHandler : AuthHandlerBase, IRequestHandler<SignUpRequest, AuthenticationResult>
     {
         private const string SignupURL = "/api/v1/Authentication/NewAccount";
 

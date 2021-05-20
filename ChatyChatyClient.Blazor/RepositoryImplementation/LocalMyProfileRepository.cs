@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace ChatyChatyClient.Blazor.RepositoryImplementation
 {
-    public class LocalStorageSelfProfileRepository : ISelfProfileRepository
+    public class LocalMyProfileRepository : ISelfProfileRepository
     {
         private static readonly string profileKey = "userprofile";
         private readonly ILocalStorageService localStorage;
-        public LocalStorageSelfProfileRepository(ILocalStorageService localStorage)
+        public LocalMyProfileRepository(ILocalStorageService localStorage)
         {
             this.localStorage = localStorage;
         }

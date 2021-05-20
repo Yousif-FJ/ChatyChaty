@@ -8,7 +8,7 @@
 </nav>
 
 
-<div class="m-1">
+<div class="m-3">
     <h4 class="my-3 fw-bold">Login</h4>
     <EditForm OnValidSubmit="@Login" Model="@loginModel">
         <DataAnnotationsValidator />
@@ -27,9 +27,12 @@
             </div>
         }
         <ValidationSummary />
-        <button disabled="@DisableLoginButton" type="submit" class="btn btn-primary">
-            Login
-        </button>
+        <div class="d-flex justify-content-between">
+            <button disabled="@DisableLoginButton" type="submit" class="btn btn-primary">
+                Login
+            </button>
+            <a href="Client/Signup" class="btn btn-light">Create account</a>
+        </div>
     </EditForm>
 </div>
 

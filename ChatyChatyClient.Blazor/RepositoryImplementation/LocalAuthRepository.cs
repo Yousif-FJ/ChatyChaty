@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace ChatyChatyClient.Blazor.RepositoryImplementation
 {
-    public class LocalStorageAuthRepository : IAuthenticationRepository
+    public class LocalAuthRepository : IAuthenticationRepository
     {
         private static readonly string tokenKey = "token";
         private readonly ILocalStorageService localStorage;
-        public LocalStorageAuthRepository(ILocalStorageService localStorage)
+        public LocalAuthRepository(ILocalStorageService localStorage)
         {
             this.localStorage = localStorage;
         }

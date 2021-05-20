@@ -8,17 +8,17 @@ using Microsoft.Extensions.Logging;
 
 namespace ChatyChatyClient.Logic.Actions.Handler.Authentication
 {
-    public abstract class AuthenticationActionHandlerBase
+    public abstract class AuthHandlerBase
     {
         protected readonly HttpClient httpClient;
         protected readonly IAuthenticationRepository authenticationRepository;
         protected readonly ISelfProfileRepository profileRepository;
-        protected readonly ILogger<AuthenticationActionHandlerBase> logger;
+        protected readonly ILogger<AuthHandlerBase> logger;
 
-        protected AuthenticationActionHandlerBase(HttpClient httpClient,
+        protected AuthHandlerBase(HttpClient httpClient,
             IAuthenticationRepository authenticationRepository,
             ISelfProfileRepository profileRepository,
-            ILogger<AuthenticationActionHandlerBase> logger)
+            ILogger<AuthHandlerBase> logger)
         {
             this.httpClient = httpClient;
             this.authenticationRepository = authenticationRepository;

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ChatyChatyClient.Blazor.RepositoryImplementation
 {
-    public class ChatMemoryStateContainer : IChatStateContainer
+    public class ChatStateContainer : IChatStateContainer
     {
         private IList<Chat> chats;
         public IList<Chat> GetChats()

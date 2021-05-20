@@ -39,8 +39,8 @@ namespace ChatyChatyClient.Blazor
             builder.Services.AddMediatR(typeof(LoginHandler));
 
             //repository stuff
-            builder.Services.AddScoped<IAuthenticationRepository, LocalStorageAuthRepository>();
-            builder.Services.AddScoped<ISelfProfileRepository, LocalStorageSelfProfileRepository>();
+            builder.Services.AddScoped<IAuthenticationRepository, LocalAuthRepository>();
+            builder.Services.AddScoped<ISelfProfileRepository, LocalMyProfileRepository>();
             builder.Services.AddBlazoredLocalStorage();
 
             //authentication stuff
@@ -48,7 +48,7 @@ namespace ChatyChatyClient.Blazor
             builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
 
             //state containers
-            builder.Services.AddSingleton<IChatStateContainer, ChatMemoryStateContainer>();
+            builder.Services.AddSingleton<IChatStateContainer, ChatStateContainer>();
 
             await builder.Build().RunAsync();
         }

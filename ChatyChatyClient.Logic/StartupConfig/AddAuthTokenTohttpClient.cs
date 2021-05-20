@@ -29,7 +29,7 @@ namespace ChatyChatyClient.Logic.StartupConfig
 
         protected override HttpResponseMessage Send(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            throw new Exception("use httpClient.SendAsync instead of Send");
+            throw new Exception("use httpClient.SendAsync instead of httpClient.Send");
         }
     }
 }
