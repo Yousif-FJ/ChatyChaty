@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using ChatyChaty.HttpShemas.v1.Authentication;
-using ChatyChaty.HttpShemas.v1.Error;
 using ChatyChatyClient.Logic.Actions.Request.Authentication;
 using ChatyChatyClient.Logic.AppExceptions;
 using ChatyChatyClient.Logic.Entities;
-using ChatyChatyClient.Logic.Repository.Interfaces;
+using ChatyChatyClient.Logic.RepositoryInterfaces;
 using MediatR;
 using Microsoft.Extensions.Logging;
 

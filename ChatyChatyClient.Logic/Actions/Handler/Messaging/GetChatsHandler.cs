@@ -11,7 +11,7 @@ using ChatyChaty.HttpShemas.v1.Profile;
 using ChatyChatyClient.Logic.Actions.Request.Messaging;
 using ChatyChatyClient.Logic.AppExceptions;
 using ChatyChatyClient.Logic.Entities;
-using ChatyChatyClient.Logic.Repository.Interfaces;
+using ChatyChatyClient.Logic.RepositoryInterfaces;
 using MediatR;
 
 namespace ChatyChatyClient.Logic.Actions.Handler.Messaging

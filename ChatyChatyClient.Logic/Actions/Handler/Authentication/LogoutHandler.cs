@@ -1,5 +1,5 @@
 ﻿using ChatyChatyClient.Logic.Actions.Request.Authentication;
-using ChatyChatyClient.Logic.Repository.Interfaces;
+using ChatyChatyClient.Logic.RepositoryInterfaces;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using System;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using ChatyChatyClient.Logic.Repository.Interfaces;
+using ChatyChatyClient.Logic.RepositoryInterfaces;
 using Microsoft.Extensions.Logging;
 
 namespace ChatyChatyClient.Logic.Actions.Handler.Authentication

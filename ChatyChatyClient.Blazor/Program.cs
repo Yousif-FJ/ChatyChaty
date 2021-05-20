@@ -9,12 +9,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MediatR;
 using Blazored.LocalStorage;
-using ChatyChatyClient.Logic.Repository.Interfaces;
-using ChatyChatyClient.Logic.Repository.Implementation;
 using ChatyChatyClient.Logic.Actions.Handler.Authentication;
 using ChatyChatyClient.Logic.StartupConfig;
 using Microsoft.AspNetCore.Components.Authorization;
 using ChatyChatyClient.Blazor.StartUpConfiguratoin;
+using ChatyChatyClient.Logic.RepositoryInterfaces;
+using ChatyChatyClient.Blazor.RepositoryImplementation;
 
 namespace ChatyChatyClient.Blazor
 {

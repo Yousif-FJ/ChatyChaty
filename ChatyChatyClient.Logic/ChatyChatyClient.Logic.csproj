@@ -5,9 +5,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Blazored.LocalStorage" Version="3.0.0" />
-		<PackageReference Include="MediatR" Version="9.0.0" />
-		<PackageReference Include="Blazored.LocalStorage" Version="3.0.0" />
 		<PackageReference Include="MediatR" Version="9.0.0" />
 	</ItemGroup>
 

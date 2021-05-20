@@ -1,4 +1,4 @@
-﻿using ChatyChatyClient.Logic.Repository.Interfaces;
+﻿using ChatyChatyClient.Logic.RepositoryInterfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;

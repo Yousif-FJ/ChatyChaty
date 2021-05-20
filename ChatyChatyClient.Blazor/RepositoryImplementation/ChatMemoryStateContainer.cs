@@ -1,11 +1,11 @@
 ﻿using ChatyChatyClient.Logic.Entities;
-using ChatyChatyClient.Logic.Repository.Interfaces;
+using ChatyChatyClient.Logic.RepositoryInterfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ChatyChatyClient.Logic.Repository.Implementation
+namespace ChatyChatyClient.Blazor.RepositoryImplementation
 {
     public class ChatMemoryStateContainer : IChatStateContainer
     {

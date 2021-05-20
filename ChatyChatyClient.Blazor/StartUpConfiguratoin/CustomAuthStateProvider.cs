@@ -4,8 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Components.Authorization;
-using ChatyChatyClient.Logic.Repository.Interfaces;
 using Microsoft.Extensions.Logging;
+using ChatyChatyClient.Logic.RepositoryInterfaces;
 
 namespace ChatyChatyClient.Blazor.StartUpConfiguratoin
 {
