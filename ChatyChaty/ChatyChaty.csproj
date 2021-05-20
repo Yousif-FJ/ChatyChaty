@@ -29,7 +29,7 @@
     <ProjectReference Include="..\ChatyChaty.Domain\ChatyChaty.Domain.csproj" />
     <ProjectReference Include="..\ChatyChaty.HttpShemas\ChatyChaty.HttpShemas.csproj" />
     <ProjectReference Include="..\ChatyChaty.Infrastructure\ChatyChaty.Infrastructure.csproj" />
-    <ProjectReference Include="..\ChatyChatyClient.Blazor\ChatyChatyClient.Blazor.csproj" />
+    <ProjectReference Include="..\Client\ChatyChatyClient.Blazor\ChatyChatyClient.Blazor.csproj" />
   </ItemGroup>
 
   <ItemGroup>

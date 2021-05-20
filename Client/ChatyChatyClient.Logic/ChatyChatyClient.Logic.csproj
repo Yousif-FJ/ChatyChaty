@@ -9,7 +9,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\ChatyChaty.HttpShemas\ChatyChaty.HttpShemas.csproj" />
+		<ProjectReference Include="..\..\ChatyChaty.HttpShemas\ChatyChaty.HttpShemas.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
