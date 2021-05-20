@@ -24,7 +24,7 @@ namespace ChatyChatyClient.Logic.Actions.Handler.Authentication
 
         public LoginHandler(HttpClient httpClient,
             IAuthenticationRepository authenticationRepository,
-            IProfileRepository profileRepository,
+            ISelfProfileRepository profileRepository,
             ILogger<LoginHandler> logger)
             : base(httpClient, authenticationRepository, profileRepository, logger) { }
 
@@ -52,7 +52,7 @@ namespace ChatyChatyClient.Logic.Actions.Handler.Authentication
                     response.Profile.DisplayName,
                     response.Profile.PhotoURL
                 ));
-
+            logger.LogInformation("Login completed");
             return new AuthenticationResult(true, null);
         }
     }

@@ -12,12 +12,12 @@ namespace ChatyChatyClient.Logic.Actions.Handler.Authentication
     {
         protected readonly HttpClient httpClient;
         protected readonly IAuthenticationRepository authenticationRepository;
-        protected readonly IProfileRepository profileRepository;
+        protected readonly ISelfProfileRepository profileRepository;
         protected readonly ILogger<AuthenticationActionHandlerBase> logger;
 
         protected AuthenticationActionHandlerBase(HttpClient httpClient,
             IAuthenticationRepository authenticationRepository,
-            IProfileRepository profileRepository,
+            ISelfProfileRepository profileRepository,
             ILogger<AuthenticationActionHandlerBase> logger)
         {
             this.httpClient = httpClient;

@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace ChatyChatyClient.Logic.Repository.Implementation
 {
-    public class LocalStorageProfileRepository : IProfileRepository
+    public class LocalStorageSelfProfileRepository : ISelfProfileRepository
     {
         private static readonly string profileKey = "userprofile";
         private readonly ILocalStorageService localStorage;
-        public LocalStorageProfileRepository(ILocalStorageService localStorage)
+        public LocalStorageSelfProfileRepository(ILocalStorageService localStorage)
         {
             this.localStorage = localStorage;
         }
@@ -20,6 +20,11 @@ namespace ChatyChatyClient.Logic.Repository.Implementation
         public ValueTask<UserProfile> Get()
         {
             return localStorage.GetItemAsync<UserProfile>(profileKey);
+        }
+
+        public ValueTask Remove()
+        {
+            return localStorage.RemoveItemAsync(profileKey);
         }
 
         public ValueTask Set(UserProfile profile)

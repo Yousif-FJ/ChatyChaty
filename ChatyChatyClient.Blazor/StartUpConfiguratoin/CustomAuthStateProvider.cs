@@ -11,11 +11,11 @@ namespace ChatyChatyClient.Blazor.StartUpConfiguratoin
 {
     public class CustomAuthStateProvider : AuthenticationStateProvider
     {
-        private readonly IProfileRepository profileRepository;
+        private readonly ISelfProfileRepository profileRepository;
         private readonly IAuthenticationRepository authenticationRepository;
         private readonly ILogger logger;
 
-        public CustomAuthStateProvider(IProfileRepository profileRepository, IAuthenticationRepository authenticationRepository, ILogger<CustomAuthStateProvider> logger)
+        public CustomAuthStateProvider(ISelfProfileRepository profileRepository, IAuthenticationRepository authenticationRepository, ILogger<CustomAuthStateProvider> logger)
         {
             this.profileRepository = profileRepository;
             this.authenticationRepository = authenticationRepository;

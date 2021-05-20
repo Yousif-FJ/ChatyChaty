@@ -40,7 +40,7 @@ namespace ChatyChatyClient.Blazor
 
             //repository stuff
             builder.Services.AddScoped<IAuthenticationRepository, LocalStorageAuthRepository>();
-            builder.Services.AddScoped<IProfileRepository, LocalStorageProfileRepository>();
+            builder.Services.AddScoped<ISelfProfileRepository, LocalStorageSelfProfileRepository>();
             builder.Services.AddBlazoredLocalStorage();
 
             //authentication stuff

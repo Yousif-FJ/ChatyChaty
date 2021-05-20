@@ -15,7 +15,7 @@ namespace ChatyChatyClient.Blazor.Pages.Authentication
     {
         private readonly LoginViewModel loginModel = new();
 
-        public async Task Login()
+        private async Task Login()
         {
             DisableButton();
             var result = await MediatR.Send(new LoginRequest(loginModel.Username, loginModel.Password));

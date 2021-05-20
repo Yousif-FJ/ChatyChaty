@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 namespace ChatyChatyClient.Logic.Repository.Interfaces
 {
-    public interface IProfileRepository
+    public interface ISelfProfileRepository
     {
         public ValueTask Set(UserProfile profile);
         public ValueTask<UserProfile> Get();
+        public ValueTask Remove();
         public ValueTask Update(UserProfile profile);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using ChatyChatyClient.Blazor.ViewModel;
+using ChatyChatyClient.Logic.Actions.Request.Authentication;
 using ChatyChatyClient.Logic.Actions.Request.Messaging;
 using MediatR;
 using Microsoft.AspNetCore.Components;
@@ -13,6 +14,8 @@ namespace ChatyChatyClient.Blazor.Pages
     {
         [Inject]
         private IMediator MediatR { get; init; }
+        [Inject]
+        private NavigationManager Navigation { get; init; }
 
         [CascadingParameter]
         protected LoadingIndicator LoadingIndicator { get; init; }
@@ -25,6 +28,12 @@ namespace ChatyChatyClient.Blazor.Pages
             var chats = await MediatR.Send(new GetChatsRequest());
             ViewModel.Chats = chats;
             LoadingIndicator.Hide();
+        }
+
+        private async Task Logout()
+        {
+            await MediatR.Send(new LogoutRequest());
+            Navigation.NavigateTo("/client/login");
         }
     }
 }

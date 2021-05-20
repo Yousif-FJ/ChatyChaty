@@ -13,7 +13,7 @@ namespace ChatyChatyClient.Blazor.Pages.Authentication
     public partial class SignUpPage: AuthBase
     {
         private readonly SignUpViewModel signUpViewModel = new();
-        public async Task SignUp()
+        private async Task SignUp()
         {
             DisableButton();
             var result = await MediatR.Send(new SignUpRequest(signUpViewModel.Username, signUpViewModel.Password, signUpViewModel.DisplayName));
