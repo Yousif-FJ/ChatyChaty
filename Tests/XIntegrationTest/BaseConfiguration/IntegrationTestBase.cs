@@ -35,6 +35,21 @@ namespace XIntegrationTest
             client = Factory.CreateClient();
         }
 
+        public static async Task<T> CustomReadResponse<T>(HttpResponseMessage response)
+        {
+            T result;
+            try
+            {
+                result = await response.Content.ReadAsAsync<T>();
+            }
+            catch (UnsupportedMediaTypeException)
+            {
+                var responseAsString = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Unexpected type response, The response as string : {responseAsString}");
+            }
+            return result;
+        }
+
         private static void RemoveRealDBContext(IServiceCollection services)
         {
             var descriptor = services.SingleOrDefault(

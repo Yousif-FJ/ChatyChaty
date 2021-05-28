@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace XIntegrationTest
@@ -16,7 +15,7 @@ namespace XIntegrationTest
         /// </summary>
         /// <param name="httpClient"></param>
         /// <param name="token"></param>
-        public static void Authenticate(this HttpClient httpClient, string token)
+        public static void AddAuthTokenToHeader(this HttpClient httpClient, string token)
         {
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token);
         }
@@ -24,22 +23,14 @@ namespace XIntegrationTest
         public async static Task<AuthResponse> CreateAccount(this HttpClient httpClient,string userName, string displayName, string password)
         {
 
-            var response = await httpClient.PostAsJsonAsync("/api/v1/Authentication/NewAccount", new CreateAccountSchema
+            HttpResponseMessage response = await httpClient.PostAsJsonAsync("/api/v1/Authentication/NewAccount", new CreateAccountSchema
             {
                 DisplayName = displayName, Password = password, Username = userName
             });
-            AuthResponse responseAsClass;
-            try
-            {
-                responseAsClass = await response.Content.ReadAsAsync<AuthResponse>();
-            }
-            catch (UnsupportedMediaTypeException)
-            {
-                var responseAsString = await response.Content.ReadAsStringAsync();
-                throw new Exception($"Unsupported type response, The response as string : {responseAsString}");
-            }
 
-            return responseAsClass;
+            var result = await IntegrationTestBase.CustomReadResponse<AuthResponse>(response);
+
+            return result;
         }
     }
 }
