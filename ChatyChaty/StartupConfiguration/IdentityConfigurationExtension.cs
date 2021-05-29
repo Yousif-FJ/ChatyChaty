@@ -14,7 +14,7 @@ namespace ChatyChaty.StartupConfiguration
     {
         public static void CustomConfigureIdentity(this IServiceCollection services, IConfiguration Configuration)
         {
-            services.AddIdentity<AppUser, Role>()
+            services.AddIdentity<AppUser, IdentityRole<UserId>>()
                .AddEntityFrameworkStores<ChatyChatyContext>();
 
 

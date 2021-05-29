@@ -23,6 +23,7 @@ namespace ChatyChaty.Domain.Model.Entity
             Id = new UserId();
             DisplayName = displayName;
         }
+        public string PhotoURL { get; private set; }
         public string DisplayName { get; private set; }
         public List<Conversation> Conversations1 { get; private set; }
         public List<Conversation> Conversations2 { get; private set; }
@@ -35,6 +36,25 @@ namespace ChatyChaty.Domain.Model.Entity
                 throw new ArgumentException($"'{nameof(displayName)}' cannot be null or whitespace", nameof(displayName));
             }
             this.DisplayName = displayName;
+        }
+
+        public void ChangePhotoUrl(string NewPhotoUrl)
+        {
+            if (IsValidHttpURL(NewPhotoUrl))
+            {
+                PhotoURL = NewPhotoUrl;
+            }
+            else
+            {
+                throw new FormatException("Invalid photo Url");
+            }
+        }
+
+        private static bool IsValidHttpURL(string source)
+        {
+            var IsURI = Uri.TryCreate(source, UriKind.Absolute, out Uri uriResult);
+            var IsHttpOrHttps = (uriResult.Scheme == Uri.UriSchemeHttps) || (uriResult.Scheme == Uri.UriSchemeHttp);
+            return IsHttpOrHttps && IsURI;
         }
     }
 

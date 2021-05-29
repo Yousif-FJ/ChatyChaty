@@ -33,24 +33,19 @@ namespace ChatyChaty.Controllers.v1
         /// <summary>
         /// Set photo or replace existing one (Require authentication)
         /// </summary>
-        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProfileResponse), StatusCodes.Status200OK)]
         [ProducesDefaultResponseType(typeof(ErrorResponse))]
         [HttpPost("Photo")]
         public async Task<IActionResult> SetPhotoForSelf([FromForm] UploadFileSchema uploadFile)
         {
             var userId = HttpContext.GetUserIdFromHeader();
 
-            var result = await accountManager.SetPhotoAsync(
+            var user = await accountManager.SetPhotoAsync(
                 userId, 
                 uploadFile.PhotoFile.FileName,
                 uploadFile.PhotoFile.OpenReadStream());
 
-            if (result.Success == false)
-            {
-                return BadRequest(new ErrorResponse(result.Errors));
-            }
-
-            return Ok(result.URL);
+            return Ok(new ProfileResponse(user.UserName,user.DisplayName,user.PhotoURL));
         }
 
 

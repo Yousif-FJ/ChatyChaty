@@ -23,17 +23,14 @@ namespace ChatyChaty.Domain.Services.AuthenticationManager
     {
         private readonly UserManager<AppUser> userManager;
         private readonly IConfiguration configuration;
-        private readonly IPictureProvider pictureProvider;
 
         public AuthenticationManager(
             UserManager<AppUser> userManager,
-            IConfiguration configuration,
-            IPictureProvider pictureProvider
+            IConfiguration configuration
             )
         {
             this.userManager = userManager;
             this.configuration = configuration;
-            this.pictureProvider = pictureProvider;
         }
 
         public async Task<AuthenticationResult> CreateAccount(string username, string password, string displayName)
@@ -89,7 +86,7 @@ namespace ChatyChaty.Domain.Services.AuthenticationManager
             {
                 DisplayName = user.DisplayName,
                 Username = user.UserName,
-                PhotoURL = await pictureProvider.GetPhotoURL(user.Id, user.UserName)
+                PhotoURL = user.PhotoURL
             };
             return new AuthenticationResult
             {

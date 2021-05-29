@@ -18,6 +18,6 @@ namespace ChatyChaty.Domain.Services.AccountServices
         Task<IEnumerable<ProfileAccountModel>> GetConversations(UserId userId);
         Task<ProfileAccountModel> GetConversation(ConversationId chatId, UserId userId);
         Task<string> UpdateDisplayNameAsync(UserId UserId, string NewDisplayName);
-        Task<PhotoUrlModel> SetPhotoAsync(UserId UserId, string fileName ,Stream file);
+        Task<AppUser> SetPhotoAsync(UserId UserId, string fileName ,Stream file);
     }
 }

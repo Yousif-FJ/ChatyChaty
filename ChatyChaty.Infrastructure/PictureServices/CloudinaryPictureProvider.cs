@@ -1,4 +1,5 @@
-﻿using ChatyChaty.Domain.InfastructureInterfaces;
+﻿using ChatyChaty.Domain.ApplicationExceptions;
+using ChatyChaty.Domain.InfastructureInterfaces;
 using ChatyChaty.Domain.Model.AccountModel;
 using ChatyChaty.Domain.Model.Entity;
 using CloudinaryDotNet;
@@ -35,67 +36,39 @@ namespace ChatyChaty.Infrastructure.PictureServices
         /// Add/Update a Photo and use (username and ID) to uniquely idetitify a user's Photo
         /// </summary>
         /// <remarks>The method Add new Picture or Overrade existing Photo with the same name</remarks>
-        /// <returns>The Uploaded Photo idetitifier</returns>
-        public async Task<PhotoUrlModel> ChangePhoto(UserId userID, string UserName, string fileName, Stream File)
+        public async Task<string> ChangePhoto(UserId userID, string fileName, Stream File)
         {
             ImageUploadParams uploadParams = new ImageUploadParams()
             {
                 File = new FileDescription(name: fileName, stream: File),
-                PublicId = ConstructPublicId(userID, UserName),
+                PublicId = ConstructPublicId(userID),
                 Overwrite = true
             };
             var uploadResult = await cloudinary.UploadAsync(uploadParams);
             if (uploadResult.Error is null)
             {
-                return new PhotoUrlModel
-                {
-                    Success = true,
-                    URL = uploadResult.SecureUrl.AbsoluteUri
-                };
+                return uploadResult.SecureUrl.AbsoluteUri;
             }
             else
             {
-                logger.LogError($"Img upload error : {uploadResult.Error.Message}");
-                return new PhotoUrlModel
-                {
-                    Success = false,
-                    Errors = new Collection<string>() { "An error occurred in the server" }
-                };
+                throw new PictureProviderException(uploadResult.Error.Message);
             }
         }
-
-        /// <summary>
-        /// Retrieve the user's PhotoURL using UserId and UserName
-        /// </summary>
-        /// <param name="userID">User's ID which is part of the stored Photo idetitifier</param>
-        /// <param name="userName">UserName which is part of the stored Photo idetitifier</param>
-        /// <returns>user's PhotoURL</returns>
-        public async Task<string> GetPhotoURL(UserId userID, string userName)
-        {
-            var resourceResult = await cloudinary.GetResourceAsync(ConstructPublicId(userID, userName));
-            if (resourceResult.StatusCode == System.Net.HttpStatusCode.OK)
-            {
-                return resourceResult.SecureUrl;
-            }
-            return null;
-        }
-
 
         /// <summary>
         /// Delete user's photo using UserId and UserName
         /// </summary>
         /// <param name="UserID">User's ID which is part of the stored Photo idetitifier</param>
-        /// <param name="UserName">UserName which is part of the stored Photo idetitifier</param>
-        public async Task DeletePhoto(UserId userID, string UserName)
+        public async Task DeletePhoto(UserId userID)
         {
-            var Result = await cloudinary.DeleteResourcesAsync(publicIds: ConstructPublicId(userID, UserName));
+            var Result = await cloudinary.DeleteResourcesAsync(publicIds: ConstructPublicId(userID));
             if (Result.Error is null)
             {
                 return;
             }
             else
             {
-                throw new Exception($"An error occured in the action with this message : {Result.Error}");
+                throw new PictureProviderException($"An error occured in the action with this message : {Result.Error}");
             }
         }
         /// <summary>
@@ -103,11 +76,9 @@ namespace ChatyChaty.Infrastructure.PictureServices
         /// </summary>
         /// <remarks>PublicId is the unique idetitifier found in the URL of a photo, it is used by the Cloudinary</remarks>
         /// <param name="UserID">User's ID which is part of the stored Photo idetitifier</param>
-        /// <param name="UserName">UserName which is part of the stored Photo idetitifier</param>
-        /// <returns>PublicId</returns>
-        private static string ConstructPublicId(UserId UserID, string UserName)
+        private static string ConstructPublicId(UserId UserID)
         {
-            return $"{FileConatiner}/{UserName}{UserID}";
+            return $"{FileConatiner}/{UserID}";
         }
     }
 }

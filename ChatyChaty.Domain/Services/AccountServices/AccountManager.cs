@@ -1,4 +1,5 @@
-﻿using ChatyChaty.Domain.InfastructureInterfaces;
+﻿using ChatyChaty.Domain.ApplicationExceptions;
+using ChatyChaty.Domain.InfastructureInterfaces;
 using ChatyChaty.Domain.Model.AccountModel;
 using ChatyChaty.Domain.Model.Entity;
 using ChatyChaty.Domain.Services.NotficationRequests;
@@ -94,7 +95,7 @@ namespace ChatyChaty.Domain.Services.AccountServices
                     ChatId = conversation.Id,
                     DisplayName = receiver.DisplayName,
                     Username = receiver.UserName,
-                    PhotoURL = await pictureProvider.GetPhotoURL(receiver.Id, receiver.UserName)
+                    PhotoURL = receiver.PhotoURL
                 }
             };
         }
@@ -132,7 +133,7 @@ namespace ChatyChaty.Domain.Services.AccountServices
                     DisplayName = SecondUser.DisplayName,
                     Username = SecondUser.UserName,
                     UserId = SecondUser.Id,
-                    PhotoURL = await pictureProvider.GetPhotoURL(SecondUser.Id, SecondUser.UserName)
+                    PhotoURL = SecondUser.PhotoURL
                 });
             }
             return response;
@@ -158,12 +159,12 @@ namespace ChatyChaty.Domain.Services.AccountServices
                 ChatId = conversation.Id,
                 DisplayName = secondUser.DisplayName,
                 Username = secondUser.UserName,
-                PhotoURL = await pictureProvider.GetPhotoURL(secondUser.Id, secondUser.UserName)
+                PhotoURL = secondUser.PhotoURL
             };
             return response;
         }
 
-        public async Task<PhotoUrlModel> SetPhotoAsync(UserId userId, string fileName, Stream file)
+        public async Task<AppUser> SetPhotoAsync(UserId userId, string fileName, Stream file)
         {
             var user = await userRepository.GetAsync(userId);
             if (user is null)
@@ -171,11 +172,19 @@ namespace ChatyChaty.Domain.Services.AccountServices
                 throw new ArgumentOutOfRangeException(nameof(userId),"Invalid userId");
             }
 
-            var setPhotoResult = await pictureProvider.ChangePhoto(user.Id, user.UserName, fileName, file);
+            var photoUrl = await pictureProvider.ChangePhoto(user.Id, fileName, file);
+
+            if (photoUrl is null)
+            {
+                throw new PictureProviderException("picture provider returned null");
+            }
+            user.ChangePhotoUrl(photoUrl);
+
+            await userRepository.UpdateAsync(user);
 
             fireAndForgetService.FireAsync<IMediator>(mediator => mediator.Send(new UserUpdatedTheirProfileAsync(userId)));
              
-            return setPhotoResult;
+            return user;
         }
 
         public async Task<string> UpdateDisplayNameAsync(UserId userId, string newDisplayName)

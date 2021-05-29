@@ -29,17 +29,15 @@ namespace ChatyChaty.HealthChecks
         }
         public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
         {
-            string UserName = "SomeVeryUniqueName";
-            UserId userID = new UserId(Guid.NewGuid().ToString());
+            UserId userID = new(Guid.NewGuid().ToString());
             using var Fs = new FileStream(path: "HealthChecks/PhotoUploadTestSamples/Untitled.png", FileMode.Open);
             var FF = new FormFile(Fs, 0, Fs.Length, "SomeFile", "SomeUnknowFileName");
 
 
-            await pictureProvider.ChangePhoto(userID: userID, UserName: UserName, FF.FileName, FF.OpenReadStream());
+            var photoUrl = await pictureProvider.ChangePhoto(userID: userID, FF.FileName, FF.OpenReadStream());
 
-            var PhotoUrl = await pictureProvider.GetPhotoURL(userID, UserName);
-            HttpClient httpClient = new HttpClient();
-            var response = await httpClient.GetAsync(PhotoUrl, cancellationToken);
+            HttpClient httpClient = new();
+            var response = await httpClient.GetAsync(photoUrl, cancellationToken);
 
             HealthCheckResult result;
             if (HttpStatusCode.OK == response.StatusCode)
@@ -52,7 +50,7 @@ namespace ChatyChaty.HealthChecks
             }
 
             //Clean up
-            await pictureProvider.DeletePhoto(userID, UserName);
+            await pictureProvider.DeletePhoto(userID);
 
             return result;
         }

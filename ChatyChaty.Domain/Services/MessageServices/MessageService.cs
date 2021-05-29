@@ -1,5 +1,4 @@
 ﻿using ChatyChaty.Domain.InfastructureInterfaces;
-using ChatyChaty.Domain.Model.AccountModel;
 using ChatyChaty.Domain.Model.Entity;
 using ChatyChaty.Domain.Model.MessagingModel;
 using ChatyChaty.Domain.Services.NotficationRequests;
