@@ -13,11 +13,10 @@ namespace ChatyChaty.Domain.Model.Entity
                 throw new ArgumentNullException(nameof(body),"Message body can't be empty");
             }
             Id = new MessageId();
-            TimeSent = DateTime.Now; 
+            SentTime = DateTime.Now;
             Body = body;
             ConversationId = conversationId ?? throw new ArgumentNullException(nameof(conversationId));
             SenderId = senderId ?? throw new ArgumentNullException(nameof(senderId));
-            Delivered = false;
         }
         public MessageId Id { get; private set; }
         public string Body { get; private set; }
@@ -26,11 +25,12 @@ namespace ChatyChaty.Domain.Model.Entity
         public AppUser Sender { get; private set; }
         public Conversation Conversation { get; private set; }
         public bool Delivered { get; private set; }
-        public DateTime TimeSent { get; private set; }
-
+        public DateTime SentTime { get; private set; }
+        public DateTime? DeliveryTime { get; private set; }
         public Message MarkAsDelivered()
         {
             Delivered = true;
+            DeliveryTime = DateTime.Now;
             return this;
         }
     }

@@ -29,7 +29,7 @@ namespace XIntegrationTest
                 new SendMessageSchema { Body = messageBody, ChatId = chatId });
             //Assert
 
-            var result = await CustomReadResponse<MessageInfoReponse>(response);
+            var result = await CustomReadResponse<MessageResponse>(response);
 
             Assert.False(result.Delivered);
             Assert.Equal(messageBody, result.Body);

@@ -9,21 +9,23 @@ namespace ChatyChaty.ModelExtensions
 {
     public static class MessagesExtension
     {
-        public static IEnumerable<MessageInfoReponse> ToMessageInfoResponse(this IEnumerable<Message> messages, UserId userId)
+        public static IEnumerable<MessageResponse> ToMessageInfoResponse(this IEnumerable<Message> messages, UserId userId)
         {
-            List<MessageInfoReponse> result = new();
+            List<MessageResponse> result = new();
             foreach (var message in messages)
             {
                 if (message.Sender is null)
                 {
                     throw new ArgumentNullException(nameof(messages), "a message in messages must have a sender");
                 }
-                result.Add(new MessageInfoReponse
+                result.Add(new MessageResponse
                             (
-                                message.Body,
                                 message.ConversationId.Value,
                                 message.Id.Value,
                                 message.Sender.UserName,
+                                message.Body,
+                                message.SentTime,
+                                message.DeliveryTime,
                                 message.SenderId == userId ? message.Delivered : null
                             ));
             }

@@ -57,7 +57,7 @@ namespace ChatyChaty.Infrastructure.Repositories.MessageRepository
             var message = await GetAsync(messageId);
 
             return await dBContext.Messages.Where(
-                m => m.TimeSent > message.TimeSent &&
+                m => m.SentTime > message.SentTime &&
                 m.Conversation.FirstUserId == userId || m.Conversation.SecondUserId == userId
                 ).Include(c => c.Sender)
                 .AsSplitQuery()

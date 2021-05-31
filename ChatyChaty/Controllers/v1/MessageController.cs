@@ -32,7 +32,7 @@ namespace ChatyChaty.Controllers.v1
         /// <summary>
         /// Return the messages of a specific chat
         /// </summary>
-        [ProducesResponseType(typeof(List<MessageInfoReponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<MessageResponse>), StatusCodes.Status200OK)]
         [ProducesDefaultResponseType(typeof(ErrorResponse))]
         [HttpGet("MessagesForChat")]
         public async Task<IActionResult> GetMessagesForChat([FromQuery][Required] string chatId)
@@ -45,7 +45,7 @@ namespace ChatyChaty.Controllers.v1
                 var result = await messageService.GetMessageForChat(userId, chatIdApp);
                 var messages = result.ToMessageInfoResponse(userId);
 
-                return Ok(new List<MessageInfoReponse>(messages));
+                return Ok(new List<MessageResponse>(messages));
             }
             catch (Exception e) when (e is InvalidEntityIdException || e is InvalidIdFormatException)
             {
@@ -57,7 +57,7 @@ namespace ChatyChaty.Controllers.v1
         /// <summary>
         /// Get new messages by supplying the last messageId of the last chat or null if no messages (Require authentication)
         /// </summary>
-        [ProducesResponseType(typeof(List<MessageInfoReponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<MessageResponse>), StatusCodes.Status200OK)]
         [ProducesDefaultResponseType(typeof(ErrorResponse))]
         [HttpGet("NewMessages")]
         public async Task<IActionResult> GetNewMessages([FromQuery] string lastMessageId)
@@ -122,7 +122,7 @@ namespace ChatyChaty.Controllers.v1
         /// <summary>
         /// Send New message with the chatId(Require authentication)
         /// </summary>
-        [ProducesResponseType(typeof(MessageInfoReponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(MessageResponse), StatusCodes.Status200OK)]
         [ProducesDefaultResponseType(typeof(ErrorResponse))]
         [HttpPost("Message")]
         public async Task<IActionResult> SendMessage([FromBody]SendMessageSchema messageSchema)
@@ -137,11 +137,13 @@ namespace ChatyChaty.Controllers.v1
                 var userNameClaim = HttpContext.User.Claims.FirstOrDefault(
                     claim => claim.Type == ClaimTypes.Name);
 
-                var response = new MessageInfoReponse(
+                var response = new MessageResponse(
                     result.ConversationId.Value,
                     result.Id.Value,
                     userNameClaim.Value,
                     result.Body,
+                    result.SentTime,
+                    result.DeliveryTime,
                     false);
 
                 return Ok(response);

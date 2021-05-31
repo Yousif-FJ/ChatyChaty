@@ -79,7 +79,7 @@ namespace ChatyChaty.Hubs.v1
 
             if (messages.Any())
             {
-                IEnumerable<MessageInfoReponse> response = messages.ToMessageInfoResponse(receiverId);
+                IEnumerable<MessageResponse> response = messages.ToMessageInfoResponse(receiverId);
 
                 //send response to clients
                 await hubContext.Clients.User(receiverId.ToString()).UpdateMessages(response);
