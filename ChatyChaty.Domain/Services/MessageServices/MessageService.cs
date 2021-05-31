@@ -1,6 +1,6 @@
-﻿using ChatyChaty.Domain.InfastructureInterfaces;
+﻿using ChatyChaty.Domain.ApplicationExceptions;
+using ChatyChaty.Domain.InfastructureInterfaces;
 using ChatyChaty.Domain.Model.Entity;
-using ChatyChaty.Domain.Model.MessagingModel;
 using ChatyChaty.Domain.Services.NotficationRequests;
 using ChatyChaty.Domain.Services.ScopeServices;
 using MediatR;
@@ -35,45 +35,46 @@ namespace ChatyChaty.Domain.Services.MessageServices
         /// <summary>
         /// Check if a message was delivered
         /// </summary>
-        public async Task<IsDeliveredModel> IsDelivered(UserId userId, MessageId messageId)
+        /// <exception cref="InvalidEntityIdException"></exception>
+        public async Task<bool> IsDelivered(UserId userId, MessageId messageId)
         {
             var message = await messageRepository.GetAsync(messageId);
-            if (message is null)
+
+            if (message is null || message.SenderId != userId)
             {
-                return new IsDeliveredModel
-                {
-                    Error = "Message not found"
-                };
+                throw new InvalidEntityIdException(messageId);
             }
-            if (!message.SenderId.Equals(userId))
-            {
-                return new IsDeliveredModel
-                {
-                    Error = "User is not the sender of this message"
-                };
-            }
-            return new IsDeliveredModel
-            {
-                IsDelivered = message.Delivered
-            };
+
+            return message.Delivered;
         }
 
         /// <summary>
         /// Send message with the provided conversation Id 
         /// </summary>
-        public async Task<SendMessageModel> SendMessage(ConversationId conversationId, UserId senderId, string MessageBody)
+        /// <exception cref="InvalidEntityIdException"></exception>
+        public async Task<Message> SendMessage(ConversationId conversationId, UserId senderId, string MessageBody)
         {
+            if (senderId is null)
+            {
+                throw new ArgumentNullException(nameof(senderId));
+            }
+
+            if (string.IsNullOrEmpty(MessageBody))
+            {
+                throw new ArgumentException($"'{nameof(MessageBody)}' cannot be null or empty.", nameof(MessageBody));
+            }
+
             //check if the conversation exist
             var conversation = await chatRepository.GetAsync(conversationId);
             if (conversation is null)
             {
-                return new SendMessageModel { Error = "Invalid ChatId" };
+                throw new InvalidEntityIdException(conversationId);
             }
 
             UserId receiverId = conversation.FindReceiverId(senderId);
             if (receiverId is null)
             {
-                return new SendMessageModel { Error = "Invalid ChatId" };
+                throw new InvalidEntityIdException(conversationId);
             }
 
             var message = new Message(MessageBody, conversation.Id, senderId);
@@ -82,62 +83,82 @@ namespace ChatyChaty.Domain.Services.MessageServices
 
             fireAndForget.FireAsync<IMediator>(mediator => mediator.Send(new UserGotNewMessageAsync((receiverId, message.Id))));
             
-            return new SendMessageModel { Message = message };
+            return message;
         }
 
-
-        public async Task<GetMessagesModel> GetNewMessages(UserId userId, MessageId lastMessageId)
+        /// <summary>
+        /// get messages that are newer that the provided lastMessageId
+        /// </summary>
+        /// <exception cref="InvalidEntityIdException"></exception>
+        public async Task<IList<Message>> GetNewMessages(UserId userId, MessageId lastMessageId)
         {
             if (userId is null)
             {
-                return new GetMessagesModel { Error = "UserId is null" };
+                throw new ArgumentNullException(nameof(userId));
             }
 
-            IEnumerable<Message> newMessages;
+            IList<Message> messages;
             if (lastMessageId is null)
             {
-                newMessages = await messageRepository.GetAllAsync(userId);
+                messages = await messageRepository.GetAllAsync(userId);
             }
             else
             {
-                newMessages = await messageRepository.GetNewAsync(lastMessageId, userId);
+                messages = await messageRepository.GetNewAsync(lastMessageId, userId);
             }
 
-            //Mark messages as read
-            var markMessages = new List<Message>();
-            foreach (var message in newMessages)
-            {
-                if (message.SenderId != userId && !message.Delivered)
-                {
-                    message.MarkAsDelivered();
-                    markMessages.Add(message);
-                }
-            }
-            await messageRepository.UpdateRangeAsync(markMessages);
+            var markedMessages = FindAndMarkDeliveredMessages(messages, userId);
+
+
+            fireAndForget.FireAsync<IMessageRepository>(messageRepository => messageRepository.UpdateRangeAsync(markedMessages));
 
             fireAndForget.FireAsync<IMediator>(mediator =>
-                mediator.Send(new UsersGotMessageStatusUpdateAsync(markMessages.Select(m => (m.SenderId, m.ConversationId, m.Id)).ToArray())));
+                mediator.Send(new UsersGotMessageStatusUpdateAsync(markedMessages.Select(m => (m.SenderId, m.ConversationId, m.Id)).ToArray())));
 
-            return new GetMessagesModel { Messages = newMessages };
+            return messages;
         }
 
-        public async Task<GetMessagesModel> GetMessageForChat(UserId userId, ConversationId conversationId)
+        /// <summary>
+        /// get messages of a specific chat
+        /// <exception cref="InvalidEntityIdException"></exception>
+        public async Task<IList<Message>> GetMessageForChat(UserId userId, ConversationId conversationId)
         {
             var chat = await chatRepository.GetAsync(conversationId);
 
             if (chat is null)
             {
-                return new GetMessagesModel { Error = "Invalid chat Id" };
+                throw new InvalidEntityIdException(conversationId);
             }
 
             if (chat.FirstUserId != userId || chat.SecondUserId != userId)
             {
-                return new GetMessagesModel { Error = "Invalid chat Id" };
+                throw new InvalidEntityIdException(conversationId);
             }
 
             var messages = await messageRepository.GetForChatAsync(conversationId);
 
-            return new GetMessagesModel { Messages = messages };
+            var markedMessages = FindAndMarkDeliveredMessages(messages, userId);
+
+            fireAndForget.FireAsync<IMessageRepository>(messageRepository => messageRepository.UpdateRangeAsync(markedMessages));
+
+            fireAndForget.FireAsync<IMediator>(mediator =>
+                mediator.Send(new UsersGotMessageStatusUpdateAsync(markedMessages.Select(m => (m.SenderId, m.ConversationId, m.Id)).ToArray())));
+
+            return messages;
+        }
+
+        private static IList<Message> FindAndMarkDeliveredMessages(IEnumerable<Message> messages, UserId userId)
+        {
+            var result = new List<Message>();
+            foreach (var message in messages)
+            {
+                if (message.SenderId != userId && !message.Delivered)
+                {
+                    message.MarkAsDelivered();
+                    result.Add(message);
+                }
+            }
+            return result;
         }
     }
 }

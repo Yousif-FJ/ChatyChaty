@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ChatyChatyClient.Logic.AppExceptions
 {
-    public class AuthenticationErrorException : ApplicationException
+    public class AuthenticationErrorException : Exception
     {
         public AuthenticationErrorException(string message) : base(message)
         {

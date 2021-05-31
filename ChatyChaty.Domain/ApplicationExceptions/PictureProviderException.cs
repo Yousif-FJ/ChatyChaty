@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ChatyChaty.Domain.ApplicationExceptions
 {
-    public class PictureProviderException : ApplicationException
+    public class PictureProviderException : Exception
     {
         public PictureProviderException(string message) : base(message)
         {

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ChatyChaty.Domain.ApplicationExceptions
 {
-    public class InvalidIdFormatException : ApplicationException
+    public class InvalidIdFormatException : Exception
     {
         public InvalidIdFormatException(string message) : base(message)
         {

@@ -78,10 +78,9 @@ namespace XUnitTest.Services
             //Act
             var MessagesResult = await messageService.GetNewMessages(u1.Id, null);
             //Assert
-            var Messagelist = new List<Message>(MessagesResult.Messages);
-            Assert.True(Messagelist[0].Body == "test1");
-            Assert.True(Messagelist[1].Body == "test2");
-            Assert.True(Messagelist[0].ConversationId == conversation1.Id);
+            Assert.True(MessagesResult[0].Body == "test1");
+            Assert.True(MessagesResult[1].Body == "test2");
+            Assert.True(MessagesResult[0].ConversationId == conversation1.Id);
         }
 
         [Fact]
@@ -107,10 +106,9 @@ namespace XUnitTest.Services
             //Act
             var MessagesResult = await messageService.GetNewMessages(u2.Id, null);
             //Assert
-            var Messagelist = new List<Message>(MessagesResult.Messages);
-            Assert.True(Messagelist[0].Body == "test1");
-            Assert.True(Messagelist[0].ConversationId == conversation1.Id);
-            Assert.True(Messagelist.Count == 1);
+            Assert.True(MessagesResult[0].Body == "test1");
+            Assert.True(MessagesResult[0].ConversationId == conversation1.Id);
+            Assert.True(MessagesResult.Count == 1);
         }
 
         [Fact]
@@ -123,9 +121,9 @@ namespace XUnitTest.Services
             await dbContext.SaveChangesAsync();
             var messageResult = await messageService.SendMessage(conversation2.Id, u1.Id, "Test Message");
             //Act
-            var result = await messageService.IsDelivered(u1.Id, messageResult.Message.Id);
+            var result = await messageService.IsDelivered(u1.Id, messageResult.Id);
             //Assert
-            Assert.False(result.IsDelivered);
+            Assert.False(result);
         }
 
         [Fact]
@@ -139,9 +137,9 @@ namespace XUnitTest.Services
             var messageResult = await messageService.SendMessage(conversation2.Id, u1.Id, "Test Message");
             await messageService.GetNewMessages(u2.Id, null);
             //Act
-            var result = await messageService.IsDelivered(u1.Id, messageResult.Message.Id);
+            var result = await messageService.IsDelivered(u1.Id, messageResult.Id);
             //Assert
-            Assert.True(result.IsDelivered);
+            Assert.True(result);
         }
     }
 }

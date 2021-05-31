@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ChatyChaty.Domain.ApplicationExceptions;
 using ChatyChaty.Domain.Model.Entity;
-using ChatyChaty.Domain.Model.MessagingModel;
 using ChatyChaty.Domain.Services.MessageServices;
 using ChatyChaty.ModelExtensions;
 using ChatyChaty.HttpShemas.v1.Message;
@@ -40,26 +39,18 @@ namespace ChatyChaty.Controllers.v1
         {
             var userId = HttpContext.GetUserIdFromHeader();
 
-            ConversationId chatIdApp;
             try
             {
-                chatIdApp = new ConversationId(chatId);
+                var chatIdApp = new ConversationId(chatId);
+                var result = await messageService.GetMessageForChat(userId, chatIdApp);
+                var messages = result.ToMessageInfoResponse(userId);
+
+                return Ok(new List<MessageInfoReponse>(messages));
             }
-            catch (InvalidIdFormatException e)
+            catch (Exception e) when (e is InvalidEntityIdException || e is InvalidIdFormatException)
             {
                 return BadRequest(new ErrorResponse(e.Message));
             }
-
-            var result = await messageService.GetMessageForChat(userId, chatIdApp);
-
-            if (result.Error is not null)
-            {
-                return BadRequest(new ErrorResponse(result.Error));
-            }
-
-            var messages = result.Messages.ToMessageInfoResponse(userId);
-
-            return Ok(new List<MessageInfoReponse>(messages));
         }
 
 
@@ -73,35 +64,34 @@ namespace ChatyChaty.Controllers.v1
         {
             var userId = HttpContext.GetUserIdFromHeader();
 
-            GetMessagesModel result;
+            IList<Message> messages;
             if (string.IsNullOrEmpty(lastMessageId))
             {
-                result = await messageService.GetNewMessages(userId, null);
-            }
-            else
-            {
-                MessageId messageIdApp;
                 try
                 {
-                    messageIdApp = new MessageId(lastMessageId);
+                    messages = await messageService.GetNewMessages(userId, null);
                 }
-                catch (InvalidIdFormatException e)
+                catch (InvalidEntityIdException e)
                 {
                     return BadRequest(new ErrorResponse(e.Message));
                 }
-
-                result = await messageService.GetNewMessages(userId, messageIdApp);
             }
-
-            //the error never a value
-            if (result.Error != null)
+            else
             {
-                return BadRequest(new ErrorResponse(result.Error));
+                try
+                {
+                    var messageIdApp = new MessageId(lastMessageId);
+                    messages = await messageService.GetNewMessages(userId, messageIdApp);
+                }
+                catch (Exception e) when (e is InvalidEntityIdException || e is InvalidIdFormatException)
+                {
+                    return BadRequest(new ErrorResponse(e.Message));
+                }
             }
 
-            var messages = result.Messages.ToMessageInfoResponse(userId);
+            var messagesRespond = messages.ToMessageInfoResponse(userId);
 
-            return Ok(new List<MessageInfoReponse>(messages));
+            return Ok(messagesRespond);
         }
 
 
@@ -115,23 +105,17 @@ namespace ChatyChaty.Controllers.v1
         {
             var userId = HttpContext.GetUserIdFromHeader();
 
-            MessageId messageIdApp;
             try
             {
-                messageIdApp = new MessageId(messageId);
+                var messageIdApp = new MessageId(messageId);
+                var IsDelivered = await messageService.IsDelivered(userId, messageIdApp);
+
+                return Ok(IsDelivered);
             }
-            catch (InvalidIdFormatException e)
+            catch (Exception e) when (e is InvalidEntityIdException || e is InvalidIdFormatException)
             {
                 return BadRequest(new ErrorResponse(e.Message));
             }
-
-            var result = await messageService.IsDelivered(userId, messageIdApp);
-
-            if (result.Error is not null)
-            {
-                return BadRequest(new ErrorResponse(result.Error));
-            }
-            return Ok(result.IsDelivered);
         }
 
 
@@ -145,35 +129,28 @@ namespace ChatyChaty.Controllers.v1
         {
             var userId = HttpContext.GetUserIdFromHeader();
 
-
-            ConversationId chatIdApp;
             try
             {
-                chatIdApp = new ConversationId(messageSchema.ChatId);
+                var chatIdApp = new ConversationId(messageSchema.ChatId);
+                var result = await messageService.SendMessage(chatIdApp, userId, messageSchema.Body);
+
+                var userNameClaim = HttpContext.User.Claims.FirstOrDefault(
+                    claim => claim.Type == ClaimTypes.Name);
+
+                var response = new MessageInfoReponse(
+                    result.ConversationId.Value,
+                    result.Id.Value,
+                    userNameClaim.Value,
+                    result.Body,
+                    false);
+
+                return Ok(response);
             }
-            catch (InvalidIdFormatException e)
+
+            catch (Exception e) when (e is InvalidEntityIdException || e is InvalidIdFormatException)
             {
                 return BadRequest(new ErrorResponse(e.Message));
             }
-
-            var result = await messageService.SendMessage(chatIdApp, userId, messageSchema.Body);
-
-            if (result.Error != null)
-            {
-                return BadRequest(new ErrorResponse(result.Error));
-            }
-
-            var userNameClaim = HttpContext.User.Claims.FirstOrDefault(
-                claim => claim.Type == ClaimTypes.Name);
-
-            var response = new MessageInfoReponse(
-                result.Message.ConversationId.Value,
-                result.Message.Id.Value,
-                userNameClaim.Value,
-                result.Message.Body,
-                false);
-
-            return Ok(response);
         }
     }
 }

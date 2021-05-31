@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ChatyChatyClient.Logic.AppExceptions
 {
-    public class ErrorResponseException : ApplicationException
+    public class ErrorResponseException : Exception
     {
         public ErrorResponseException(string message) : base(message)
         {
