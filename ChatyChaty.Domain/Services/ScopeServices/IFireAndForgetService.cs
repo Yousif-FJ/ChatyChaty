@@ -11,7 +11,7 @@ namespace ChatyChaty.Domain.Services.ScopeServices
     /// </summary>
     public interface IFireAndForgetService
     {
-        public void Fire<T>(Action<T> bullet, Action<Exception> handler = null);
-        public void FireAsync<T>(Func<T, Task> bullet, Action<Exception> handler = null);
+        public void RunActionWithoutWaiting<T>(Action<T> bullet, Action<Exception> handler = null);
+        public void RunActionWithoutWaitingAsync<T>(Func<T, Task> bullet, Action<Exception> handler = null);
     }
 }

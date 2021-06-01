@@ -30,7 +30,8 @@ namespace ChatyChaty.Controllers.v1
         }
 
         /// <summary>
-        /// Return the messages of a specific chat
+        /// Return the messages of a specific chat, either load chats with this method,
+        /// Or use getNewMessages to load messages from all chats. Don't mix them as it will cause problems.
         /// </summary>
         [ProducesResponseType(typeof(List<MessageResponse>), StatusCodes.Status200OK)]
         [ProducesDefaultResponseType(typeof(ErrorResponse))]

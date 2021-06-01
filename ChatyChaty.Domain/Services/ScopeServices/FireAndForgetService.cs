@@ -21,9 +21,9 @@ namespace ChatyChaty.Domain.Services.ScopeServices
             _scopeFactory = scopeFactory;
         }
 
-        public void Fire<T>(Action<T> bullet, Action<Exception> handler = null)
+        public void RunActionWithoutWaiting<T>(Action<T> bullet, Action<Exception> handler = null)
         {
-            _logger.LogInformation("Fired a new action.");
+            _logger.LogInformation("Unawaited action started.");
             Task.Run(() =>
             {
                 using var scope = _scopeFactory.CreateScope();
@@ -34,7 +34,7 @@ namespace ChatyChaty.Domain.Services.ScopeServices
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, "Cannon crashed!");
+                    _logger.LogError(e, "Unawaited action crashed!");
                     handler?.Invoke(e);
                 }
                 finally
@@ -44,9 +44,9 @@ namespace ChatyChaty.Domain.Services.ScopeServices
             });
         }
 
-        public void FireAsync<T>(Func<T, Task> bullet, Action<Exception> handler = null)
+        public void RunActionWithoutWaitingAsync<T>(Func<T, Task> bullet, Action<Exception> handler = null)
         {
-            _logger.LogInformation("Fired a new async action.");
+            _logger.LogInformation("Async unawaited action started.");
             Task.Run(async () =>
             {
                 using var scope = _scopeFactory.CreateScope();
@@ -57,7 +57,7 @@ namespace ChatyChaty.Domain.Services.ScopeServices
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, "Cannon crashed!");
+                    _logger.LogError(e, "Async unawaited crashed!");
                     handler?.Invoke(e);
                 }
                 finally

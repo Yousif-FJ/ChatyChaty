@@ -17,6 +17,7 @@ namespace ChatyChaty.Domain.Services.MessageServices
     /// </summary>
     public class MessageService : IMessageService
     {
+        private const int MaxMessagesNumber = 1000;
         private readonly IMessageRepository messageRepository;
         private readonly IChatRepository chatRepository;
         private readonly IFireAndForgetService fireAndForget;
@@ -81,7 +82,7 @@ namespace ChatyChaty.Domain.Services.MessageServices
 
             await messageRepository.AddAsync(message);
 
-            fireAndForget.FireAsync<IMediator>(mediator => mediator.Send(new UserGotNewMessageAsync((receiverId, message.Id))));
+            fireAndForget.RunActionWithoutWaitingAsync<IMediator>(mediator => mediator.Send(new UserGotNewMessageAsync((receiverId, message.Id))));
             
             return message;
         }
@@ -109,10 +110,14 @@ namespace ChatyChaty.Domain.Services.MessageServices
 
             var markedMessages = FindAndMarkDeliveredMessages(messages, userId);
 
+            if (messages.Count > MaxMessagesNumber)
+            {
+                fireAndForget.RunActionWithoutWaitingAsync<IMessageRepository>(messageRepository => messageRepository.RemoveOverLimit(userId));
+            }
 
-            fireAndForget.FireAsync<IMessageRepository>(messageRepository => messageRepository.UpdateRangeAsync(markedMessages));
+            fireAndForget.RunActionWithoutWaitingAsync<IMessageRepository>(messageRepository => messageRepository.UpdateRangeAsync(markedMessages));
 
-            fireAndForget.FireAsync<IMediator>(mediator =>
+            fireAndForget.RunActionWithoutWaitingAsync<IMediator>(mediator =>
                 mediator.Send(new UsersGotMessageStatusUpdateAsync(markedMessages.Select(m => (m.SenderId, m.ConversationId, m.Id)).ToArray())));
 
             return messages;
@@ -139,9 +144,14 @@ namespace ChatyChaty.Domain.Services.MessageServices
 
             var markedMessages = FindAndMarkDeliveredMessages(messages, userId);
 
-            fireAndForget.FireAsync<IMessageRepository>(messageRepository => messageRepository.UpdateRangeAsync(markedMessages));
+            if (messages.Count > MaxMessagesNumber)
+            {
+                fireAndForget.RunActionWithoutWaitingAsync<IMessageRepository>(messageRepository => messageRepository.RemoveOverLimit(userId));
+            }
 
-            fireAndForget.FireAsync<IMediator>(mediator =>
+            fireAndForget.RunActionWithoutWaitingAsync<IMessageRepository>(messageRepository => messageRepository.UpdateRangeAsync(markedMessages));
+
+            fireAndForget.RunActionWithoutWaitingAsync<IMediator>(mediator =>
                 mediator.Send(new UsersGotMessageStatusUpdateAsync(markedMessages.Select(m => (m.SenderId, m.ConversationId, m.Id)).ToArray())));
 
             return messages;

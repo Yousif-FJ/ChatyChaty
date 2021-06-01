@@ -85,7 +85,7 @@ namespace ChatyChaty.Domain.Services.AccountServices
                 conversation = await chatRepository.AddAsync(conversation); 
             }
 
-            fireAndForgetService.FireAsync<IMediator>(mediator
+            fireAndForgetService.RunActionWithoutWaitingAsync<IMediator>(mediator
                 => mediator.Send(new UsersGotChatUpdateAsync((receiver.Id, conversation.Id))));
 
             return new NewConversationModel
@@ -182,7 +182,7 @@ namespace ChatyChaty.Domain.Services.AccountServices
 
             await userRepository.UpdateAsync(user);
 
-            fireAndForgetService.FireAsync<IMediator>(mediator => mediator.Send(new UserUpdatedTheirProfileAsync(userId)));
+            fireAndForgetService.RunActionWithoutWaitingAsync<IMediator>(mediator => mediator.Send(new UserUpdatedTheirProfileAsync(userId)));
              
             return user;
         }
@@ -203,7 +203,7 @@ namespace ChatyChaty.Domain.Services.AccountServices
 
             await userRepository.UpdateAsync(user);
 
-            fireAndForgetService.FireAsync<IMediator>(mediator => mediator.Send(new UserUpdatedTheirProfileAsync(userId)));
+            fireAndForgetService.RunActionWithoutWaitingAsync<IMediator>(mediator => mediator.Send(new UserUpdatedTheirProfileAsync(userId)));
 
             return user.DisplayName;
         }

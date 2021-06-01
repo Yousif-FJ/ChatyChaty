@@ -33,13 +33,12 @@ namespace ChatyChaty.Infrastructure.Repositories.MessageRepository
             return dBContext.Messages.Include(m => m.Sender).FirstOrDefaultAsync(m => m.Id == Id);
         }
 
-        public Task<List<Message>> GetForChatAsync(ConversationId conversationId, int count = 100)
+        public Task<List<Message>> GetForChatAsync(ConversationId conversationId)
         {
             return dBContext.Messages
                 .Where(m => m.ConversationId == conversationId)
                 .Include(m => m.Sender)
                 .AsSplitQuery()
-                .Take(count)
                 .ToListAsync();
         }
 
@@ -68,6 +67,19 @@ namespace ChatyChaty.Infrastructure.Repositories.MessageRepository
         {
             dBContext.Messages.UpdateRange(Messages);
             await dBContext.SaveChangesAsync();
+        }
+
+        public Task RemoveOverLimit(UserId userId,int numberOfMessageToRemove = 100)
+        {
+            var messages = dBContext.Messages
+            .Where(m => m.Conversation.FirstUserId == userId || m.Conversation.SecondUserId == userId)
+            .Include(m => m.Sender)
+            .TakeLast(numberOfMessageToRemove)
+            .AsSplitQuery();
+
+            dBContext.Messages.RemoveRange(messages);
+
+            return dBContext.SaveChangesAsync();
         }
     }
 }
