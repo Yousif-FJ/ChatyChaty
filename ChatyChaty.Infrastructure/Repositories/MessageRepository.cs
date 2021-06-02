@@ -28,16 +28,18 @@ namespace ChatyChaty.Infrastructure.Repositories.MessageRepository
             return DBMessage.Entity;
         }
 
-        public Task<Message> GetAsync(MessageId Id)
+        public async Task<Message> GetAsync(MessageId Id)
         {
-            return dBContext.Messages.Include(m => m.Sender).FirstOrDefaultAsync(m => m.Id == Id);
+            var message = await dBContext.Messages.Include(m => m.Sender).FirstOrDefaultAsync(m => m.Id == Id);
+            message.SetSender(message.Sender.UserName);
+            return message;
         }
 
         public Task<List<Message>> GetForChatAsync(ConversationId conversationId)
         {
             return dBContext.Messages
                 .Where(m => m.ConversationId == conversationId)
-                .Include(m => m.Sender)
+                .Select(m => m.SetSender(m.Sender.UserName))
                 .AsSplitQuery()
                 .ToListAsync();
         }
@@ -46,7 +48,7 @@ namespace ChatyChaty.Infrastructure.Repositories.MessageRepository
         {
             return dBContext.Messages
             .Where(m => m.Conversation.FirstUserId == userId || m.Conversation.SecondUserId == userId)
-            .Include(m => m.Sender)
+            .Select(m => m.SetSender(m.Sender.UserName))
             .AsSplitQuery()
             .ToListAsync();
         }
@@ -57,8 +59,8 @@ namespace ChatyChaty.Infrastructure.Repositories.MessageRepository
 
             return await dBContext.Messages.Where(
                 m => m.SentTime > message.SentTime &&
-                m.Conversation.FirstUserId == userId || m.Conversation.SecondUserId == userId
-                ).Include(c => c.Sender)
+                m.Conversation.FirstUserId == userId || m.Conversation.SecondUserId == userId)
+                .Select(m => m.SetSender(m.Sender.UserName))
                 .AsSplitQuery()
                 .ToListAsync();
         }
@@ -73,9 +75,7 @@ namespace ChatyChaty.Infrastructure.Repositories.MessageRepository
         {
             var messages = dBContext.Messages
             .Where(m => m.Conversation.FirstUserId == userId || m.Conversation.SecondUserId == userId)
-            .Include(m => m.Sender)
-            .TakeLast(numberOfMessageToRemove)
-            .AsSplitQuery();
+            .TakeLast(numberOfMessageToRemove);
 
             dBContext.Messages.RemoveRange(messages);
 

@@ -18,10 +18,12 @@ namespace ChatyChaty.Domain.Model.Entity
             ConversationId = conversationId ?? throw new ArgumentNullException(nameof(conversationId));
             SenderId = senderId ?? throw new ArgumentNullException(nameof(senderId));
         }
+
         public MessageId Id { get; private set; }
         public string Body { get; private set; }
         public ConversationId ConversationId { get; private set; }
         public UserId SenderId { get; private set; }
+        public string SenderUsername { get; private set; }
         public AppUser Sender { get; private set; }
         public Conversation Conversation { get; private set; }
         public bool Delivered { get; private set; }
@@ -31,6 +33,12 @@ namespace ChatyChaty.Domain.Model.Entity
         {
             Delivered = true;
             DeliveryTime = DateTime.Now;
+            return this;
+        }
+
+        public Message SetSender(string username)
+        {
+            SenderUsername = username;
             return this;
         }
     }

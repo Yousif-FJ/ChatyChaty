@@ -18,11 +18,12 @@ namespace XUnitTest.MessageRepositoryTests
             var message = dbContext.Messages.Add(new Message(messageBody, chat.Id, user1.Id)).Entity;
             dbContext.SaveChanges();
             //Act
-            var returnedMessage = await repository.GetAsync(message.Id);
+            var returnedMessage = await repository.GetAllAsync(user1.Id);
             //Assert
-            Assert.True(returnedMessage.Body == message.Body);
-            Assert.True(returnedMessage.ConversationId == message.ConversationId);
-            Assert.True(returnedMessage.SenderId == message.SenderId);
+            Assert.True(returnedMessage[0].Body == message.Body);
+            Assert.True(returnedMessage[0].ConversationId == message.ConversationId);
+            Assert.True(returnedMessage[0].SenderId == message.SenderId);
+            Assert.True(returnedMessage[0].SenderUsername is not null);
         }
     }
 }

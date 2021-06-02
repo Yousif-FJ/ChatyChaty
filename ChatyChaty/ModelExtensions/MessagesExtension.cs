@@ -22,7 +22,7 @@ namespace ChatyChaty.ModelExtensions
                             (
                                 message.ConversationId.Value,
                                 message.Id.Value,
-                                message.Sender.UserName,
+                                message.SenderUsername,
                                 message.Body,
                                 message.SentTime,
                                 message.DeliveryTime,

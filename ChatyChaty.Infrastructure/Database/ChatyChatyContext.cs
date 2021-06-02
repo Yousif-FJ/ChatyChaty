@@ -31,6 +31,8 @@ namespace ChatyChaty.Infrastructure.Database
             builder.Entity<AppUser>().Ignore(f => f.PhoneNumberConfirmed);
             builder.Entity<AppUser>().Ignore(f => f.TwoFactorEnabled);
 
+            builder.Entity<Message>().Ignore(m => m.SenderUsername);
+
 
             builder.Entity<Message>()
                 .HasKey(m => m.Id);
