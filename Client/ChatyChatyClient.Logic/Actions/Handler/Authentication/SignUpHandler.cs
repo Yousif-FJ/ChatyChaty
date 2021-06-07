@@ -30,7 +30,7 @@ namespace ChatyChatyClient.Logic.Actions.Handler.Authentication
 
         public async Task<AuthenticationResult> Handle(SignUpRequest request, CancellationToken cancellationToken)
         {
-            var signUpInfo = new CreateAccountSchema() { Password = request.Password, Username = request.Username, DisplayName = request.DisplayName };
+            var signUpInfo = new CreateAccountSchema(request.Username, request.Password, request.DisplayName);
             var httpResponse = await httpClient.PostAsJsonAsync(SignupURL, signUpInfo, cancellationToken);
 
 

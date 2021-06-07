@@ -6,34 +6,37 @@ using Xunit;
 using System.Net.Http;
 using ChatyChaty.HttpShemas.v1.Message;
 using ChatyChaty.HttpShemas.v1.Profile;
+using Microsoft.AspNetCore.Mvc.Testing;
+using ChatyChaty;
+using ChatyChaty.HttpShemas.v1.Authentication;
+using XIntegrationTest.Profile;
+using XIntegrationTest.BaseConfiguration;
+using XIntegrationTest.Messaging;
 
 namespace XIntegrationTest
 {
     public class MessageTest : IntegrationTestBase
     {
-        [Fact]
-        public async Task SendMessage_Success()
+        [Theory]
+        [MemberData(memberName: nameof(DataGenerator.GetSenderReceiverAndMessageBody), MemberType = typeof(DataGenerator))]
+        public async Task<MessageResponse> SendMessage_Success(CreateAccountSchema senderSchem, CreateAccountSchema receiverSchem, string messageBody)
         {
             //Arrange
-            var user1CreationResponse = await client.CreateAccount("user1", "A name", "veryGoodPassword123");
-            var user2CreationResponse = await client.CreateAccount("user2", "A name", "veryGoodPassword123");
-            client.AddAuthTokenToHeader(user1CreationResponse.Token);
+            var sender = await client.CreateAccount(senderSchem);
+            var receiver = await client.CreateAccount(receiverSchem);
 
-            var chatHttpResposne = await client.GetAsync($"api/v1/Profile/User?UserName={user2CreationResponse.Profile.Username}");
-            var chatResposne = await chatHttpResposne.Content.ReadAsAsync<UserProfileResponse>();
+            var chat = await client.CreateChat(sender, receiver);
 
-            var chatId = chatResposne.ChatId;
-            var messageBody = "hi";
             //Act
-            var response = await client.PostAsJsonAsync("api/v1/Message/Message",
-                new SendMessageSchema { Body = messageBody, ChatId = chatId });
-            //Assert
+            var result = await client.SendMessage(sender, chat, messageBody);
 
-            var result = await CustomReadResponse<MessageResponse>(response);
+            //Assert
 
             Assert.False(result.Delivered);
             Assert.Equal(messageBody, result.Body);
-            Assert.Equal(chatId, result.ChatId);
+            Assert.Equal(chat.ChatId, result.ChatId);
+
+            return result;
         }
     }
 }

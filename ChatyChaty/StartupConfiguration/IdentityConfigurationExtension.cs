@@ -30,7 +30,7 @@ namespace ChatyChaty.StartupConfiguration
 
                 // User settings.
                 options.User.AllowedUserNameCharacters =
-                "abcdefghijklmnopqrstuvwxyz0123456789_";
+                "QWERTYUIOPASDFGHJKLZXCVBNMabcdefghijklmnopqrstuvwxyz0123456789_";
             });
         }
     }

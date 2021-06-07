@@ -5,7 +5,6 @@ using System.Net.Http;
 using Xunit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Threading.Tasks;
 using System.Net.Http.Headers;
 using System.Linq;
@@ -16,9 +15,10 @@ namespace XIntegrationTest
     public abstract class IntegrationTestBase
     {
         protected readonly HttpClient client;
+        protected readonly WebApplicationFactory<Startup> Factory;
         public IntegrationTestBase()
         {
-            var Factory = new WebApplicationFactory<Startup>().WithWebHostBuilder(builder =>
+            Factory = new WebApplicationFactory<Startup>().WithWebHostBuilder(builder =>
             {
                 builder.ConfigureServices(services =>
                 {
@@ -31,24 +31,13 @@ namespace XIntegrationTest
                     });
                 });
             });
+            
             //create a special client that work the In-Memory app
+
             client = Factory.CreateClient();
         }
 
-        public static async Task<T> CustomReadResponse<T>(HttpResponseMessage response)
-        {
-            T result;
-            try
-            {
-                result = await response.Content.ReadAsAsync<T>();
-            }
-            catch (UnsupportedMediaTypeException)
-            {
-                var responseAsString = await response.Content.ReadAsStringAsync();
-                throw new Exception($"Unexpected type response, The response as string : {responseAsString}");
-            }
-            return result;
-        }
+
 
         private static void RemoveRealDBContext(IServiceCollection services)
         {

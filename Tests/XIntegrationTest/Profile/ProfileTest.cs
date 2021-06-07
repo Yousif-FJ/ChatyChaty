@@ -1,10 +1,14 @@
-﻿using ChatyChaty.HttpShemas.v1.Error;
+﻿using ChatyChaty;
+using ChatyChaty.HttpShemas.v1.Authentication;
+using ChatyChaty.HttpShemas.v1.Error;
 using ChatyChaty.HttpShemas.v1.Profile;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
+using XIntegrationTest.BaseConfiguration;
 using Xunit;
 
 namespace XIntegrationTest.Profile
@@ -12,44 +16,46 @@ namespace XIntegrationTest.Profile
     public class ProfileTest : IntegrationTestBase
     {
         [Theory]
-        [InlineData("user2")]
-        public async Task<UserProfileResponse> CreateChat_Success(string username)
+        [MemberData(memberName: nameof(DataGenerator.GetSenderAndReceiver), MemberType = typeof(DataGenerator))]
+        public async Task<UserProfileResponse> CreateChat_Success(CreateAccountSchema senderSchem, CreateAccountSchema receiverSchem)
         {
             //Arrange
-            var user1CreationResponse = await client.CreateAccount("user3", "A name", "veryGoodPassword123");
-            var user2CreationResponse = await client.CreateAccount(username, "A name", "veryGoodPassword123");
+            var sender = await client.CreateAccount(senderSchem);
+            var receiver = await client.CreateAccount(receiverSchem);
 
-            client.AddAuthTokenToHeader(user1CreationResponse.Token);
+
             //Act
-            var response = await client.GetAsync($"api/v1/Profile/User?UserName={username}");
+            UserProfileResponse result = await client.CreateChat(sender, receiver);
             //Assert
 
-            var result = await CustomReadResponse<UserProfileResponse>(response);
-
             Assert.NotNull(result.ChatId);
-            Assert.Equal(user2CreationResponse.Profile.Username, result.Profile.Username);
+            Assert.Equal(receiver.Profile.Username, result.Profile.Username);
             return result;
         }
 
         [Theory]
-        [InlineData("user2")]
-        public async Task<ErrorResponse> CreateChat_NotFound(string username)
+        [MemberData(memberName: nameof(DataGenerator.GetSenderAndReceiver), MemberType = typeof(DataGenerator))]
+        public async Task<ErrorResponse> CreateChat_NotFound(CreateAccountSchema senderSchema, CreateAccountSchema receiver)
         {
             //Arrange
-            var user1CreationResponse = await client.CreateAccount("user1", "A name", "veryGoodPassword123");
+            var sender = await client.CreateAccount(senderSchema);
 
-            client.AddAuthTokenToHeader(user1CreationResponse.Token);
+
             //Act
-            var response = await client.GetAsync($"api/v1/Profile/User?UserName={username}");
-
+            var exception = await Assert.ThrowsAsync<IntegrationTestException>( 
+                async () =>
+                {
+                    await client.CreateChat(sender, new AuthResponse(null, new ProfileResponse(receiver.Username, receiver.DisplayName, null)));
+                }
+            );
 
             //Assert
-            var result = await CustomReadResponse<ErrorResponse>(response);
+            var error = await exception.ReadHttpError();
 
-            Assert.NotEqual(HttpStatusCode.OK, response.StatusCode);
-            Assert.NotEmpty(result.Errors);
+            Assert.NotEqual(HttpStatusCode.OK, exception.HttpResponse.StatusCode);
+            Assert.NotEmpty(error.Errors);
 
-            return result;
+            return error;
         }
     }
 }

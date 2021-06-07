@@ -8,6 +8,12 @@ namespace ChatyChaty.HttpShemas.v1.Message
 {
     public class SendMessageSchema
     {
+        public SendMessageSchema(string chatId, string body)
+        {
+            ChatId = chatId ?? throw new ArgumentNullException(nameof(chatId));
+            Body = body ?? throw new ArgumentNullException(nameof(body));
+        }
+
         [Required]
         public string ChatId { get; set; }
         [Required]
