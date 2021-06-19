@@ -146,9 +146,9 @@ namespace ChatyChaty.Domain.Services.AuthenticationManager
                 }
                 ),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
-                IssuedAt = DateTime.Now,
-                NotBefore = DateTime.Now,
-                Expires = DateTime.Now.AddDays(7),
+                IssuedAt = DateTime.UtcNow,
+                NotBefore = DateTime.UtcNow,
+                Expires = DateTime.UtcNow.AddDays(7),
                 Issuer = configuration["Jwt:Issuer"],
                 Audience = configuration["Jwt:Issuer"]
             };

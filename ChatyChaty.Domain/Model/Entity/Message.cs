@@ -13,7 +13,7 @@ namespace ChatyChaty.Domain.Model.Entity
                 throw new ArgumentNullException(nameof(body),"Message body can't be empty");
             }
             Id = new MessageId();
-            SentTime = DateTime.Now;
+            SentTime = DateTime.UtcNow;
             Body = body;
             ConversationId = conversationId ?? throw new ArgumentNullException(nameof(conversationId));
             SenderId = senderId ?? throw new ArgumentNullException(nameof(senderId));
@@ -32,7 +32,7 @@ namespace ChatyChaty.Domain.Model.Entity
         public Message MarkAsDelivered()
         {
             Delivered = true;
-            DeliveryTime = DateTime.Now;
+            DeliveryTime = DateTime.UtcNow;
             return this;
         }
 
