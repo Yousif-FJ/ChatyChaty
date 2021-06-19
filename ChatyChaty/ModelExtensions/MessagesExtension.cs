@@ -14,10 +14,6 @@ namespace ChatyChaty.ModelExtensions
             List<MessageResponse> result = new();
             foreach (var message in messages)
             {
-                if (message.Sender is null)
-                {
-                    throw new ArgumentNullException(nameof(messages), "a message in messages must have a sender");
-                }
                 result.Add(new MessageResponse
                             (
                                 message.ConversationId.Value,

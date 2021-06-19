@@ -61,33 +61,18 @@ namespace ChatyChaty.Controllers.v1
         [ProducesResponseType(typeof(List<MessageResponse>), StatusCodes.Status200OK)]
         [ProducesDefaultResponseType(typeof(ErrorResponse))]
         [HttpGet("NewMessages")]
-        public async Task<IActionResult> GetNewMessages([FromQuery] string lastMessageId)
+        public async Task<IActionResult> GetNewMessages([FromQuery] DateTime? lastMessageDateTime)
         {
             var userId = HttpContext.GetUserIdFromHeader();
 
             IList<Message> messages;
-            if (string.IsNullOrEmpty(lastMessageId))
+            if (lastMessageDateTime is null)
             {
-                try
-                {
-                    messages = await messageService.GetNewMessages(userId, null);
-                }
-                catch (InvalidEntityIdException e)
-                {
-                    return BadRequest(new ErrorResponse(e.Message));
-                }
+                messages = await messageService.GetNewMessages(userId, null);
             }
             else
             {
-                try
-                {
-                    var messageIdApp = new MessageId(lastMessageId);
-                    messages = await messageService.GetNewMessages(userId, messageIdApp);
-                }
-                catch (Exception e) when (e is InvalidEntityIdException || e is InvalidIdFormatException)
-                {
-                    return BadRequest(new ErrorResponse(e.Message));
-                }
+                messages = await messageService.GetNewMessages(userId, lastMessageDateTime);
             }
 
             var messagesRespond = messages.ToMessageInfoResponse(userId);

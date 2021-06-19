@@ -53,13 +53,11 @@ namespace ChatyChaty.Infrastructure.Repositories.MessageRepository
             .ToListAsync();
         }
 
-        public async Task<List<Message>> GetNewAsync(MessageId messageId, UserId userId)
+        public async Task<List<Message>> GetNewAsync(DateTime dateTime, UserId userId)
         {
-            var message = await GetAsync(messageId);
-
             return await dBContext.Messages.Where(
-                m => m.SentTime > message.SentTime &&
-                m.Conversation.FirstUserId == userId || m.Conversation.SecondUserId == userId)
+                m => (m.SentTime > dateTime &&
+                (m.Conversation.FirstUserId == userId || m.Conversation.SecondUserId == userId)))
                 .Select(m => m.SetSender(m.Sender.UserName))
                 .AsSplitQuery()
                 .ToListAsync();

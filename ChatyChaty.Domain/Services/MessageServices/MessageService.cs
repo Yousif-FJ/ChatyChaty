@@ -90,8 +90,7 @@ namespace ChatyChaty.Domain.Services.MessageServices
         /// <summary>
         /// get messages that are newer that the provided lastMessageId
         /// </summary>
-        /// <exception cref="InvalidEntityIdException"></exception>
-        public async Task<IList<Message>> GetNewMessages(UserId userId, MessageId lastMessageId)
+        public async Task<IList<Message>> GetNewMessages(UserId userId, DateTime? lastMessageTime)
         {
             if (userId is null)
             {
@@ -99,13 +98,13 @@ namespace ChatyChaty.Domain.Services.MessageServices
             }
 
             IList<Message> messages;
-            if (lastMessageId is null)
+            if (lastMessageTime is null)
             {
                 messages = await messageRepository.GetAllAsync(userId);
             }
             else
             {
-                messages = await messageRepository.GetNewAsync(lastMessageId, userId);
+                messages = await messageRepository.GetNewAsync(lastMessageTime.Value, userId);
             }
 
             var markedMessages = FindAndMarkDeliveredMessages(messages, userId);
