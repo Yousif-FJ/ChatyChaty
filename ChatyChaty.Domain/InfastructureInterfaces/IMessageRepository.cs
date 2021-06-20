@@ -13,10 +13,11 @@ namespace ChatyChaty.Domain.InfastructureInterfaces
     {
         Task<Message> GetAsync(MessageId Id);
         Task<List<Message>> GetAllAsync(UserId userId);
-        Task<List<Message>> GetNewAsync(DateTime dateTime, UserId userId);
+        Task<List<Message>> GetNewAsync(UserId userId, DateTime dateTime);
         Task<List<Message>> GetForChatAsync(ConversationId conversationId);
+        Task<List<Message>> GetStatusNewAsync(UserId userId, DateTime dateTime);
         Task UpdateRangeAsync(IEnumerable<Message> messages);
         Task<Message> AddAsync(Message message);
-        Task RemoveOverLimit(UserId userId, int numberOfMessageToRemove = 100);
+        Task RemoveOverLimitAsync(UserId userId, int numberOfMessageToRemove = 100);
     }
 }

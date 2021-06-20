@@ -108,12 +108,6 @@ namespace ChatyChaty.Domain.Services.AccountServices
         /// <returns>a list of conversations</returns>
         public async Task<IEnumerable<ProfileAccountModel>> GetConversations(UserId userId)
         {
-            var user = await userRepository.GetAsync(userId);
-            if (user is null)
-            {
-                throw new ArgumentOutOfRangeException(nameof(userId),"Invalid Id");
-            };
-
             var conversations = await chatRepository.GetWithUsersAsync(userId);
 
             var response = new List<ProfileAccountModel>();
@@ -121,7 +115,7 @@ namespace ChatyChaty.Domain.Services.AccountServices
             foreach (var conversation in conversations)
             {
 
-                AppUser SecondUser = conversation.FindReceiver(user.Id);
+                AppUser SecondUser = conversation.FindReceiver(userId);
                 if (SecondUser is null)
                 {
                     throw new InvalidOperationException("Conversation is not for the given user");

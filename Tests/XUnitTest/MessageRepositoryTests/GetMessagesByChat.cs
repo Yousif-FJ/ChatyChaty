@@ -8,17 +8,16 @@ using Xunit;
 
 namespace XUnitTest.MessageRepositoryTests
 {
-    public class GetMessagesByChat : BaseMessageRepositoryTest
+    public class GetMessagesByChat : MessageRepositoryTestBase
     {
         [Fact]
         public async Task OneMessage_OneChat_ShouldReturn_OneMessage()
         {
             //Arrange
-            var chat = dbContext.Conversations.Add(new Conversation(user1.Id, user2.Id)).Entity;
-            var message = dbContext.Messages.Add(new Message("some message", chat.Id, user1.Id)).Entity;
+            var message = dbContext.Messages.Add(new Message("some message", chatUser1AndUser2.Id, user1.Id)).Entity;
             dbContext.SaveChanges();
             //Act
-            var result = await repository.GetForChatAsync(chat.Id);
+            var result = await repository.GetForChatAsync(chatUser1AndUser2.Id);
             //Assert
             Assert.Single(result);
             Assert.Equal(message.Body, result.FirstOrDefault().Body);
@@ -30,13 +29,11 @@ namespace XUnitTest.MessageRepositoryTests
         public async Task TwoMessages_TwoChats_ShouldReturn_OneMessage()
         {
             //Arrange
-            var chat1 = dbContext.Conversations.Add(new Conversation(user1.Id, user2.Id)).Entity;
-            var chat2 = dbContext.Conversations.Add(new Conversation(user1.Id, user3.Id)).Entity;
-            var message1 = dbContext.Messages.Add(new Message("some message", chat1.Id, user1.Id)).Entity;
-            _ = dbContext.Messages.Add(new Message("some message", chat2.Id, user1.Id)).Entity;
+            var message1 = dbContext.Messages.Add(new Message("some message", chatUser1AndUser2.Id, user1.Id)).Entity;
+            _ = dbContext.Messages.Add(new Message("some message", chatUser1AndUser3.Id, user1.Id)).Entity;
             dbContext.SaveChanges();
             //Act
-            var result = await repository.GetForChatAsync(chat1.Id);
+            var result = await repository.GetForChatAsync(chatUser1AndUser2.Id);
             //Assert
             Assert.Single(result);
             Assert.Equal(message1.Id, result.FirstOrDefault().Id);
@@ -46,18 +43,16 @@ namespace XUnitTest.MessageRepositoryTests
         public async Task ThreeMessages_TwoChats_ShouldReturn_TwoMessage()
         {
             //Arrange
-            var chat1 = dbContext.Conversations.Add(new Conversation(user1.Id, user2.Id)).Entity;
-            var chat2 = dbContext.Conversations.Add(new Conversation(user1.Id, user3.Id)).Entity;
-            var message1 = dbContext.Messages.Add(new Message("some message", chat1.Id, user1.Id)).Entity;
-            var message2 = dbContext.Messages.Add(new Message("some message", chat1.Id, user1.Id)).Entity;
-            _ = dbContext.Messages.Add(new Message("some message", chat2.Id, user1.Id)).Entity;
+            var message1 = dbContext.Messages.Add(new Message("some message", chatUser1AndUser2.Id, user1.Id)).Entity;
+            var message2 = dbContext.Messages.Add(new Message("some message", chatUser1AndUser2.Id, user1.Id)).Entity;
+            _ = dbContext.Messages.Add(new Message("some message", chatUser1AndUser3.Id, user1.Id)).Entity;
             dbContext.SaveChanges();
             //Act
-            var result = await repository.GetForChatAsync(chat1.Id);
+            var result = await repository.GetForChatAsync(chatUser1AndUser2.Id);
             //Assert
             Assert.Equal(2, result.Count);
-            Assert.Equal(message1.Id, result.FirstOrDefault().Id);
-            Assert.Equal(message2.Id, result.LastOrDefault().Id);
+            Assert.Contains(result, m => m.Id == message1.Id);
+            Assert.Contains(result, m => m.Id == message2.Id);
         }
     }
 }

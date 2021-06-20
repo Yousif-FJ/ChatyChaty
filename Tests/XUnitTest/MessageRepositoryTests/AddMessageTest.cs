@@ -8,22 +8,21 @@ using Xunit;
 
 namespace XUnitTest.MessageRepositoryTests
 {
-    public class AddMessageTest : BaseMessageRepositoryTest
+    public class AddMessageTest : MessageRepositoryTestBase
     {
         [Fact]
         public async Task Success()
         {
             //Arrange
             var messageBody = "Some message";
-            var chat = dbContext.Conversations.Add(new Conversation(user1.Id, user2.Id)).Entity;
             dbContext.SaveChanges();
-            var message = new Message(messageBody, chat.Id, user1.Id);
+            var message = new Message(messageBody, chatUser1AndUser2.Id, user1.Id);
             //Act
             var returnMessage = await repository.AddAsync(message);
             //Assert
             var dbMessage = dbContext.Messages.Find(returnMessage.Id);
             Assert.True(dbMessage.SenderId == user1.Id);
-            Assert.True(dbMessage.ConversationId == chat.Id);
+            Assert.True(dbMessage.ConversationId == chatUser1AndUser2.Id);
             Assert.True(dbMessage.Body == messageBody);
         }
 

@@ -56,7 +56,7 @@ namespace ChatyChaty.Controllers.v1
 
 
         /// <summary>
-        /// Get new messages by supplying the last messageId of the last chat or null if no messages (Require authentication)
+        /// Get new messages by supplying the time of the last message or null if no messages (Require authentication)
         /// </summary>
         [ProducesResponseType(typeof(List<MessageResponse>), StatusCodes.Status200OK)]
         [ProducesDefaultResponseType(typeof(ErrorResponse))]

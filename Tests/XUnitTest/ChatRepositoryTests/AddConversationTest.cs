@@ -8,23 +8,21 @@ using Xunit;
 
 namespace XUnitTest.ChatRepositoryTests
 {
-    public class AddConversationTest
+    public class AddConversationTest : ChatRepositoryTestBase
     {
-        private readonly ChatRepositoryTestKit testKit;
         public AddConversationTest()
         {
-            testKit = new ChatRepositoryTestKit();
         }
 
         [Fact]
         public async Task AddConeversation_successfully()
         {
             //Arrange
-            var conversation = new Conversation(testKit.users[0].Id, testKit.users[1].Id);
+            var conversation = new Conversation(users[0].Id, users[1].Id);
             //Act
-            await testKit.ChatRepository.AddAsync(conversation);
+            await ChatRepository.AddAsync(conversation);
             //Assert
-            var dbConversation = testKit.Context.Conversations.Find(conversation.Id);
+            var dbConversation = Context.Conversations.Find(conversation.Id);
             Assert.Equal(conversation.Id, dbConversation.Id);
         }
     }

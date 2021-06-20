@@ -10,13 +10,13 @@ using XUnitTest;
 
 namespace XUnitTest.ChatRepositoryTests
 {
-    public class ChatRepositoryTestKit
+    public abstract class ChatRepositoryTestBase
     {
-        public readonly ChatyChatyContext Context;
-        public readonly ChatRepository ChatRepository;
-        public readonly List<AppUser> users;
+        protected readonly ChatyChatyContext Context;
+        protected readonly ChatRepository ChatRepository;
+        protected readonly List<AppUser> users;
 
-        public ChatRepositoryTestKit()
+        public ChatRepositoryTestBase()
         {
             Context = new ChatyChatySqliteInMemoryBuilder().CreateChatyChatyContext();
             ChatRepository = new ChatRepository(Context);

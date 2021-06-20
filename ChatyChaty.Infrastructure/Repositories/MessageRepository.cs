@@ -53,9 +53,9 @@ namespace ChatyChaty.Infrastructure.Repositories.MessageRepository
             .ToListAsync();
         }
 
-        public async Task<List<Message>> GetNewAsync(DateTime dateTime, UserId userId)
+        public Task<List<Message>> GetNewAsync(UserId userId,DateTime dateTime)
         {
-            return await dBContext.Messages.Where(
+            return dBContext.Messages.Where(
                 m => (m.SentTime > dateTime &&
                 (m.Conversation.FirstUserId == userId || m.Conversation.SecondUserId == userId)))
                 .Select(m => m.SetSender(m.Sender.UserName))
@@ -69,7 +69,7 @@ namespace ChatyChaty.Infrastructure.Repositories.MessageRepository
             await dBContext.SaveChangesAsync();
         }
 
-        public Task RemoveOverLimit(UserId userId,int numberOfMessageToRemove = 100)
+        public Task RemoveOverLimitAsync(UserId userId,int numberOfMessageToRemove = 100)
         {
             var messages = dBContext.Messages
             .Where(m => m.Conversation.FirstUserId == userId || m.Conversation.SecondUserId == userId)
@@ -78,6 +78,16 @@ namespace ChatyChaty.Infrastructure.Repositories.MessageRepository
             dBContext.Messages.RemoveRange(messages);
 
             return dBContext.SaveChangesAsync();
+        }
+
+        public Task<List<Message>> GetStatusNewAsync(UserId userId, DateTime dateTime)
+        {
+            return dBContext.Messages.Where(
+                m => (m.StatusUpdateTime > dateTime &&
+                (m.Conversation.FirstUserId == userId || m.Conversation.SecondUserId == userId)))
+                .Select(m => m.SetSender(m.Sender.UserName))
+                .AsSplitQuery()
+                .ToListAsync();
         }
     }
 }

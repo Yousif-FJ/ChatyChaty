@@ -7,15 +7,14 @@ using Xunit;
 
 namespace XUnitTest.MessageRepositoryTests
 {
-    public class GetMessageTests : BaseMessageRepositoryTest
+    public class GetMessageTests : MessageRepositoryTestBase
     {
         [Fact]
         public async Task OneMessage_OneChat_ShouldReturn_OneMessage()
         {
             //Arrange
             var messageBody = "Some message";
-            var chat = dbContext.Conversations.Add(new Conversation(user1.Id, user2.Id)).Entity;
-            var message = dbContext.Messages.Add(new Message(messageBody, chat.Id, user1.Id)).Entity;
+            var message = dbContext.Messages.Add(new Message(messageBody, chatUser1AndUser2.Id, user1.Id)).Entity;
             dbContext.SaveChanges();
             //Act
             var returnedMessage = await repository.GetAllAsync(user1.Id);

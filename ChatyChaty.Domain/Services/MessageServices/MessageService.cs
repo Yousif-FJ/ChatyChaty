@@ -104,14 +104,14 @@ namespace ChatyChaty.Domain.Services.MessageServices
             }
             else
             {
-                messages = await messageRepository.GetNewAsync(lastMessageTime.Value, userId);
+                messages = await messageRepository.GetNewAsync(userId, lastMessageTime.Value);
             }
 
             var markedMessages = FindAndMarkDeliveredMessages(messages, userId);
 
             if (messages.Count > MaxMessagesNumber)
             {
-                fireAndForget.RunActionWithoutWaitingAsync<IMessageRepository>(messageRepository => messageRepository.RemoveOverLimit(userId));
+                fireAndForget.RunActionWithoutWaitingAsync<IMessageRepository>(messageRepository => messageRepository.RemoveOverLimitAsync(userId));
             }
 
             fireAndForget.RunActionWithoutWaitingAsync<IMessageRepository>(messageRepository => messageRepository.UpdateRangeAsync(markedMessages));
@@ -145,7 +145,7 @@ namespace ChatyChaty.Domain.Services.MessageServices
 
             if (messages.Count > MaxMessagesNumber)
             {
-                fireAndForget.RunActionWithoutWaitingAsync<IMessageRepository>(messageRepository => messageRepository.RemoveOverLimit(userId));
+                fireAndForget.RunActionWithoutWaitingAsync<IMessageRepository>(messageRepository => messageRepository.RemoveOverLimitAsync(userId));
             }
 
             fireAndForget.RunActionWithoutWaitingAsync<IMessageRepository>(messageRepository => messageRepository.UpdateRangeAsync(markedMessages));
