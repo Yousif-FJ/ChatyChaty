@@ -52,6 +52,15 @@ namespace ChatyChaty.Infrastructure.Database
                 .HasConversion(x => x.Value,
                                x => new MessageId(x));
 
+            builder.Entity<Message>()
+                .Property(m => m.SentTime)
+                .HasConversion(t => t, t => DateTime.SpecifyKind(t, DateTimeKind.Utc));
+
+
+            builder.Entity<Message>()
+                .Property(m => m.DeliveryTime)
+                .HasConversion(t => t, t => DateTime.SpecifyKind(t.Value, DateTimeKind.Utc));
+
             builder.Entity<Conversation>()
                 .HasKey(c => c.Id);
 
