@@ -21,7 +21,7 @@ namespace ChatyChaty.ModelExtensions
                                 message.SenderUsername,
                                 message.Body,
                                 message.SentTime,
-                                message.DeliveryTime,
+                                message.StatusUpdateTime,
                                 message.SenderId == userId ? message.Delivered : null
                             ));
             }

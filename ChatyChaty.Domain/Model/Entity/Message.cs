@@ -28,11 +28,11 @@ namespace ChatyChaty.Domain.Model.Entity
         public Conversation Conversation { get; private set; }
         public bool Delivered { get; private set; }
         public DateTime SentTime { get; private set; }
-        public DateTime? DeliveryTime { get; private set; }
+        public DateTime? StatusUpdateTime { get; private set; }
         public Message MarkAsDelivered()
         {
             Delivered = true;
-            DeliveryTime = DateTime.UtcNow;
+            StatusUpdateTime = DateTime.UtcNow;
             return this;
         }
 

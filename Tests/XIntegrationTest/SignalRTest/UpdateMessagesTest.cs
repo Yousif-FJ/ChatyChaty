@@ -22,9 +22,9 @@ namespace XIntegrationTest.SignalRTest
         }
 
 
-        public async Task UpdateMessage_OneMessage()
+/*        public async Task UpdateMessage_OneMessage()
         {
             throw new NotImplementedException();
-        }
+        }*/
     }
 }

@@ -129,7 +129,7 @@ namespace ChatyChaty.Controllers.v1
                     userNameClaim.Value,
                     result.Body,
                     result.SentTime,
-                    result.DeliveryTime,
+                    result.StatusUpdateTime,
                     false);
 
                 return Ok(response);

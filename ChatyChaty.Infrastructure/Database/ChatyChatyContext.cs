@@ -58,7 +58,7 @@ namespace ChatyChaty.Infrastructure.Database
 
 
             builder.Entity<Message>()
-                .Property(m => m.DeliveryTime)
+                .Property(m => m.StatusUpdateTime)
                 .HasConversion(t => t, t => DateTime.SpecifyKind(t.Value, DateTimeKind.Utc));
 
             builder.Entity<Conversation>()
