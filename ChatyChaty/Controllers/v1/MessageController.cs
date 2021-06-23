@@ -86,10 +86,10 @@ namespace ChatyChaty.Controllers.v1
         [ProducesResponseType(typeof(List<MessageResponse>), StatusCodes.Status200OK)]
         [ProducesDefaultResponseType(typeof(ErrorResponse))]
         [HttpGet("MessageStatus")]
-        public async Task<IActionResult> GetNewMessageStatus([FromQuery][Required] DateTime lastMessageStutsDateTime)
+        public async Task<IActionResult> GetNewMessageStatus([FromQuery][Required] DateTime lastMessageStatusDateTime)
         {
             var userId = HttpContext.GetUserIdFromHeader();
-            var messages = await messageService.GetNewMessageStatus(userId, lastMessageStutsDateTime);
+            var messages = await messageService.GetNewMessageStatus(userId, lastMessageStatusDateTime);
             var messagesResponse = messages.ToMessageResponse(userId);
             return Ok(messagesResponse);
         }
