@@ -44,7 +44,7 @@ namespace ChatyChaty.Infrastructure.Repositories.MessageRepository
                 .ToListAsync();
         }
 
-        public  Task<List<Message>> GetAllAsync(UserId userId)
+        public Task<List<Message>> GetAllAsync(UserId userId)
         {
             return dBContext.Messages
             .Where(m => m.Conversation.FirstUserId == userId || m.Conversation.SecondUserId == userId)

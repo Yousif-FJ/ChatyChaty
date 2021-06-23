@@ -9,7 +9,7 @@ namespace ChatyChaty.ModelExtensions
 {
     public static class MessagesExtension
     {
-        public static IEnumerable<MessageResponse> ToMessageInfoResponse(this IEnumerable<Message> messages, UserId userId)
+        public static IEnumerable<MessageResponse> ToMessageResponse(this IEnumerable<Message> messages, UserId userId)
         {
             List<MessageResponse> result = new();
             foreach (var message in messages)

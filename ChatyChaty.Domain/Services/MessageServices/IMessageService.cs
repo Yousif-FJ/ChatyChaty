@@ -13,8 +13,9 @@ namespace ChatyChaty.Domain.Services.MessageServices
     public interface IMessageService
     {
         Task<Message> SendMessage(ConversationId conversationId, UserId senderId, string messageBody);
-        Task<IList<Message>> GetNewMessages(UserId userId, DateTime? lastMessageTime);
-        Task<IList<Message>> GetMessageForChat(UserId userId, ConversationId conversationId);
+        Task<List<Message>> GetNewMessages(UserId userId, DateTime? lastMessageTime);
+        Task<List<Message>> GetNewMessageStatus(UserId userId, DateTime lastStatusUpdateTime);
+        Task<List<Message>> GetMessageForChat(UserId userId, ConversationId conversationId);
         Task<bool> IsDelivered(UserId userId, MessageId messageId);
     }
 }

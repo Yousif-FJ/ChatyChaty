@@ -44,7 +44,7 @@ namespace ChatyChaty.Controllers.v1
             {
                 var chatIdApp = new ConversationId(chatId);
                 var result = await messageService.GetMessageForChat(userId, chatIdApp);
-                var messages = result.ToMessageInfoResponse(userId);
+                var messages = result.ToMessageResponse(userId);
 
                 return Ok(new List<MessageResponse>(messages));
             }
@@ -75,11 +75,24 @@ namespace ChatyChaty.Controllers.v1
                 messages = await messageService.GetNewMessages(userId, lastMessageDateTime);
             }
 
-            var messagesRespond = messages.ToMessageInfoResponse(userId);
+            var messagesRespond = messages.ToMessageResponse(userId);
 
             return Ok(messagesRespond);
         }
 
+        /// <summary>
+        /// Get messages which had been updated (like being delivered) by supplying the time of the last message status time(Require authentication)
+        /// </summary>
+        [ProducesResponseType(typeof(List<MessageResponse>), StatusCodes.Status200OK)]
+        [ProducesDefaultResponseType(typeof(ErrorResponse))]
+        [HttpGet("MessageStatus")]
+        public async Task<IActionResult> GetNewMessageStatus([FromQuery][Required] DateTime lastMessageStutsDateTime)
+        {
+            var userId = HttpContext.GetUserIdFromHeader();
+            var messages = await messageService.GetNewMessageStatus(userId, lastMessageStutsDateTime);
+            var messagesResponse = messages.ToMessageResponse(userId);
+            return Ok(messagesResponse);
+        }
 
         /// <summary>
         /// Check if the message is Delivered or not (Require authentication)

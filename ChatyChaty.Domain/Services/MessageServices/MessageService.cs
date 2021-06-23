@@ -90,14 +90,14 @@ namespace ChatyChaty.Domain.Services.MessageServices
         /// <summary>
         /// get messages that are newer that the provided lastMessageId
         /// </summary>
-        public async Task<IList<Message>> GetNewMessages(UserId userId, DateTime? lastMessageTime)
+        public async Task<List<Message>> GetNewMessages(UserId userId, DateTime? lastMessageTime)
         {
             if (userId is null)
             {
                 throw new ArgumentNullException(nameof(userId));
             }
 
-            IList<Message> messages;
+            List<Message> messages;
             if (lastMessageTime is null)
             {
                 messages = await messageRepository.GetAllAsync(userId);
@@ -125,7 +125,7 @@ namespace ChatyChaty.Domain.Services.MessageServices
         /// <summary>
         /// get messages of a specific chat
         /// <exception cref="InvalidEntityIdException"></exception>
-        public async Task<IList<Message>> GetMessageForChat(UserId userId, ConversationId conversationId)
+        public async Task<List<Message>> GetMessageForChat(UserId userId, ConversationId conversationId)
         {
             var chat = await chatRepository.GetAsync(conversationId);
 
@@ -155,6 +155,17 @@ namespace ChatyChaty.Domain.Services.MessageServices
 
             return messages;
         }
+        public Task<List<Message>> GetNewMessageStatus(UserId userId, DateTime lastStatusUpdateTime)
+        {
+            if (userId is null)
+            {
+                throw new ArgumentNullException(nameof(userId));
+            }
+
+            var messages = messageRepository.GetStatusNewAsync(userId, lastStatusUpdateTime);
+
+            return messages;
+        }
 
         private static IList<Message> FindAndMarkDeliveredMessages(IEnumerable<Message> messages, UserId userId)
         {
@@ -169,5 +180,6 @@ namespace ChatyChaty.Domain.Services.MessageServices
             }
             return result;
         }
+
     }
 }
