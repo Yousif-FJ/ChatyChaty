@@ -50,7 +50,7 @@ namespace ChatyChaty.Domain.Services.AccountServices
         /// </summary>
         /// <param name="senderId">First user Id</param>
         /// <param name="receiverUsername">Second user Id</param>
-        public async Task<NewConversationModel> CreateConversationAsync(UserId senderId, string receiverUsername)
+        public async Task<ProfileAccountModel> CreateConversationAsync(UserId senderId, string receiverUsername)
         {
             if (senderId is null)
             {
@@ -71,10 +71,7 @@ namespace ChatyChaty.Domain.Services.AccountServices
             var receiver = await userManager.FindByNameAsync(receiverUsername); 
             if (receiver is null)
             {
-                return new NewConversationModel
-                {
-                    Error = "Requested user doesn't exist"
-                };
+                throw new UserNotFoundException();
             }
 
             var conversation = await chatRepository.GetAsync(senderId, receiver.Id);
@@ -88,15 +85,12 @@ namespace ChatyChaty.Domain.Services.AccountServices
             fireAndForgetService.RunActionWithoutWaitingAsync<IMediator>(mediator
                 => mediator.Send(new UsersGotChatUpdateAsync((receiver.Id, conversation.Id))));
 
-            return new NewConversationModel
+            return new ProfileAccountModel
             {
-                Conversation = new ProfileAccountModel
-                {
-                    ChatId = conversation.Id,
-                    DisplayName = receiver.DisplayName,
-                    Username = receiver.UserName,
-                    PhotoURL = receiver.PhotoURL
-                }
+                ChatId = conversation.Id,
+                DisplayName = receiver.DisplayName,
+                Username = receiver.UserName,
+                PhotoURL = receiver.PhotoURL
             };
         }
 

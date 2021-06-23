@@ -3,16 +3,15 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ChatyChaty.Domain.Model.Entity;
 using ChatyChaty.Domain.Services.AccountServices;
-using ChatyChaty.Domain.Services.MessageServices;
 using ChatyChaty.HttpShemas.v1.Profile;
 using ChatyChaty.HttpShemas.v1.Error;
+using ChatyChaty.Domain.ApplicationExceptions;
 
 namespace ChatyChaty.Controllers.v1
 {
@@ -59,19 +58,18 @@ namespace ChatyChaty.Controllers.v1
         public async Task<IActionResult> GetUser([FromQuery][Required] string userName)
         {
             var userId = HttpContext.GetUserIdFromHeader();
-
-            var result = await accountManager.CreateConversationAsync(userId, userName);
-            if (result.Error is not null)
+            try
             {
-                return NotFound(new ErrorResponse(result.Error));
+                var result = await accountManager.CreateConversationAsync(userId, userName);
+                var response = new UserProfileResponse(result.ChatId.Value,
+                                new ProfileResponse(result.Username, result.DisplayName,result.PhotoURL));
+
+                return Ok(response);
             }
-
-            var response = new UserProfileResponse(result.Conversation.ChatId.Value,
-                     new ProfileResponse(result.Conversation.Username,
-                      result.Conversation.DisplayName,
-                      result.Conversation.PhotoURL));
-
-            return Ok(response);
+            catch (UserNotFoundException e)
+            {
+                return NotFound(new ErrorResponse(e.Message));
+            }
         }
 
         /// <summary>

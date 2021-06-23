@@ -14,7 +14,7 @@ namespace ChatyChaty.Domain.Services.AccountServices
     /// </summary>
     public interface IAccountManager
     {
-        Task<NewConversationModel> CreateConversationAsync(UserId senderId, string receiverUsername);
+        Task<ProfileAccountModel> CreateConversationAsync(UserId senderId, string receiverUsername);
         Task<IEnumerable<ProfileAccountModel>> GetConversations(UserId userId);
         Task<ProfileAccountModel> GetConversation(ConversationId chatId, UserId userId);
         Task<string> UpdateDisplayNameAsync(UserId UserId, string NewDisplayName);
