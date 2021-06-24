@@ -12,10 +12,9 @@ namespace ChatyChaty.Domain.InfastructureInterfaces
     public interface IMessageRepository
     {
         Task<Message> GetAsync(MessageId Id);
-        Task<List<Message>> GetAllAsync(UserId userId);
-        Task<List<Message>> GetNewAsync(UserId userId, DateTime dateTime);
+        Task<List<Message>> GetAllAsync(UserId userId, DateTime AfterDateTime = default);
         Task<List<Message>> GetForChatAsync(ConversationId conversationId);
-        Task<List<Message>> GetStatusNewAsync(UserId userId, DateTime dateTime);
+        Task<List<Message>> GetStatusAsync(UserId userId, DateTime AfterDateTime = default);
         Task UpdateRangeAsync(IEnumerable<Message> messages);
         Task<Message> AddAsync(Message message);
         Task RemoveOverLimitAsync(UserId userId, int numberOfMessageToRemove = 100);

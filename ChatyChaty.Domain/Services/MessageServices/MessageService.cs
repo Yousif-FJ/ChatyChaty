@@ -90,22 +90,14 @@ namespace ChatyChaty.Domain.Services.MessageServices
         /// <summary>
         /// get messages that are newer that the provided lastMessageId
         /// </summary>
-        public async Task<List<Message>> GetNewMessages(UserId userId, DateTime? lastMessageTime)
+        public async Task<List<Message>> GetMessages(UserId userId, DateTime lastMessageTime = default)
         {
             if (userId is null)
             {
                 throw new ArgumentNullException(nameof(userId));
             }
 
-            List<Message> messages;
-            if (lastMessageTime is null)
-            {
-                messages = await messageRepository.GetAllAsync(userId);
-            }
-            else
-            {
-                messages = await messageRepository.GetNewAsync(userId, lastMessageTime.Value);
-            }
+            List<Message> messages = await messageRepository.GetAllAsync(userId, lastMessageTime);
 
             var markedMessages = FindAndMarkDeliveredMessages(messages, userId);
 
@@ -143,10 +135,7 @@ namespace ChatyChaty.Domain.Services.MessageServices
 
             var markedMessages = FindAndMarkDeliveredMessages(messages, userId);
 
-            if (messages.Count > MaxMessagesNumber)
-            {
-                fireAndForget.RunActionWithoutWaitingAsync<IMessageRepository>(messageRepository => messageRepository.RemoveOverLimitAsync(userId));
-            }
+            CheckMessageLimit(userId, messages);
 
             fireAndForget.RunActionWithoutWaitingAsync<IMessageRepository>(messageRepository => messageRepository.UpdateRangeAsync(markedMessages));
 
@@ -155,18 +144,27 @@ namespace ChatyChaty.Domain.Services.MessageServices
 
             return messages;
         }
-        public Task<List<Message>> GetNewMessageStatus(UserId userId, DateTime lastStatusUpdateTime)
+
+
+        public Task<List<Message>> GetMessageStatus(UserId userId, DateTime lastStatusUpdateTime = default)
         {
             if (userId is null)
             {
                 throw new ArgumentNullException(nameof(userId));
             }
 
-            var messages = messageRepository.GetStatusNewAsync(userId, lastStatusUpdateTime);
+            var messages = messageRepository.GetStatusAsync(userId, lastStatusUpdateTime);
 
             return messages;
         }
 
+        private void CheckMessageLimit(UserId userId, List<Message> messages)
+        {
+            if (messages.Count > MaxMessagesNumber)
+            {
+                fireAndForget.RunActionWithoutWaitingAsync<IMessageRepository>(messageRepository => messageRepository.RemoveOverLimitAsync(userId));
+            }
+        }
         private static IList<Message> FindAndMarkDeliveredMessages(IEnumerable<Message> messages, UserId userId)
         {
             var result = new List<Message>();

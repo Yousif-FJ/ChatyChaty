@@ -44,16 +44,7 @@ namespace ChatyChaty.Infrastructure.Repositories.MessageRepository
                 .ToListAsync();
         }
 
-        public Task<List<Message>> GetAllAsync(UserId userId)
-        {
-            return dBContext.Messages
-            .Where(m => m.Conversation.FirstUserId == userId || m.Conversation.SecondUserId == userId)
-            .Select(m => m.SetSender(m.Sender.UserName))
-            .AsSplitQuery()
-            .ToListAsync();
-        }
-
-        public Task<List<Message>> GetNewAsync(UserId userId,DateTime dateTime)
+        public Task<List<Message>> GetAllAsync(UserId userId,DateTime dateTime = default)
         {
             return dBContext.Messages.Where(
                 m => (m.SentTime > dateTime &&
@@ -73,6 +64,7 @@ namespace ChatyChaty.Infrastructure.Repositories.MessageRepository
         {
             var messages = dBContext.Messages
             .Where(m => m.Conversation.FirstUserId == userId || m.Conversation.SecondUserId == userId)
+            .OrderBy(m => m.SentTime)
             .TakeLast(numberOfMessageToRemove);
 
             dBContext.Messages.RemoveRange(messages);
@@ -80,11 +72,10 @@ namespace ChatyChaty.Infrastructure.Repositories.MessageRepository
             return dBContext.SaveChangesAsync();
         }
 
-        public Task<List<Message>> GetStatusNewAsync(UserId userId, DateTime dateTime)
+        public Task<List<Message>> GetStatusAsync(UserId userId, DateTime dateTime = default)
         {
             return dBContext.Messages.Where(
-                m => (m.StatusUpdateTime > dateTime &&
-                (m.Conversation.FirstUserId == userId || m.Conversation.SecondUserId == userId)))
+                m => m.StatusUpdateTime > dateTime && m.SenderId == userId)
                 .Select(m => m.SetSender(m.Sender.UserName))
                 .AsSplitQuery()
                 .ToListAsync();

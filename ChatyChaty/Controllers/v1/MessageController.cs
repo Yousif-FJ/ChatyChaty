@@ -68,11 +68,11 @@ namespace ChatyChaty.Controllers.v1
             IList<Message> messages;
             if (lastMessageDateTime is null)
             {
-                messages = await messageService.GetNewMessages(userId, null);
+                messages = await messageService.GetMessages(userId);
             }
             else
             {
-                messages = await messageService.GetNewMessages(userId, lastMessageDateTime);
+                messages = await messageService.GetMessages(userId, lastMessageDateTime.Value);
             }
 
             var messagesRespond = messages.ToMessageResponse(userId);
@@ -86,10 +86,18 @@ namespace ChatyChaty.Controllers.v1
         [ProducesResponseType(typeof(List<MessageResponse>), StatusCodes.Status200OK)]
         [ProducesDefaultResponseType(typeof(ErrorResponse))]
         [HttpGet("MessageStatus")]
-        public async Task<IActionResult> GetNewMessageStatus([FromQuery][Required] DateTime lastMessageStatusDateTime)
+        public async Task<IActionResult> GetNewMessageStatus([FromQuery] DateTime? lastMessageStatusDateTime)
         {
             var userId = HttpContext.GetUserIdFromHeader();
-            var messages = await messageService.GetNewMessageStatus(userId, lastMessageStatusDateTime);
+            List<Message> messages;
+            if (lastMessageStatusDateTime is null)
+            {
+                messages = await messageService.GetMessageStatus(userId);
+            }
+            else
+            {
+                messages = await messageService.GetMessageStatus(userId, lastMessageStatusDateTime.Value);
+            }
             var messagesResponse = messages.ToMessageResponse(userId);
             return Ok(messagesResponse);
         }
@@ -124,7 +132,7 @@ namespace ChatyChaty.Controllers.v1
         [ProducesResponseType(typeof(MessageResponse), StatusCodes.Status200OK)]
         [ProducesDefaultResponseType(typeof(ErrorResponse))]
         [HttpPost("Message")]
-        public async Task<IActionResult> SendMessage([FromBody]SendMessageSchema messageSchema)
+        public async Task<IActionResult> SendMessage([FromBody][Required] SendMessageSchema messageSchema)
         {
             var userId = HttpContext.GetUserIdFromHeader();
 

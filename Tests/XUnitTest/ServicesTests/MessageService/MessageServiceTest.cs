@@ -76,7 +76,7 @@ namespace XUnitTest.Services
 
 
             //Act
-            var MessagesResult = await messageService.GetNewMessages(u1.Id, null);
+            var MessagesResult = await messageService.GetMessages(u1.Id);
             //Assert
             Assert.True(MessagesResult[0].Body == "test1");
             Assert.True(MessagesResult[1].Body == "test2");
@@ -104,7 +104,7 @@ namespace XUnitTest.Services
             await dbContext.SaveChangesAsync();
 
             //Act
-            var MessagesResult = await messageService.GetNewMessages(u2.Id, null);
+            var MessagesResult = await messageService.GetMessages(u2.Id);
             //Assert
             Assert.True(MessagesResult[0].Body == "test1");
             Assert.True(MessagesResult[0].ConversationId == conversation1.Id);
@@ -135,7 +135,7 @@ namespace XUnitTest.Services
             var conversation2 = (await dbContext.Conversations.AddAsync(new Conversation( u1.Id,u2.Id))).Entity;
             await dbContext.SaveChangesAsync();
             var messageResult = await messageService.SendMessage(conversation2.Id, u1.Id, "Test Message");
-            await messageService.GetNewMessages(u2.Id, null);
+            await messageService.GetMessages(u2.Id);
             //Act
             var result = await messageService.IsDelivered(u1.Id, messageResult.Id);
             //Assert
