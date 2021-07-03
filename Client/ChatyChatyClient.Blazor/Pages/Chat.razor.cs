@@ -10,5 +10,11 @@ namespace ChatyChatyClient.Blazor.Pages
     {
         [Parameter]
         public string ChatId { get; set; }
+        public Chat ChatInfo { get; set; }
+
+        protected override Task OnInitializedAsync()
+        {
+            return base.OnInitializedAsync();
+        }
     }
 }

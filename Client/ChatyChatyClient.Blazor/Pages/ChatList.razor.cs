@@ -35,5 +35,10 @@ namespace ChatyChatyClient.Blazor.Pages
             await MediatR.Send(new LogoutRequest());
             Navigation.NavigateTo("/client/login");
         }
+
+        private void OpenChat(string chatId)
+        {
+
+        }
     }
 }

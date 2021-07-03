@@ -9,7 +9,8 @@ namespace ChatyChatyClient.Logic.RepositoryInterfaces
     public interface IChatStateContainer
     {
         IList<Chat> GetChats();
+        void AddChat(Chat chat);
         void SetChats(IList<Chat> chats);
-        void UpdateChat(Chat chat);
+        Chat GetChat(string chatId);
     }
 }

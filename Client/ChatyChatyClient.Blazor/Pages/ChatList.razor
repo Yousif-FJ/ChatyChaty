@@ -25,7 +25,7 @@
     @foreach (var chat in ViewModel.Chats)
     {
         <div>
-            <a class="list-group-item list-group-item-action">
+            <a href="#" @onclick="(e => OpenChat(chat.Id))" class="list-group-item list-group-item-action">
                 <div class="d-flex align-items-center">
                     @if (chat.Profile.PhotoURL is null)
                     {

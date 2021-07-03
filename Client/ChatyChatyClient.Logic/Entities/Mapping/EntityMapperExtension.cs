@@ -1,4 +1,5 @@
-﻿using ChatyChaty.HttpShemas.v1.Profile;
+﻿using ChatyChaty.HttpShemas.v1.Message;
+using ChatyChaty.HttpShemas.v1.Profile;
 using ChatyChatyClient.Logic.Entities;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,17 @@ namespace ChatyChatyClient.Logic.Entities
                     new UserProfile(item.Profile.Username, item.Profile.DisplayName, item.Profile.PhotoURL)));
             }
             return chats;
+        }
+
+        public static IList<Message> ToEntityList(this IList<MessageResponse> messageResponses)
+        {
+            var messages = new List<Message>();
+            foreach (var item in messageResponses)
+            {
+                messages.Add(new Message(item.Body, item.Sender, item.MessageId, item.Delivered,
+                    item.SentTime, item.DeliveryTime));
+            }
+            return messages;
         }
     }
 }
