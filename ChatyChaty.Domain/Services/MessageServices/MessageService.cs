@@ -126,7 +126,7 @@ namespace ChatyChaty.Domain.Services.MessageServices
                 throw new InvalidEntityIdException(conversationId);
             }
 
-            if (chat.FirstUserId != userId || chat.SecondUserId != userId)
+            if (chat.FirstUserId != userId && chat.SecondUserId != userId)
             {
                 throw new InvalidEntityIdException(conversationId);
             }

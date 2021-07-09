@@ -1,4 +1,5 @@
-﻿using ChatyChaty.Domain.Model.Entity;
+﻿using ChatyChaty.Domain.ApplicationExceptions;
+using ChatyChaty.Domain.Model.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -54,6 +55,26 @@ namespace XUnitTest.EntityTests
             Assert.NotNull(Id.Value);
             Assert.NotEqual(Id.Value, new Guid().ToString());
             Assert.Equal(NewId, Id);
+        }
+
+        [Theory]
+        [InlineData("37fd07a9-5ae2-40c5-9705-6e692d80fa82")]
+        public void CreateConverstaionId_ValidId(string IdString)
+        {
+            //Act
+            var Id = new ConversationId(IdString);
+            //Assert
+            Assert.Equal(IdString, Id.Value);
+        }
+
+        [Theory]
+        [InlineData("-5ae2-40c5-9705-6e692d80fa82")]
+        public void CreateConverstaionId_InValidId(string IdString)
+        {
+            //Arrange
+            void createIdAction() { _ = new ConversationId(IdString); }
+            //Act & Assert
+            Assert.Throws<InvalidIdFormatException>(createIdAction);
         }
     }
 }
