@@ -18,24 +18,38 @@ namespace ChatyChatyClient.Logic.Actions.Handler.Messaging
         private const string GetMessagesForChatURL = "/api/v1/Message/MessagesForChat";
         private readonly HttpClient httpClient;
         private readonly IChatStateContainer stateContainer;
-        public GetChatMessagesHandler(HttpClient httpClient, IChatStateContainer stateContainer)
+        private readonly IMediator mediator;
+
+        public GetChatMessagesHandler(HttpClient httpClient, IChatStateContainer stateContainer, IMediator mediator)
         {
             this.httpClient = httpClient;
             this.stateContainer = stateContainer;
+            this.mediator = mediator;
         }
         public async Task<Chat> Handle(GetChatMessagesRequest request, CancellationToken cancellationToken)
         {
             var chat = stateContainer.GetChat(request.ChatId);
-            if (chat is not null)
+            if (chat is null)
+            {
+                await mediator.Send(new GetChatsRequest(), cancellationToken);
+                chat = stateContainer.GetChat(request.ChatId);
+                if (chat is null)
+                {
+                    throw new Exception("chat can't be null");
+                }
+            }
+            if (chat.Messages is not null)
             {
                 return chat;
             }
 
-            var httpResponse = await httpClient.GetAsync($"GetMessagesForChatURL?chatId={request.ChatId}", cancellationToken);
+            var httpResponse = await httpClient.GetAsync($"{GetMessagesForChatURL}?chatId={request.ChatId}", cancellationToken);
 
-            var result = httpResponse.ReadApplicatoinResponse<List<MessageResponse>>(cancellationToken);
+            var messagesResponse = await httpResponse.ReadAppResponseAsync<List<MessageResponse>>(cancellationToken);
 
-            throw new NotImplementedException();
+            chat.Messages = messagesResponse.ToEntityList();
+
+            return chat;
         }
     }
 }

@@ -17,9 +17,9 @@ namespace ChatyChatyClient.Logic.Entities
             StatusUpdateTime = statusUpdateTime;
         }
 
-        public string Body { get; set; }
-        public string SenderName { get; set; }
-        public string Id { get; set; }
+        public string Body { get; init; }
+        public string SenderName { get; init; }
+        public string Id { get; init; }
         public bool? IsDelivered { get; set; }
         public DateTime SentTime { get; set; }
         public DateTime? StatusUpdateTime { get; set; }

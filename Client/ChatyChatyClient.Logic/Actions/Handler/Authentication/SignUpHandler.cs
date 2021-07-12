@@ -37,7 +37,7 @@ namespace ChatyChatyClient.Logic.Actions.Handler.Authentication
             AuthResponse response;
             try
             {
-                response = await httpResponse.ReadApplicatoinResponse<AuthResponse>(cancellationToken);
+                response = await httpResponse.ReadAppResponseAsync<AuthResponse>(cancellationToken);
             }
             catch (ErrorResponseException e)
             {

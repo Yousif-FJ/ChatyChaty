@@ -8,10 +8,10 @@ namespace ChatyChatyClient.Blazor.ViewModel
 {
     public class ChatListViewModel
     {
-        public ChatListViewModel()
+        public ChatListViewModel(IList<Chat> chats)
         {
-            Chats = new List<Chat>();
+            Chats = chats ?? throw new ArgumentNullException(nameof(chats));
         }
-        public IList<Chat> Chats { get; set; }
+        public IList<Chat> Chats { get; }
     }
 }

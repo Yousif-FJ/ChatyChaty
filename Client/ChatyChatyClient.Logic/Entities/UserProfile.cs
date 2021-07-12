@@ -23,8 +23,8 @@ namespace ChatyChatyClient.Logic.Entities
             DisplayName = displayName;
             PhotoURL = photoURL;
         }
-        public string Username { get; set; }
-        public string DisplayName { get; set; }
+        public string Username { get; init; }
+        public string DisplayName { get; init; }
         public string PhotoURL { get; set; }
     }
 }

@@ -39,7 +39,7 @@ namespace ChatyChatyClient.Logic.Actions.Handler.Messaging
             var httpResponse = await httpClient.GetAsync(GetChatsURL,cancellationToken);
 
             List<UserProfileResponse> response;
-            response = await httpResponse.ReadApplicatoinResponse<List<UserProfileResponse>>(cancellationToken);
+            response = await httpResponse.ReadAppResponseAsync<List<UserProfileResponse>>(cancellationToken);
 
             chats = response.ToEntityList();
 

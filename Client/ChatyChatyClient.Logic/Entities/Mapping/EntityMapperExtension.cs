@@ -11,7 +11,7 @@ namespace ChatyChatyClient.Logic.Entities
 {
     public static class EntityMapperExtension
     {
-        public static IList<Chat> ToEntityList(this IList<UserProfileResponse> userProfiles)
+        public static List<Chat> ToEntityList(this IList<UserProfileResponse> userProfiles)
         {
             var chats = new List<Chat>();
             foreach (var item in userProfiles)
@@ -22,7 +22,7 @@ namespace ChatyChatyClient.Logic.Entities
             return chats;
         }
 
-        public static IList<Message> ToEntityList(this IList<MessageResponse> messageResponses)
+        public static List<Message> ToEntityList(this IList<MessageResponse> messageResponses)
         {
             var messages = new List<Message>();
             foreach (var item in messageResponses)

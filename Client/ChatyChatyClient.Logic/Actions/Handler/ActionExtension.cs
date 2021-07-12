@@ -23,7 +23,7 @@ namespace ChatyChatyClient.Logic.Actions.Handler
         /// <exception cref="ErrorResponseException"></exception>
         /// <exception cref="UnexpectedResponseException"></exception>
         /// <returns></returns>
-        public async static Task<T> ReadApplicatoinResponse<T>(this HttpResponseMessage httpResponse, CancellationToken cancellationToken)
+        public async static Task<T> ReadAppResponseAsync<T>(this HttpResponseMessage httpResponse, CancellationToken cancellationToken)
         {
             T response;
             try

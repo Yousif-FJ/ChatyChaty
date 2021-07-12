@@ -9,7 +9,7 @@ namespace ChatyChatyClient.Blazor.RepositoryImplementation
 {
     public class ChatStateContainer : IChatStateContainer
     {
-        private IList<Chat> chats;
+        private List<Chat> chats;
 
         public void AddChat(Chat chat)
         {
@@ -23,6 +23,10 @@ namespace ChatyChatyClient.Blazor.RepositoryImplementation
 
         public Chat GetChat(string chatId)
         {
+            if (chats is null)
+            {
+                return null;
+            }
             return chats.FirstOrDefault(chat => chat.Id == chatId);
         }
 
@@ -33,7 +37,12 @@ namespace ChatyChatyClient.Blazor.RepositoryImplementation
 
         public void SetChats(IList<Chat> chats)
         {
-            this.chats = chats ?? throw new ArgumentNullException(nameof(chats));
+            if (chats is null)
+            {
+                throw new ArgumentNullException(nameof(chats));
+            }
+
+            this.chats = new List<Chat>(chats);
         }
     }
 }

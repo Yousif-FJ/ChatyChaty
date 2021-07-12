@@ -1,9 +1,10 @@
 ﻿@inherits LayoutComponentBase
 
-<div style="background-color:azure">
-    <div style="max-width:768px; padding:0px; background-color:white;" class="container">
+<div style="background-color:azure; height:100vh;">
+    <div style="max-width: 768px; height:inherit; padding:0px; background-color: white;"
+         class="container">
         <CascadingValue Value="LoadingIndicator" IsFixed="true">
-            @if (LoadingIndicator.Value)
+            @if (LoadingIndicator.IsVisible)
             {
                 <div class="fixed-top text-center">
                     <div class="spinner-grow text-primary mt-2" role="status">

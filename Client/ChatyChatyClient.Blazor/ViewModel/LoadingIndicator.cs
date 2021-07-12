@@ -9,28 +9,28 @@ namespace ChatyChatyClient.Blazor.ViewModel
 {
     public class LoadingIndicator : INotifyPropertyChanged
     {
-        private bool IsVisible;
+        private bool isVisible;
 
-        public bool Value
+        public bool IsVisible
         {
-            get => IsVisible;
+            get => isVisible;
             private set
             {
-                if (value != IsVisible)
+                if (value != isVisible)
                 {
-                    IsVisible = value;
+                    isVisible = value;
                     NotifyPropertyChanged();
                 }
             }
         }
         public void Show()
         {
-            Value = true;
+            IsVisible = true;
         }
 
         public void Hide()
         {
-            Value = false;
+            IsVisible = false;
         }
 
 

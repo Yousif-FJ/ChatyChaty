@@ -7,10 +7,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ChatyChatyClient.Logic.Entities;
 
 namespace ChatyChatyClient.Blazor.Pages
 {
-    public partial class ChatList
+    public partial class ChatListPage
     {
         [Inject]
         private IMediator MediatR { get; init; }
@@ -20,13 +21,13 @@ namespace ChatyChatyClient.Blazor.Pages
         [CascadingParameter]
         protected LoadingIndicator LoadingIndicator { get; init; }
 
-        private readonly ChatListViewModel ViewModel = new();
+        private ChatListViewModel ViewModel { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
             LoadingIndicator.Show();
             var chats = await MediatR.Send(new GetChatsRequest());
-            ViewModel.Chats = chats;
+            ViewModel = new ChatListViewModel(chats);
             LoadingIndicator.Hide();
         }
 
@@ -38,7 +39,7 @@ namespace ChatyChatyClient.Blazor.Pages
 
         private void OpenChat(string chatId)
         {
-
+            Navigation.NavigateTo($"/client/{chatId}");
         }
     }
 }

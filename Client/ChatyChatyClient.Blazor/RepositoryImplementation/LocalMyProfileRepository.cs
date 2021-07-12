@@ -29,11 +29,21 @@ namespace ChatyChatyClient.Blazor.RepositoryImplementation
 
         public ValueTask Set(UserProfile profile)
         {
+            if (profile is null)
+            {
+                throw new ArgumentNullException(nameof(profile));
+            }
+
             return localStorage.SetItemAsync(profileKey, profile);
         }
 
         public ValueTask Update(UserProfile profile)
         {
+            if (profile is null)
+            {
+                throw new ArgumentNullException(nameof(profile));
+            }
+
             return localStorage.SetItemAsync(profileKey, profile);
         }
     }

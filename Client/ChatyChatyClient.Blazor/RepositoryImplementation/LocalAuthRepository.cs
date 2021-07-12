@@ -33,6 +33,11 @@ namespace ChatyChatyClient.Blazor.RepositoryImplementation
 
         public ValueTask SetToken(string value)
         {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                throw new ArgumentException($"'{nameof(value)}' cannot be null or whitespace.", nameof(value));
+            }
+
             return localStorage.SetItemAsync(tokenKey, value);
         }
     }
