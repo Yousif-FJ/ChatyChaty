@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ChatyChatyClient.Logic.Entities
 {
-    public class Message
+    public class Message : IComparable<Message>
     {
         public Message(string body, string senderName, string id, bool? isDelivered, DateTime sentTime, DateTime? statusUpdateTime)
         {
@@ -23,5 +23,21 @@ namespace ChatyChatyClient.Logic.Entities
         public bool? IsDelivered { get; set; }
         public DateTime SentTime { get; set; }
         public DateTime? StatusUpdateTime { get; set; }
+
+        public int CompareTo(Message other)
+        {
+            if (this.SentTime > other.SentTime)
+            {
+                return 1;
+            }
+            else if (this.SentTime < other.SentTime)
+            {
+                return -1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
     }
 }

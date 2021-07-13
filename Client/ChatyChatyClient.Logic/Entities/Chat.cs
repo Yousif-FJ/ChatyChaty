@@ -14,7 +14,7 @@ namespace ChatyChatyClient.Logic.Entities
         }
 
         public string Id { get; init; }
-        public IList<Message> Messages { get; set; }
+        public List<Message> Messages { get; set; }
         public UserProfile Profile { get; init; }
         public bool IsThereNewMessage { get; set; }
     }

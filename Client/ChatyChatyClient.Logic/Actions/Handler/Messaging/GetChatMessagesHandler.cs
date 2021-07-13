@@ -33,6 +33,7 @@ namespace ChatyChatyClient.Logic.Actions.Handler.Messaging
             {
                 await mediator.Send(new GetChatsRequest(), cancellationToken);
                 chat = stateContainer.GetChat(request.ChatId);
+
                 if (chat is null)
                 {
                     throw new Exception("chat can't be null");
@@ -48,6 +49,7 @@ namespace ChatyChatyClient.Logic.Actions.Handler.Messaging
             var messagesResponse = await httpResponse.ReadAppResponseAsync<List<MessageResponse>>(cancellationToken);
 
             chat.Messages = messagesResponse.ToEntityList();
+            chat.Messages.Sort();
 
             return chat;
         }
