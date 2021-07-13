@@ -1,6 +1,6 @@
 ﻿@page "/client/{ChatId}"
 
-<nav class="navbar navbar-dark bg-dark" style="height:56px">
+<nav class="navbar navbar-dark bg-dark">
     <div class="container-fluid justify-content-start px-1">
         <a href="client">
             <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" color="white" fill="currentColor" class="bi bi-arrow-left mr-2" viewBox="0 0 16 16">
@@ -20,7 +20,7 @@
 </nav>
 
 
-<div id="messages-container" class="d-flex flex-column" style="max-height:calc(100% - 56px); overflow-y:auto;">
+<div id="messages-container" class="d-flex flex-column" style="overflow-y:auto;">
     @if (ViewModel is not null)
     {
         if (ViewModel.ChatInfo.Messages.Count == 0)
