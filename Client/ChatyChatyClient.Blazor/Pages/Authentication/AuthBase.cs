@@ -1,5 +1,6 @@
 ﻿using ChatyChatyClient.Blazor.StartUpConfiguratoin;
 using ChatyChatyClient.Blazor.ViewModel;
+using ChatyChatyClient.Logic.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -19,7 +20,7 @@ namespace ChatyChatyClient.Blazor.Pages.Authentication
 
         [Inject]
         private AuthenticationStateProvider AuthStateProvider { get; init; }
-        protected CustomAuthStateProvider CustomAuthStateProvider => (CustomAuthStateProvider)AuthStateProvider;
+        private CustomAuthStateProvider CustomAuthStateProvider => (CustomAuthStateProvider)AuthStateProvider;
         [CascadingParameter]
         private Task<AuthenticationState> AuthenticationStateTask { get; init; }
 
@@ -27,13 +28,28 @@ namespace ChatyChatyClient.Blazor.Pages.Authentication
         [CascadingParameter]
         protected LoadingIndicator LoadingIndicator { get; init; }
 
-
         protected string Error;
         protected bool DisableLoginButton;
 
+        protected abstract Task<AuthenticationResult> AuthenticateActionAsync();
         protected override Task OnInitializedAsync()
         {
             return IfLoggedInRedirectToHome();
+        }
+
+        protected async Task AuthenticateButtonClickAsync()
+        {
+            StartLoadingState();
+            var result = await AuthenticateActionAsync();
+            if (result.IsSuccessful == false)
+            {
+                Error = result.Error;
+                EndLoadingState();
+                return;
+            }
+            EndLoadingState();
+            CustomAuthStateProvider.UpdateAuthState();
+            NavigationManager.NavigateTo("/client");
         }
 
         private async Task IfLoggedInRedirectToHome()
@@ -46,13 +62,13 @@ namespace ChatyChatyClient.Blazor.Pages.Authentication
             }
         }
 
-        protected void DisableButton()
+        protected void StartLoadingState()
         {
             LoadingIndicator.Show();
             DisableLoginButton = true;
         }
 
-        protected void EnableButton()
+        protected void EndLoadingState()
         {
             DisableLoginButton = false;
             LoadingIndicator.Hide();

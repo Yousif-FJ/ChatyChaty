@@ -9,7 +9,7 @@
 
 <div class="m-3">
     <h4 class="my-3 fw-bold">SignUp</h4>
-    <EditForm OnValidSubmit="@SignUp" Model="@signUpViewModel">
+    <EditForm OnValidSubmit="@AuthenticateButtonClickAsync" Model="@signUpViewModel">
         <DataAnnotationsValidator />
         <div class="mb-3">
             <label for="exampleInputEmail1" class="form-label">Username</label>

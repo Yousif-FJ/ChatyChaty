@@ -4,28 +4,19 @@ using MediatR;
 using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using ChatyChatyClient.Logic.Entities;
 
 namespace ChatyChatyClient.Blazor.Pages.Authentication
 {
     public partial class SignUpPage: AuthBase
     {
         private readonly SignUpViewModel signUpViewModel = new();
-        private async Task SignUp()
+
+        protected override Task<AuthenticationResult> AuthenticateActionAsync()
         {
-            DisableButton();
-            var result = await MediatR.Send(new SignUpRequest(signUpViewModel.Username, signUpViewModel.Password, signUpViewModel.DisplayName));
-            if (result.IsSuccessful == false)
-            {
-                Error = result.Error;
-                EnableButton();
-                return;
-            }
-            EnableButton();
-            CustomAuthStateProvider.UpdateAuthState();
-            NavigationManager.NavigateTo("/client");
+            return MediatR.Send(new SignUpRequest(signUpViewModel.Username, signUpViewModel.Password, signUpViewModel.DisplayName));
         }
     }
 }
