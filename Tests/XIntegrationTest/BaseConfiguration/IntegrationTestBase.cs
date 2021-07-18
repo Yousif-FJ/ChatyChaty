@@ -14,7 +14,7 @@ namespace XIntegrationTest
 {
     public abstract class IntegrationTestBase
     {
-        protected readonly HttpClient client;
+        protected readonly HttpClient httpClient;
         protected readonly WebApplicationFactory<Startup> Factory;
         public IntegrationTestBase()
         {
@@ -34,7 +34,7 @@ namespace XIntegrationTest
             
             //create a special client that work the In-Memory app
 
-            client = Factory.CreateClient();
+            httpClient = Factory.CreateClient();
         }
 
 

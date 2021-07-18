@@ -20,7 +20,7 @@ namespace XIntegrationTest
             //Arrange
 
             //Act
-            var result = await client.CreateAccount(account);
+            var result = await httpClient.CreateAccount(account);
             //Assert
             Assert.Equal(account.Username, result.Profile.Username);
             Assert.Null(result.Profile.PhotoURL);
@@ -34,12 +34,12 @@ namespace XIntegrationTest
         public async Task CreateAccount_Fail_UsernameInUse(CreateAccountSchema account)
         {
             //Arrange
-            var _ = await client.CreateAccount(account);
+            var _ = await httpClient.CreateAccount(account);
             //Act
             var exception = await Assert.ThrowsAsync<IntegrationTestException>(
                 async () =>
                 {
-                    await client.CreateAccount(account);
+                    await httpClient.CreateAccount(account);
                 });
 
 
@@ -54,11 +54,11 @@ namespace XIntegrationTest
         public async Task Authentication_Successful(CreateAccountSchema account)
         {
             //Arrange
-            var result = await client.CreateAccount(account);
+            var result = await httpClient.CreateAccount(account);
 
-            client.AddAuthTokenToHeader(result.Token);
+            httpClient.AddAuthTokenToHeader(result.Token);
             //Act
-            var response = await client.GetAsync("/api/v1/message/NewMessages");
+            var response = await httpClient.GetAsync("/api/v1/message/NewMessages");
             //Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
@@ -68,7 +68,7 @@ namespace XIntegrationTest
         {
             //Arrange
             //Act
-            var response = await client.GetAsync("/api/v1/message/NewMessages");
+            var response = await httpClient.GetAsync("/api/v1/message/NewMessages");
             //Assert
             Assert.NotEqual(HttpStatusCode.OK, response.StatusCode);
         }

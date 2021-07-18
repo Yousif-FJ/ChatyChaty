@@ -20,12 +20,12 @@ namespace XIntegrationTest.Profile
         public async Task<UserProfileResponse> CreateChat_Success(CreateAccountSchema senderSchem, CreateAccountSchema receiverSchem)
         {
             //Arrange
-            var sender = await client.CreateAccount(senderSchem);
-            var receiver = await client.CreateAccount(receiverSchem);
+            var sender = await httpClient.CreateAccount(senderSchem);
+            var receiver = await httpClient.CreateAccount(receiverSchem);
 
 
             //Act
-            UserProfileResponse result = await client.CreateChat(sender, receiver);
+            UserProfileResponse result = await httpClient.CreateChat(sender, receiver);
             //Assert
 
             Assert.NotNull(result.ChatId);
@@ -38,14 +38,14 @@ namespace XIntegrationTest.Profile
         public async Task<ErrorResponse> CreateChat_NotFound(CreateAccountSchema senderSchema, CreateAccountSchema receiver)
         {
             //Arrange
-            var sender = await client.CreateAccount(senderSchema);
+            var sender = await httpClient.CreateAccount(senderSchema);
 
 
             //Act
             var exception = await Assert.ThrowsAsync<IntegrationTestException>( 
                 async () =>
                 {
-                    await client.CreateChat(sender, new AuthResponse(null, new ProfileResponse(receiver.Username, receiver.DisplayName, null)));
+                    await httpClient.CreateChat(sender, new AuthResponse(null, new ProfileResponse(receiver.Username, receiver.DisplayName, null)));
                 }
             );
 

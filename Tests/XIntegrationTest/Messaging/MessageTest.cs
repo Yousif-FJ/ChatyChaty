@@ -22,13 +22,13 @@ namespace XIntegrationTest
         public async Task<MessageResponse> SendMessage_Success(CreateAccountSchema senderSchem, CreateAccountSchema receiverSchem, string messageBody)
         {
             //Arrange
-            var sender = await client.CreateAccount(senderSchem);
-            var receiver = await client.CreateAccount(receiverSchem);
+            var sender = await httpClient.CreateAccount(senderSchem);
+            var receiver = await httpClient.CreateAccount(receiverSchem);
 
-            var chat = await client.CreateChat(sender, receiver);
+            var chat = await httpClient.CreateChat(sender, receiver);
 
             //Act
-            var result = await client.SendMessage(sender, chat, messageBody);
+            var result = await httpClient.SendMessage(sender, chat, messageBody);
 
             //Assert
 
