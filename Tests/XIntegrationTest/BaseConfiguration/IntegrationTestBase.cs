@@ -23,21 +23,22 @@ namespace XIntegrationTest
                 builder.ConfigureServices(services =>
                 {
                     RemoveRealDBContext(services);
-
-                    var sqliteMemory = new SqliteInMemory();
-                    services.AddDbContextFactory<ChatyChatyContext>(optionsBuilder =>
-                    {
-                        optionsBuilder.UseSqlite(sqliteMemory.Connection);
-                    });
+                    CreateAndAddMemorySqlLite(services);
                 });
             });
             
             //create a special client that work the In-Memory app
-
             httpClient = Factory.CreateClient();
         }
 
-
+        private static void CreateAndAddMemorySqlLite(IServiceCollection services)
+        {
+            var sqliteMemory = new SqliteInMemory();
+            services.AddDbContextFactory<ChatyChatyContext>(optionsBuilder =>
+            {
+                optionsBuilder.UseSqlite(sqliteMemory.Connection);
+            });
+        }
 
         private static void RemoveRealDBContext(IServiceCollection services)
         {

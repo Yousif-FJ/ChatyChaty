@@ -49,6 +49,7 @@ namespace XIntegrationTest
             Assert.NotEmpty(result.Errors);
         }
 
+
         [Theory]
         [MemberData(memberName: nameof(DataGenerator.GetAccount), MemberType = typeof(DataGenerator))]
         public async Task Authentication_Successful(CreateAccountSchema account)

@@ -11,11 +11,11 @@ namespace XIntegrationTest.Profile
 {
     public static class ProfileExtention
     {
-        public static async Task<UserProfileResponse> CreateChat(this HttpClient httpClient, AuthResponse sender, AuthResponse receiver)
+        public static async Task<UserProfileResponse> CreateChat(this HttpClient httpClient, string token, string receiverUsername)
         {
-            httpClient.AddAuthTokenToHeader(sender.Token);
+            httpClient.AddAuthTokenToHeader(token);
 
-            var response = await httpClient.GetAsync($"api/v1/Profile/User?UserName={receiver.Profile.Username}");
+            var response = await httpClient.GetAsync($"api/v1/Profile/User?UserName={receiverUsername}");
 
             return await response.CustomRead200Response<UserProfileResponse>();
         }

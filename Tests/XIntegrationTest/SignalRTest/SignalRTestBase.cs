@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Http.Connections;
+﻿using ChatyChaty.HttpShemas.v1.Authentication;
+using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace XIntegrationTest.SignalRTest
@@ -19,6 +21,20 @@ namespace XIntegrationTest.SignalRTest
                     o.AccessTokenProvider = () => Task<string>.Factory.StartNew(() => token);
                 })
                 .Build();
+        }
+
+        protected async Task SetupHubTest<T>(CreateAccountSchema sender, CreateAccountSchema receiver, string UpdateMethodName, Action<T> UpdateHanlder)
+        {
+            var senderResponse = await httpClient.CreateAccount(sender);
+            var receiverResponse = await httpClient.CreateAccount(receiver);
+
+            var hubConnection = CreateHubConnection(receiverResponse.Token);
+            await hubConnection.StartAsync();
+
+            CancellationTokenSource cancellationSource = new();
+            var delayTask = Task.Delay(1000, cancellationSource.Token);
+
+            hubConnection.On<T>(UpdateMethodName, UpdateHanlder);
         }
     }
 }

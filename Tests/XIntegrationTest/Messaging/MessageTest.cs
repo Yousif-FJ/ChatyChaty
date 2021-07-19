@@ -18,17 +18,18 @@ namespace XIntegrationTest
     public class MessageTest : IntegrationTestBase
     {
         [Theory]
-        [MemberData(memberName: nameof(DataGenerator.GetSenderReceiverAndMessageBody), MemberType = typeof(DataGenerator))]
-        public async Task<MessageResponse> SendMessage_Success(CreateAccountSchema senderSchem, CreateAccountSchema receiverSchem, string messageBody)
+        [InlineData("a message")]
+        public async Task<MessageResponse> SendMessage_Success(string messageBody)
         {
             //Arrange
-            var sender = await httpClient.CreateAccount(senderSchem);
-            var receiver = await httpClient.CreateAccount(receiverSchem);
+            var accounts = DataGenerator.Get2AccountTuple();
+            var sender = await httpClient.CreateAccount(accounts.Item1);
+            var receiver = await httpClient.CreateAccount(accounts.Item2);
 
-            var chat = await httpClient.CreateChat(sender, receiver);
+            var chat = await httpClient.CreateChat(sender.Token, receiver.Profile.Username);
 
             //Act
-            var result = await httpClient.SendMessage(sender, chat, messageBody);
+            var result = await httpClient.SendMessage(sender, chat.ChatId, messageBody);
 
             //Assert
 

@@ -25,7 +25,7 @@ namespace XIntegrationTest.Profile
 
 
             //Act
-            UserProfileResponse result = await httpClient.CreateChat(sender, receiver);
+            UserProfileResponse result = await httpClient.CreateChat(sender.Token, receiver.Profile.Username);
             //Assert
 
             Assert.NotNull(result.ChatId);
@@ -45,7 +45,7 @@ namespace XIntegrationTest.Profile
             var exception = await Assert.ThrowsAsync<IntegrationTestException>( 
                 async () =>
                 {
-                    await httpClient.CreateChat(sender, new AuthResponse(null, new ProfileResponse(receiver.Username, receiver.DisplayName, null)));
+                    await httpClient.CreateChat(sender.Token, "randomUsername");
                 }
             );
 

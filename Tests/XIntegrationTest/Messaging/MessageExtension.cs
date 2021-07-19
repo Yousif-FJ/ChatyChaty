@@ -12,12 +12,12 @@ namespace XIntegrationTest.Messaging
 {
     public static class MessageExtension
     {
-        public static async Task<MessageResponse> SendMessage(this HttpClient httpClient, AuthResponse senderSchem,UserProfileResponse chatReceiver,string messageBody)
+        public static async Task<MessageResponse> SendMessage(this HttpClient httpClient, AuthResponse senderSchem, string chatId, string messageBody)
         {
             httpClient.AddAuthTokenToHeader(senderSchem.Token);
 
             var response = await httpClient.PostAsJsonAsync("api/v1/Message/Message",
-                new SendMessageSchema(chatReceiver.ChatId, messageBody));
+                new SendMessageSchema(chatId, messageBody));
 
             return await response.CustomRead200Response<MessageResponse>();
         }

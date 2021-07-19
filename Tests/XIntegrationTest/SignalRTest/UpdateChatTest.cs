@@ -14,6 +14,8 @@ namespace XIntegrationTest.SignalRTest
 {
     public class UpdateChatTest : SignalRTestBase
     {
+        private const string UpdateMethodName = "UpdateChat";
+
         [Theory]
         [MemberData(memberName: nameof(DataGenerator.GetSenderAndReceiver), MemberType = typeof(DataGenerator))]
         public async Task ChatCreate_UpdateChat_ShouldReturn_1Chat(CreateAccountSchema sender, CreateAccountSchema receiver)
@@ -27,19 +29,21 @@ namespace XIntegrationTest.SignalRTest
 
             UserProfileResponse updateResponse = default;
             CancellationTokenSource cancellationSource = new();
-           
+            var delayTask = Task.Delay(1000, cancellationSource.Token);
+
+
+            Action<UserProfileResponse> UpdateChatHanlder = (UserProfileResponse u) =>
+            {
+                updateResponse = u;
+                cancellationSource.Cancel();
+            };
 
             //Act
-            hubConnection.On<UserProfileResponse>("UserProfileResponse",
-                u => { 
-                    updateResponse = u;
-                    cancellationSource.Cancel();
-                });
-            var chat = await httpClient.CreateChat(senderResponse, receiverResponse);
+            hubConnection.On<UserProfileResponse>(UpdateMethodName, UpdateChatHanlder);
+            var chat = await httpClient.CreateChat(senderResponse.Token, receiverResponse.Profile.Username);
 
             //Assert
-            var delayTask = Task.Delay(1000, cancellationSource.Token);
-            await delayTask;
+            await Assert.ThrowsAsync<TaskCanceledException>(async () => await delayTask);
             Assert.NotNull(updateResponse);
             Assert.Equal(chat.ChatId, updateResponse.ChatId);
         }

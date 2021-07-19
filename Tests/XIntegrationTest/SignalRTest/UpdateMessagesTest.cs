@@ -35,7 +35,7 @@ namespace XIntegrationTest.SignalRTest
             //Arrange
             var senderResponse = await httpClient.CreateAccount(sender);
             var receiverResponse = await httpClient.CreateAccount(receiver);
-            var chat = await httpClient.CreateChat(senderResponse, receiverResponse);
+            var chat = await httpClient.CreateChat(senderResponse.Token, receiverResponse.Profile.Username);
 
             var hubConnection = CreateHubConnection(receiverResponse.Token);
             await hubConnection.StartAsync();
@@ -50,7 +50,7 @@ namespace XIntegrationTest.SignalRTest
                     updateMessage = u;
                     cancellationSource.Cancel();
                 });
-            var message = httpClient.SendMessage(senderResponse, chat, "some message");
+            var message = httpClient.SendMessage(senderResponse, chat.ChatId, "some message");
             //Assert
             await Assert.ThrowsAsync<TaskCanceledException>(async () => await delayTask);
             Assert.NotNull(updateMessage);

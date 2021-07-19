@@ -26,21 +26,9 @@ namespace XIntegrationTest.BaseConfiguration
             };
         }
 
-        public static IEnumerable<object[]> GetAccountAndUsername()
+        public static (CreateAccountSchema, CreateAccountSchema) Get2AccountTuple()
         {
-            yield return new object[] {
-                CreateRandomAccount(),
-                "user2"
-            };
-        }
-
-        public static IEnumerable<object[]> GetSenderReceiverAndMessageBody()
-        {
-            yield return new object[] {
-                CreateRandomAccount(),
-                CreateRandomAccount(),
-                "some message"
-            };
+            return (CreateRandomAccount(), CreateRandomAccount());
         }
 
         private static CreateAccountSchema CreateRandomAccount()
