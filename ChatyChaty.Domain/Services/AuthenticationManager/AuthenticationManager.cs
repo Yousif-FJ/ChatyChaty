@@ -22,14 +22,17 @@ namespace ChatyChaty.Domain.Services.AuthenticationManager
     public class AuthenticationManager : IAuthenticationManager
     {
         private readonly UserManager<AppUser> userManager;
+        private readonly IUserRepository userRepository;
         private readonly IConfiguration configuration;
 
         public AuthenticationManager(
             UserManager<AppUser> userManager,
+            IUserRepository userRepository,
             IConfiguration configuration
             )
         {
             this.userManager = userManager;
+            this.userRepository = userRepository;
             this.configuration = configuration;
         }
 
@@ -98,12 +101,12 @@ namespace ChatyChaty.Domain.Services.AuthenticationManager
         }
 
 
-        public async Task<AuthenticationResult> ChangePassword(string Id, string currentPassword, string newPassword)
+        public async Task<AuthenticationResult> ChangePassword(UserId Id, string currentPassword, string newPassword)
         {
-            var user = await userManager.FindByIdAsync(Id);
+            var user = await userRepository.GetAsync(Id);
             if (user is null)
             {
-                throw new ArgumentException("Passed user doesn't exist");
+                throw new ArgumentException("user doesn't exist");
             }
             var LoginResult = await userManager.CheckPasswordAsync(user, currentPassword);
             if (!LoginResult)

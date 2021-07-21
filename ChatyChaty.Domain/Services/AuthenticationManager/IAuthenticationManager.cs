@@ -1,4 +1,5 @@
 ﻿using ChatyChaty.Domain.Model.AccountModel;
+using ChatyChaty.Domain.Model.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,6 @@ namespace ChatyChaty.Domain.Services.AuthenticationManager
     {
         Task<AuthenticationResult> CreateAccount(string username, string password, string displayName);
         Task<AuthenticationResult> Login(string username, string password);
-        Task<AuthenticationResult> ChangePassword(string userName, string currentPassword, string newPassword);
+        Task<AuthenticationResult> ChangePassword(UserId userId, string currentPassword, string newPassword);
     }
 }

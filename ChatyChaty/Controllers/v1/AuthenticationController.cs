@@ -92,7 +92,7 @@ namespace ChatyChaty.Controllers.v1
         [HttpPatch("Password")]
         public async Task<IActionResult> ChangePassword([FromBody]ChangePasswordSchema passwordSchema)
         {
-            var userId = HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
+            var userId = HttpContext.GetUserIdFromHeader();
             var result = await authenticationManager.ChangePassword(userId, passwordSchema.CurrentPassword, passwordSchema.NewPassword);
 
             if (result.Success == false)
