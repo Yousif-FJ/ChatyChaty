@@ -10,8 +10,8 @@ namespace ChatyChaty.HttpShemas.v1.Authentication
     {
         public ChangePasswordSchema(string currentPassword, string newPassword)
         {
-            CurrentPassword = currentPassword ?? throw new ArgumentNullException(nameof(currentPassword));
-            NewPassword = newPassword ?? throw new ArgumentNullException(nameof(newPassword));
+            CurrentPassword = currentPassword;
+            NewPassword = newPassword;
         }
 
         [Required]

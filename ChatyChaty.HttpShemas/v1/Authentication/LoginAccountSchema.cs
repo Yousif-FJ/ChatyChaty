@@ -10,8 +10,8 @@ namespace ChatyChaty.HttpShemas.v1.Authentication
     {
         public LoginAccountSchema(string username, string password)
         {
-            Username = username ?? throw new ArgumentNullException(nameof(username));
-            Password = password ?? throw new ArgumentNullException(nameof(password));
+            Username = username;
+            Password = password;
         }
 
         [Required]
